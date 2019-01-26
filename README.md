@@ -5,7 +5,7 @@
 | Name | NEU ID | Email Address |
 | --- | --- | --- |
 | | | |
-| | | |
+| Jinansi | Thakkar | thakkar.j@husky.neu.edu |
 | | | |
 | | | |
 
