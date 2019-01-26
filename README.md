@@ -5,7 +5,9 @@
 | Name | NEU ID | Email Address |
 |  | --- | --- |
 | Kinnari Sanghvi| 001837528| sanghvi.ki@husky.neu.edu |
-| | |                                                  |
+
+| Jinansi | Thakkar | thakkar.j@husky.neu.edu |
+
 | | | |
 | | | |
 
