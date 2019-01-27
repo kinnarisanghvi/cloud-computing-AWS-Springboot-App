@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | Jinansi Thakkar| 001835505 | thakkar.j@husky.neu.edu |
 | Kinnari Sanghvi| 001837528| sanghvi.ki@husky.neu.edu |
+| Kinnari Sanghvi| 001837528| sanghvi.ki@husky.neu.edu |
 | --- | --- | --- |
 
 
