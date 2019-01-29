@@ -1,6 +1,7 @@
 package com.csye6225.spring2019.controller;
 
 
+import com.csye6225.spring2019.dao.Userdao;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ public class UserController {
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
+
         System.out.println(dateFormat.format(date));
         return dateFormat.format(date);
     }
@@ -45,6 +47,8 @@ public class UserController {
 
 
         User user = new User(name, password);
+        String hashed_password = Password.hashPassword(password);
+
 //        int result = userDao.addUser(user);
         //if (result == 1) {
 
