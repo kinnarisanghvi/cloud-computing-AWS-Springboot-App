@@ -28,6 +28,7 @@
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0" level="project" />
     <orderEntry type="library" name="Maven: at.favre.lib:bcrypt:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: at.favre.lib:bytes:0.4.6" level="project" />
+    <orderEntry type="library" name="Maven: org.mindrot:jbcrypt:0.3m" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:3.0-alpha-1" level="project" />
   </component>
 </module>
