@@ -1,35 +1,56 @@
 package com.csye6225.spring2019.controller;
 
 
+import com.csye6225.spring2019.model.User;
+import org.springframework.http.MediaType;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.springframework.web.bind.annotation.*;
+
+
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/note")
 
 public class UserController {
 //    Endpoints GET & POST
 
-    @GetMapping("/")
-    public void getUserRequest()
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    public String getUserRequest()
     {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        DateFormat dateFormat;
+        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         System.out.println(dateFormat.format(date));
+        return dateFormat.format(date);
     }
 
-    @PostMapping("/user/register")
-     public void createUser()
+    @POST
+    @Path("/user/register")
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    public String createUser(@FormParam("name") String name,
+                             @FormParam("password") String password,@Context HttpServletResponse servletResponse) throws IOException
     {
 
-        System.out.print("User Succesfully created");
-    }
 
+        User user = new User(name, password);
+//        int result = userDao.addUser(user);
+        //if (result == 1) {
+
+            return ("User Succesfully created");
+
+    }
 
 
 
