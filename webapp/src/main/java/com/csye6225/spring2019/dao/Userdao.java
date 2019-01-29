@@ -1,3 +1,4 @@
+package com.csye6225.spring2019.dao;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import com.csye6225.spring2019.model.User;
 
 public class Userdao {
     public List<User> getAllUsers(){
@@ -14,7 +16,7 @@ public class Userdao {
         try {
             File file = new File("Users.dat");
             if (!file.exists()) {
-                User user = new User(1, "Mahesh", "Teacher");
+                User user = new User("abxc@gmail.com", "123456789");
                 userList = new ArrayList<User>();
                 userList.add(user);
                 saveUserList(userList);

@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-
 @RestController
 @RequestMapping("/note")
 
@@ -48,7 +47,7 @@ public class UserController {
 //        int result = userDao.addUser(user);
         //if (result == 1) {
 
-            return ("User Succesfully created");
+        return ("User Succesfully created");
 
     }
 
