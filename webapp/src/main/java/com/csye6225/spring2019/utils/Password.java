@@ -1,4 +1,5 @@
-import at.favre.lib.crypto.bcrypt.BCrypt;
+package com.csye6225.spring2019.utils;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Password {
 
@@ -6,10 +7,9 @@ public class Password {
 
 
     public static String hashPassword(String password_plaintext) {
-//        String salt = BCrypt.gensalt(workload);
-//        String hashed_password = BCrypt.hashpw(password_plaintext, salt);
-        String hash_pass = BCrypt.withDefaults().hashToString(12, password_plaintext.toCharArray());
-        return(hash_pass);
+        String salt = BCrypt.gensalt(workload);
+        String hashed_password = BCrypt.hashpw(password_plaintext, salt);
+        return(hashed_password);
     }
 
 
