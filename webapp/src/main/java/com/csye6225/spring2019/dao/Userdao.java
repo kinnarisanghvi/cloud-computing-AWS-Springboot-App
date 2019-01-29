@@ -9,103 +9,48 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import com.csye6225.spring2019.model.User;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
-public class Userdao {
-    public List<User> getAllUsers(){
-        List<User> userList = null;
+public class Userdao extends DAO {
+
+    Session session = getSession();
+
+    public User get(String username, String password) {
         try {
-            File file = new File("Users.dat");
-            if (!file.exists()) {
-                User user = new User("abxc@gmail.com", "123456789");
-                userList = new ArrayList<User>();
-                userList.add(user);
-                saveUserList(userList);
-            }
-            else{
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                userList = (List<User>) ois.readObject();
-                ois.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return userList;
-    }
-
-    public User getUser(int id){
-        List<User> users = getAllUsers();
-
-        for(User user: users){
-            if(user.getId() == id){
-                return user;
-            }
+            begin();
+            Query q = getSession().createQuery("from Users where emailID = :username and password = :password");
+            q.setString("username", username);
+            q.setString("password", password);
+            User user = (User) q.uniqueResult();
+            commit();
+            return user;
+        } catch (HibernateException e) {
+            rollback();
+            System.out.println("Error in login "+ e.getMessage());
         }
         return null;
     }
 
-    public int addUser(User pUser){
-        List<User> userList = getAllUsers();
-        boolean userExists = false;
-        for(User user: userList){
-            if(user.getId() == pUser.getId()){
-                userExists = true;
-                break;
-            }
-        }
-        if(!userExists){
-            userList.add(pUser);
-            saveUserList(userList);
-            return 1;
-        }
-        return 0;
-    }
-
-    public int updateUser(User pUser){
-        List<User> userList = getAllUsers();
-
-        for(User user: userList){
-            if(user.getId() == pUser.getId()){
-                int index = userList.indexOf(user);
-                userList.set(index, pUser);
-                saveUserList(userList);
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    public int deleteUser(int id){
-        List<User> userList = getAllUsers();
-
-        for(User user: userList){
-            if(user.getId() == id){
-                int index = userList.indexOf(user);
-                userList.remove(index);
-                saveUserList(userList);
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    private void saveUserList(List<User> userList){
+    public registerUser(String emailID1, String password1) {
         try {
-            File file = new File("Users.dat");
-            FileOutputStream fos;
+            begin();
 
-            fos = new FileOutputStream(file);
+            Query query = session.createQuery("insert into Users(emailID, password)" +
+                    "select emailID, password from Users");
+            int result = query.executeUpdate();
 
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(userList);
-            oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            commit();
+            session.close();
+
+        }catch (HibernateException e) {
+            rollback();
+            System.out.println("Error in login "+ e.getMessage());
         }
+
     }
+
 }
 
