@@ -19,8 +19,15 @@ public class User {
     @NotNull
     private String email;
 
+    public User(@NotNull String email, @NotNull String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     @NotNull
     private String password;
+
+
 
     public Long getId() {
         return id;
