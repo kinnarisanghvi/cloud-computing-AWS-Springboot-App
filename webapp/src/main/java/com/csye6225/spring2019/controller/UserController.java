@@ -2,7 +2,6 @@ package com.csye6225.spring2019.controller;
 
 
 import com.csye6225.spring2019.model.User;
-import com.csye6225.spring2019.utils.Password;
 import org.springframework.http.MediaType;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

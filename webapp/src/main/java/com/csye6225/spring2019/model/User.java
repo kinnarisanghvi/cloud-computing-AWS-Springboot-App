@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User{
 //    email and password
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,6 +26,9 @@ public class User {
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
+
+    public User() {
+    }
 
 
     public Long getId() {
