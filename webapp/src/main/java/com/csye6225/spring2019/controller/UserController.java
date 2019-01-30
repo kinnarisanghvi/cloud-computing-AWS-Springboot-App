@@ -41,7 +41,7 @@ public class UserController {
             dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
             System.out.println(dateFormat.format(date));
-            return dateFormat.format(date);
+            return "{date: "+dateFormat.format(date)+"}";
         }
         else{
             return ("user does not exist please provide correct credentials");
@@ -60,8 +60,10 @@ public class UserController {
         User user = new User(name, password);
 //        int result = userDao.addUser(user);
         //if (result == 1) {
+        return "{message: 'User successfully created', email: "+name+"'}";
+//        return ("User Succesfully created");
 
-        return ("User Succesfully created");
+
 
     }
 
