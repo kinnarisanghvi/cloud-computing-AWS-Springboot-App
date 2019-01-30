@@ -24,12 +24,12 @@ public class Userdao extends DAO {
         return null;
     }
 
-    public int registerUser(String emailID1, String password1) {
+    public int registerUser(User user) {
         int result=0;
         try {
             begin();
 
-            String query = "insert into Users values("+emailID1+","+password1+")";
+            String query = "insert into Users values("+user.getEmail()+","+user.getPassword()+")";
             Query q = session.createQuery(query);
             result = q.executeUpdate();
             System.out.println("Chal gaya User added "+result);
