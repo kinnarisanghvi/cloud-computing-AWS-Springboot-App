@@ -24,16 +24,28 @@ public class UserController {
 
     @GET
     @Path("/")
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @Produces(MediaType.APPLICATION_JSON_VALUE)
-    public String getUserRequest()
+    public String getUserRequest(@FormParam("name") String name,
+                                 @FormParam("password") String password,@Context HttpServletResponse servletResponse)
     {
 
-        DateFormat dateFormat;
-        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-
-        System.out.println(dateFormat.format(date));
-        return dateFormat.format(date);
+        Userdao udao = new Userdao();
+        User user=(User) udao.get(name,password);
+        if(user!=null) {
+            if(!(user.getPassword().equalsIgnoreCase(password))
+                    || !user.getEmail().equalsIgnoreCase(name)){
+                return ("Invalid credentials");
+            }
+            DateFormat dateFormat;
+            dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            System.out.println(dateFormat.format(date));
+            return dateFormat.format(date);
+        }
+        else{
+            return ("user does not exist please provide correct credentials");
+        }
     }
 
     @POST
@@ -46,8 +58,6 @@ public class UserController {
 
 
         User user = new User(name, password);
-        String hashed_password = Password.hashPassword(password);
-
 //        int result = userDao.addUser(user);
         //if (result == 1) {
 
