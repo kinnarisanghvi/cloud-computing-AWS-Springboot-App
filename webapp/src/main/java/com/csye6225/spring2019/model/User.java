@@ -3,20 +3,19 @@ package com.csye6225.spring2019.model;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 public class User {
 //    email and password
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
     @NotNull
+    @Column(name = "emailID",unique = true,nullable = false)
     private String email;
 
     public User(@NotNull String email, @NotNull String password) {
@@ -25,8 +24,8 @@ public class User {
     }
 
     @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
-
 
 
     public Long getId() {
