@@ -3,11 +3,14 @@ package com.csye6225.spring2019.controller;
 
 import com.csye6225.spring2019.dao.Userdao;
 import com.csye6225.spring2019.model.User;
+import com.csye6225.spring2019.utils.Password;
 import org.springframework.http.MediaType;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.UserDataHandler;
+
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,8 +34,10 @@ public class UserController {
     {
 
         Userdao udao = new Userdao();
+
         User user=(User) udao.get(name,password);
-        if(user!=null) {
+        boolean check_hash_password = Password.checkPassword(password,user.getPassword());
+        if(user!=null && !check_hash_password) {
             if(!(user.getPassword().equalsIgnoreCase(password))
                     || !user.getEmail().equalsIgnoreCase(name)){
                 return ("Invalid credentials");
@@ -56,14 +61,12 @@ public class UserController {
                              @FormParam("password") String password,@Context HttpServletResponse servletResponse) throws IOException
     {
 
-
-        User user = new User(name, password);
-//        int result = userDao.addUser(user);
-        //if (result == 1) {
-        return "{message: 'User successfully created', email: "+name+"'}";
+        String hashed_password = Password.hashPassword(password);
+        User user = new User(name, hashed_password);
+        Userdao userdao = new Userdao();
+        userdao.registerUser(user);
+        return "{message: 'User successfully created', email: '"+name+"'}";
 //        return ("User Succesfully created");
-
-
 
     }
 
