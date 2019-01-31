@@ -22,6 +22,7 @@ import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -41,7 +42,8 @@ public class UserController {
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         responseHeaders.set("MyResponseHeader", "MyValue");
-        return new ResponseEntity<String>("date:" +dateFormat.format(date), responseHeaders, HttpStatus.ACCEPTED);
+        //        "{\"message\":
+        return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
 
 
@@ -76,7 +78,8 @@ public class UserController {
         //                return "{message: Please provide proper credentials}";
 
 //        return "{'token': '" + jwtToken + "'}";
-        return new ResponseEntity<String>("token: " + jwtToken + "}", responseHeaders, HttpStatus.ACCEPTED);
+//        "{\"message\":
+        return new ResponseEntity<String>("{\"bearer-token\": \"" + jwtToken + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
 
 
@@ -92,21 +95,22 @@ public class UserController {
         for(User user1 : users) {
 
             if (user.getEmailID().equals(user1.getEmailID())) {
-                return new ResponseEntity<String>("Account already exits", responseHeaders, HttpStatus.CONFLICT);
+                return new ResponseEntity<String>("{\"message\":\"Account already exits\"}", responseHeaders, HttpStatus.CONFLICT);
             }
         }
         if(isValidEmailAddress(user.getEmailID())){
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
-                return new ResponseEntity<String>(user.getEmailID().toString(), responseHeaders, HttpStatus.OK);
+                return new ResponseEntity<String>("{\"message\": \"" + user.getEmailID() + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
-                 return new ResponseEntity<String>(errorList.toString(),responseHeaders,HttpStatus.BAD_REQUEST);
+                 return new ResponseEntity<String>("{\"message\": \"" + errorList.toString() + "\"}",responseHeaders,HttpStatus.BAD_REQUEST);
                 }
             }
         } else {
-            return new ResponseEntity<String>("Invalid Email", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<String>("{\"message\": \"Invalid Email\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
+
         }
 
 
