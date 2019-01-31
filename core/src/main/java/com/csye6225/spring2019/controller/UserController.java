@@ -8,12 +8,18 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 @RestController
 @RequestMapping("/api")
@@ -23,11 +29,32 @@ public class UserController {
     UserRepository userRepository;
 
     @GetMapping("/")
-    public String getDate() {
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    public String getDate(@FormParam("name") String name, @FormParam("password") String password, @Context HttpServletResponse servletResponse) {
+
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         System.out.println(dateFormat.format(date));
+        List<User> users = userRepository.findAll();
+
+        Iterator itr = users.iterator();
+        while (itr.hasNext()){
+            User u = (User)itr.next();
+            if(u.getEmailID().equalsIgnoreCase(name) && u.getPassword().equalsIgnoreCase(password)) {
+                return "{date: "+dateFormat.format(date)+"}";
+
+            }
+            else {
+                return "{message: Please provide proper credentials}";
+
+            }
+        }
+
+
+
+
         return "{date: "+dateFormat.format(date)+"}";
     }
 
