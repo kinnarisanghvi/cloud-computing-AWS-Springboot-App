@@ -2,6 +2,7 @@ package com.csye6225.spring2019.controller;
 
 
 import com.csye6225.spring2019.model.User;
+import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,10 @@ public class UserController {
 
 
     @PostMapping("/users/register")
-    public User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user)
+    {
+//        String hashed_password = Password.hashPassword(user.getPassword());
+//        user.setPassword(u)
         return userRepository.save(user);
     }
 
