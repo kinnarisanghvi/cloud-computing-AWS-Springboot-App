@@ -57,6 +57,7 @@ public class UserController {
 
         String email = login.getEmailID();
         String password = login.getPassword();
+        System.out.println(email + "  "+ password);
 
         User user = userRepository.findByEmail(email);
 
@@ -64,9 +65,9 @@ public class UserController {
             throw new ServletException("User email not found.");
         }
 
-        String pwd = user.getPassword();
+        boolean flag = Password.checkPassword(login.getPassword(),user.getPassword());
 
-        if (!password.equals(pwd)) {
+        if (!flag) {
             throw new ServletException("Invalid login. Please check your name and password.");
         }
 
