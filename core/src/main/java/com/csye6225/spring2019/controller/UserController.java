@@ -4,25 +4,25 @@ package com.csye6225.spring2019.controller;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
+//import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api")
@@ -30,58 +30,74 @@ public class UserController {
 
     @Autowired
     UserRepository userRepository;
+    HttpHeaders responseHeaders = new HttpHeaders();
 
-    @GetMapping("/")
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    public String getDate(@FormParam("name") String name, @FormParam("password") String password, @Context HttpServletResponse servletResponse) {
 
+    @RequestMapping("/")
+    public ResponseEntity<String> loginSuccess() {
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        System.out.println(dateFormat.format(date));
-        List<User> users = userRepository.findAll();
+        responseHeaders.set("MyResponseHeader", "MyValue");
+        return new ResponseEntity<String>("date:" +dateFormat.format(date), responseHeaders, HttpStatus.ACCEPTED);
+    }
 
-        Iterator itr = users.iterator();
-        while (itr.hasNext()){
-            User u = (User)itr.next();
-            if(u.getEmailID().equalsIgnoreCase(name) && u.getPassword().equalsIgnoreCase(password)) {
-                return "{date: "+dateFormat.format(date)+"}";
 
-            }
-            else {
-                return "{message: Please provide proper credentials}";
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ResponseEntity<String> login(@RequestBody User login) throws ServletException {
+        String jwtToken = "";
 
-            }
+        if (login.getEmailID() == null || login.getPassword() == null) {
+            throw new ServletException("Please fill in username and password");
         }
 
+        String email = login.getEmailID();
+        String password = login.getPassword();
 
+        User user = userRepository.findByEmail(email);
 
+        if (user == null) {
+            throw new ServletException("User email not found.");
+        }
 
-        return "{date: "+dateFormat.format(date)+"}";
+        String pwd = user.getPassword();
+
+        if (!password.equals(pwd)) {
+            throw new ServletException("Invalid login. Please check your name and password.");
+        }
+
+        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+        //                return "{message: Please provide proper credentials}";
+
+//        return "{'token': '" + jwtToken + "'}";
+        return new ResponseEntity<String>("token: " + jwtToken + "}", responseHeaders, HttpStatus.ACCEPTED);
     }
+
+
+
+
 
 
     @Produces("application/json")
     @PostMapping("/users/register")
-    public String createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
 
         List<User> users = userRepository.findAll();
         for(User user1 : users){
 
                 if(user.getEmailID().equals(user1.getEmailID())){
-                    return "Account already exits";
+                    return new ResponseEntity<String>("Account already exits",responseHeaders,HttpStatus.CONFLICT);
                 }else if(isValidEmailAddress(user1.getEmailID())){
 //                    boolean valid = EmailValidator.getInstance().isValid(user1.getEmailID());
 //                    if(valid) {
                         user.setPassword(Password.hashPassword(user1.getPassword()));
                         userRepository.save(user);
-                        return user.getEmailID().toString() + " " + user.getPassword().toString();
-//                    }else{
-//                        return "INvalid emailId";
-//                    }
+                        return new ResponseEntity<String>(user.getEmailID().toString(),responseHeaders,HttpStatus.OK);
                 }else{
-                    return "Invalid Email";
+                    return new ResponseEntity<String>("Invalid Email", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
                 }
         }
 
@@ -95,9 +111,5 @@ public class UserController {
         return m.matches();
     }
 
-//    @GetMapping("/notes/{id}")
-//    public Note getNoteById(@PathVariable(value = "id") Long noteId) {
-//        return userRepository.findById(noteId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-//    }
+
 }
