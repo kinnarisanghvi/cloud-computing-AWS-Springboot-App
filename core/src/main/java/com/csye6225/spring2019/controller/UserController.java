@@ -21,8 +21,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api")
@@ -84,22 +86,28 @@ public class UserController {
     @Produces("application/json")
     @PostMapping("/users/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
-
+        List<String> errorList = new ArrayList<String>();
         List<User> users = userRepository.findAll();
-        for(User user1 : users){
+        for(User user1 : users) {
 
-                if(user.getEmailID().equals(user1.getEmailID())){
-                    return new ResponseEntity<String>("Account already exits",responseHeaders,HttpStatus.CONFLICT);
-                }else if(isValidEmailAddress(user1.getEmailID())){
-//                    boolean valid = EmailValidator.getInstance().isValid(user1.getEmailID());
-//                    if(valid) {
-                        user.setPassword(Password.hashPassword(user1.getPassword()));
-                        userRepository.save(user);
-                        return new ResponseEntity<String>(user.getEmailID().toString(),responseHeaders,HttpStatus.OK);
-                }else{
-                    return new ResponseEntity<String>("Invalid Email", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
-                }
+            if (user.getEmailID().equals(user1.getEmailID())) {
+                return new ResponseEntity<String>("Account already exits", responseHeaders, HttpStatus.CONFLICT);
+            }
         }
+        if(isValidEmailAddress(user.getEmailID())){
+            if(isValidPassword(user.getPassword(),errorList)) {
+                user.setPassword(Password.hashPassword(user.getPassword()));
+                userRepository.save(user);
+                return new ResponseEntity<String>(user.getEmailID().toString(), responseHeaders, HttpStatus.OK);
+            } else {
+                if(!errorList.isEmpty()) {
+                 return new ResponseEntity<String>(errorList.toString(),responseHeaders,HttpStatus.BAD_REQUEST);
+                }
+            }
+        } else {
+            return new ResponseEntity<String>("Invalid Email", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
+        }
+
 
         return null;
     }
@@ -109,6 +117,41 @@ public class UserController {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
+    }
+
+    public boolean isValidPassword(String passwordhere, List<String> errorList) {
+
+        Pattern specailCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
+        Pattern lowerCasePatten = Pattern.compile("[a-z ]");
+        Pattern digitCasePatten = Pattern.compile("[0-9 ]");
+        errorList.clear();
+
+        boolean flag=true;
+
+        if (passwordhere.length() < 8) {
+            errorList.add("Password length must have atleast 8 character !!");
+            flag=false;
+        }
+        if (!specailCharPatten.matcher(passwordhere).find()) {
+            errorList.add("Password must have atleast one special character !!");
+            flag=false;
+        }
+        if (!UpperCasePatten.matcher(passwordhere).find()) {
+            errorList.add("Password must have atleast one uppercase character !!");
+            flag=false;
+        }
+        if (!lowerCasePatten.matcher(passwordhere).find()) {
+            errorList.add("Password must have atleast one lowercase character !!");
+            flag=false;
+        }
+        if (!digitCasePatten.matcher(passwordhere).find()) {
+            errorList.add("Password must have atleast one digit character !!");
+            flag=false;
+        }
+
+        return flag;
+
     }
 
 
