@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>easy-notes</artifactId>
+	<artifactId>NotesApplication</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>easy-notes</name>
+	<name>NotesApplication</name>
 	<description>Rest API for a Simple Note Taking Application</description>
 
 	<parent>
@@ -49,6 +49,25 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>5.0.4.RELEASE</version>
+        </dependency>
+		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.3m</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
