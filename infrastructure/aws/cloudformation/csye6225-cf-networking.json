@@ -4,34 +4,42 @@
    "Parameters":{
       "stackname":{
          "Description":"name of network stack",
+         "Default":"stack",
          "Type":"String"
       },
       "vpcblock":{
          "Description":"VPC ID Block",
+         "Default":"vpc1",
          "Type":"String"
       },
       "zone1":{
          "Description":"Zone 1a for subnet 1",
+         "Default":"us-east-1a",
          "Type":"String"
       },
       "zone2":{
          "Description":"Zone 1a for subnet 1",
+         "Default":"us-east-1b",
          "Type":"String"
       },
       "zone3":{
          "Description":"Zone 1a for subnet 1",
+         "Default":"us-east-1c",
          "Type":"String"
       },
       "subnetip1":{
          "Description":"cidr for subnet 1",
+	 "Default":"10.0.1.0/24",
          "Type":"String"
       },
       "subnetip2":{
          "Description":"cidr for subnet 2",
+	 "Default":"10.0.2.0/24",
          "Type":"String"
       },
       "subnetip3":{
          "Description":"cidr for subnet 3",
+         "Default":"10.0.3.0/24",
          "Type":"String"
       }
    },
@@ -58,34 +66,6 @@
             }
          }
       },
-      "subnet2":{
-         "Type":"AWS::EC2::Subnet",
-         "Properties":{
-            "AvailabilityZone":{
-               "Ref":"zone2"
-            },
-            "VpcId":{
-               "Ref":"myVPC"
-            },
-            "CidrBlock":{
-               "Ref":"subnetip2"
-            }
-         }
-      },
-      "subnet3":{
-         "Type":"AWS::EC2::Subnet",
-         "Properties":{
-            "AvailabilityZone":{
-               "Ref":"zone3"
-            },
-            "VpcId":{
-               "Ref":"myVPC"
-            },
-            "CidrBlock":{
-               "Ref":"subnetip3"
-            }
-         }
-      },
       "myRouteTable":{
          "Type":"AWS::EC2::RouteTable",
          "Properties":{
@@ -98,7 +78,7 @@
          "Type":"AWS::EC2::InternetGateway",
          "Properties":{
             "Tags":[
-               "-"
+                 {"Key" : "gateway1", "Value" : "csye"}
             ]
          }
       },
@@ -113,7 +93,7 @@
             }
          }
       },
-      "IG_RouteTable_Route":{
+      "IGRouteTableRoute":{
          "Type":"AWS::EC2::Route",
          "Properties":{
             "RouteTableId":{
@@ -130,28 +110,6 @@
          "Properties":{
             "SubnetId":{
                "Ref":"subnet1"
-            },
-            "RouteTableId":{
-               "Ref":"myRouteTable"
-            }
-         }
-      },
-      "SubnetRouteTableAssociation2":{
-         "Type":"AWS::EC2::SubnetRouteTableAssociation",
-         "Properties":{
-            "SubnetId":{
-               "Ref":"subnet2"
-            },
-            "RouteTableId":{
-               "Ref":"myRouteTable"
-            }
-         }
-      },
-      "SubnetRouteTableAssociation3":{
-         "Type":"AWS::EC2::SubnetRouteTableAssociation",
-         "Properties":{
-            "SubnetId":{
-               "Ref":"subnet3"
             },
             "RouteTableId":{
                "Ref":"myRouteTable"
