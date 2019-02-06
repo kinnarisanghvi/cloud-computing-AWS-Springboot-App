@@ -9,7 +9,7 @@
       },
       "vpcblock":{
          "Description":"VPC ID Block",
-         "Default":"vpc1",
+         "Default":"10.0.0.0/24",
          "Type":"String"
       },
       "zone1":{
@@ -66,6 +66,34 @@
             }
          }
       },
+      "subnet2":{
+         "Type":"AWS::EC2::Subnet",
+         "Properties":{
+            "AvailabilityZone":{
+               "Ref":"zone2"
+            },
+            "VpcId":{
+               "Ref":"myVPC"
+            },
+            "CidrBlock":{
+               "Ref":"subnetip2"
+            }
+         }
+      },
+      "subnet3":{
+         "Type":"AWS::EC2::Subnet",
+         "Properties":{
+            "AvailabilityZone":{
+               "Ref":"zone3"
+            },
+            "VpcId":{
+               "Ref":"myVPC"
+            },
+            "CidrBlock":{
+               "Ref":"subnetip3"
+            }
+         }
+      },
       "myRouteTable":{
          "Type":"AWS::EC2::RouteTable",
          "Properties":{
@@ -110,6 +138,28 @@
          "Properties":{
             "SubnetId":{
                "Ref":"subnet1"
+            },
+            "RouteTableId":{
+               "Ref":"myRouteTable"
+            }
+         }
+      },
+       "SubnetRouteTableAssociation2":{
+         "Type":"AWS::EC2::SubnetRouteTableAssociation",
+         "Properties":{
+            "SubnetId":{
+               "Ref":"subnet2"
+            },
+            "RouteTableId":{
+               "Ref":"myRouteTable"
+            }
+         }
+      },
+       "SubnetRouteTableAssociation3":{
+         "Type":"AWS::EC2::SubnetRouteTableAssociation",
+         "Properties":{
+            "SubnetId":{
+               "Ref":"subnet3"
             },
             "RouteTableId":{
                "Ref":"myRouteTable"
