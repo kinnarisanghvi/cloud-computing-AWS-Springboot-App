@@ -22,7 +22,7 @@
 ## Deploy Instructions
 
 
-## Running Tests
+## Running Tests.
 
 
 ## CI/CD
