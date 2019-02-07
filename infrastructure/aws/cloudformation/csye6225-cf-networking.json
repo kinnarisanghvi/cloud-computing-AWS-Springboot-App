@@ -4,12 +4,12 @@
    "Parameters":{
       "stackname":{
          "Description":"name of network stack",
-         "Default":"stack",
+         "Default":"stack1-csye6225-vpc",
          "Type":"String"
       },
       "vpcblock":{
          "Description":"VPC ID Block",
-         "Default":"10.0.0.0/24",
+         "Default":"10.0.0.0/16",
          "Type":"String"
       },
       "zone1":{
