@@ -135,4 +135,5 @@ else
 	exit 1
 fi
 
+aws cloudformation deploy --template ./csye6225-cf-networking.json --stack-name "$stackname" --parameter-overrides SubnetIpBlocks="$subnets" AvailabilityZones="$zones" VPCIpBlock="$cidr"
 
