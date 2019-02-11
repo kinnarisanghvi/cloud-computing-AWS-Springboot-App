@@ -21,9 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().httpBasic()
                 .authenticationEntryPoint(authenticationEntryPoint);
     }
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication().withUser("jinansi123").password("password").roles("USER");
-//    }
+     @Autowired
+     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+          auth.inMemoryAuthentication().withUser("jinansi123").password("password").roles("ADMIN");
+     }
 
 }
