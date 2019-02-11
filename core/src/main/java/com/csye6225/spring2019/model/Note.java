@@ -25,10 +25,10 @@ public class Note {
     @Column(name="note_content")
     private String noteContent;
 
-    @Column(name="note_createdat")
+    @Column(name="note_createdAt")
     private Date noteCreatedAt;
 
-    @Column(name="note_lastupdatedat")
+    @Column(name="note_lastUpdated")
     private Date noteUpdatedAt;
 
     public Integer getNoteId() {
@@ -80,11 +80,7 @@ public class Note {
     }
 
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="user_id")
     private User userId;
-
-
-
-
     }
 
