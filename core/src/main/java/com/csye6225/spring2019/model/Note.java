@@ -13,9 +13,8 @@ import java.util.Date;
 public class Note {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="noteid")
-    private Integer noteId;
+    private String noteId;
 
 
     @Column(name="note_title")
@@ -25,19 +24,36 @@ public class Note {
     @Column(name="note_content")
     private String noteContent;
 
-    @Column(name="note_createdAt")
+    @Column(name="note_createdAt",columnDefinition = "text")
     private Date noteCreatedAt;
 
-    @Column(name="note_lastUpdated")
-    private Date noteUpdatedAt;
+    public Date getNoteCreatedAt() {
+        return noteCreatedAt;
+    }
 
-    public Integer getNoteId() {
+    public Date getNoteUpdatedAt() {
+        return noteUpdatedAt;
+    }
+
+    public void setNoteUpdatedAt(Date noteUpdatedAt) {
+        this.noteUpdatedAt = noteUpdatedAt;
+    }
+
+    public String getNoteId() {
         return noteId;
     }
 
-    public void setNoteId(Integer noteId) {
+    public void setNoteId(String noteId) {
         this.noteId = noteId;
     }
+
+
+    public void setNoteCreatedAt(Date noteCreatedAt) {
+        this.noteCreatedAt = noteCreatedAt;
+    }
+
+    @Column(name="note_lastUpdated",columnDefinition = "text")
+    private Date noteUpdatedAt;
 
     public String getNoteTitle() {
         return noteTitle;
@@ -55,32 +71,8 @@ public class Note {
         this.noteContent = noteContent;
     }
 
-    public Date getNoteCreatedAt() {
-        return noteCreatedAt;
-    }
-
-    public void setNoteCreatedAt(Date noteCreatedAt) {
-        this.noteCreatedAt = noteCreatedAt;
-    }
-
-    public Date getNoteUpdatedAt() {
-        return noteUpdatedAt;
-    }
-
-    public void setNoteUpdatedAt(Date noteUpdatedAt) {
-        this.noteUpdatedAt = noteUpdatedAt;
-    }
-
-    public User getUserId() {
-        return userId;
-    }
-
-    public void setUserId(User userId) {
-        this.userId = userId;
-    }
-
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User userId;
+    private User user;
     }
 
