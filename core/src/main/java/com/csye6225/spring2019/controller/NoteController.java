@@ -5,18 +5,21 @@ import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.sql.Date;
 
 @RestController
 public class NoteController {
@@ -25,29 +28,39 @@ public class NoteController {
     NoteRepository noteRepository;
     @Autowired
     UserRepository uRepository;
-
+    HttpHeaders responseHeaders = new HttpHeaders();
 
 
     @GetMapping("/note")
-    public List<Note> getAllNote() {
-
-        return noteRepository.findAll();
+    public ResponseEntity<Object> getAllNote() throws JSONException {
+        List<Note> notes = noteRepository.findAll();
+        List<JSONObject> entities = new ArrayList<JSONObject>();
+        for (Note n : notes) {
+            JSONObject entity = new JSONObject();
+            entity.put("Id", n.getNoteId());
+            entity.put("User", n.getUser().getEmailID());
+            entity.put("Title", n.getNoteTitle());
+            entity.put("Content", n.getNoteContent());
+            entity.put("Created At", n.getNoteCreatedAt());
+            entity.put("Last Updated At", n.getNoteUpdatedAt());
+            entities.add(entity);
+        }
+        return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
     }
 
     @PostMapping("/note")
-    public Note newNote(@Valid @RequestBody Note note) {
+    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note) {
 
-        long userid=0L;
+        long userid = 0L;
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         note.setNoteId(randomUUIDString);
         String user_email = note.getUser().getEmailID();
-        User user1=uRepository.findByEmail(user_email);
-        if(user1!=null){
-             userid=user1.getId();
+        User user1 = uRepository.findByEmail(user_email);
+        if (user1 != null) {
+            userid = user1.getId();
 
-        }
-        else{
+        } else {
             System.out.println("Please enter user");
             return null;
         }
@@ -58,18 +71,27 @@ public class NoteController {
         System.out.println("Using a dateFormat date is : " + df.format(uDate));
         note.setNoteCreatedAt(sDate);
         note.getUser().setId(userid);
-
-        return noteRepository.save(note);
+        noteRepository.save(note);
+        return new ResponseEntity<Object>(note, HttpStatus.CREATED);
     }
 
     @GetMapping("/note/{id}")
-    public Note getOneNote(@PathVariable(value = "noteid") String noteid) {
-
-        return noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
+    public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id) throws JSONException {
+        Optional<Note> note = noteRepository.findById(id);
+        List<JSONObject> entities = new ArrayList<JSONObject>();
+        JSONObject entity = new JSONObject();
+        entity.put("Id", note.orElseThrow(RuntimeException::new).getNoteId());
+        entity.put("User", note.orElseThrow(RuntimeException::new).getUser());
+        entity.put("Title", note.orElseThrow(RuntimeException::new).getNoteTitle());
+        entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
+        entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
+        entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
+        entities.add(entity);
+        return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
     }
 
     @PutMapping("/note/{id}")
-    public Note updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note) {
+    public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note) {
 
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
 
@@ -83,7 +105,7 @@ public class NoteController {
         System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
         note.setNoteUpdatedAt(sDate1);
         Note changedNote = noteRepository.save(note1);
-        return changedNote;
+        return new ResponseEntity<Object>(changedNote, HttpStatus.MOVED_PERMANENTLY);
     }
 
 
@@ -91,7 +113,9 @@ public class NoteController {
     public ResponseEntity<?> deleteNote(@PathVariable(value = "id") String noteid) {
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
         noteRepository.delete(note1);
-        return ResponseEntity.ok().build();
+//        return new ResponseEntity<Object>("", HttpStatus.MOVED_PERMANENTLY);
+        return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
+
 
     }
 }
