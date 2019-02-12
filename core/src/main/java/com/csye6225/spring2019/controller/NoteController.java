@@ -23,7 +23,9 @@ public class NoteController {
 
     @Autowired
     NoteRepository noteRepository;
+    @Autowired
     UserRepository uRepository;
+
 
 
     @GetMapping("/note")
@@ -47,6 +49,7 @@ public class NoteController {
         }
         else{
             System.out.println("Please enter user");
+            return null;
         }
         java.util.Date uDate = new java.util.Date();
         java.sql.Date sDate = new java.sql.Date(uDate.getTime());
