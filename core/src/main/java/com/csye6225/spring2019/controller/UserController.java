@@ -67,7 +67,7 @@ public class UserController {
         return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
 
-    
+
 
     @Produces("application/json")
     @PostMapping("/users/register")

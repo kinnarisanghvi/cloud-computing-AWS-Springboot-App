@@ -41,30 +41,36 @@ public class NoteController {
         System.out.println("Time in java.sql.Date is : " + sDate);
         DateFormat df = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
         System.out.println("Using a dateFormat date is : " + df.format(uDate));
+        note.setNoteCreatedAt(sDate);
         return noteRepository.save(note);
     }
 
     @GetMapping("/note/{id}")
-    public Note getOneNote(@PathVariable(value = "noteid") Long noteid) {
+    public Note getOneNote(@PathVariable(value = "noteid") String noteid) {
 
         return noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
     }
 
     @PutMapping("/note/{id}")
-    public Note updateNote(@PathVariable(value = "noteid") Long noteid, @Valid @RequestBody Note note) {
+    public Note updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note) {
 
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
 
         note1.setNoteTitle(note.getNoteTitle());
         note1.setNoteContent(note.getNoteContent());
-
+        java.util.Date uDate1 = new java.util.Date();
+        java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
+        System.out.println("Time in java.sql.Date is : " + sDate1);
+        DateFormat df1 = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
+        System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
+        note.setNoteUpdatedAt(sDate1);
         Note changedNote = noteRepository.save(note1);
         return changedNote;
     }
 
 
     @DeleteMapping("/note/{id}")
-    public ResponseEntity<?> deleteNote(@PathVariable(value = "noteid") Long noteid) {
+    public ResponseEntity<?> deleteNote(@PathVariable(value = "id") String noteid) {
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
         noteRepository.delete(note1);
         return ResponseEntity.ok().build();
