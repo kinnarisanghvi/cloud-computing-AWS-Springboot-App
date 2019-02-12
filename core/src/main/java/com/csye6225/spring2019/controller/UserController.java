@@ -29,15 +29,15 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
-
-    @RequestMapping("/")
+    @RequestMapping(value="/", method = RequestMethod.GET, headers = "text")
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> loginSuccess() {
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -82,11 +82,6 @@ public class UserController {
 //        "{\"message\":
         return new ResponseEntity<String>("{\"bearer-token\": \"" + jwtToken + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
-
-
-
-
-
 
     @Produces("application/json")
     @PostMapping("/users/register")

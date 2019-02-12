@@ -1,11 +1,11 @@
 package com.csye6225.spring2019.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
-
 
 @Entity
 @Table(name="notes")
@@ -13,18 +13,18 @@ import java.util.Date;
 public class Note {
 
     @Id
-    @Column(name="noteid")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @Column(name = "noteid")
     private String noteId;
 
-
-    @Column(name="note_title")
+    @Column(name = "note_title")
     private String noteTitle;
 
-
-    @Column(name="note_content")
+    @Column(name = "note_content")
     private String noteContent;
 
-    @Column(name="note_createdAt",columnDefinition = "text")
+    @Column(name = "note_createdAt", columnDefinition = "text")
     private Date noteCreatedAt;
 
     public Date getNoteCreatedAt() {
@@ -52,7 +52,7 @@ public class Note {
         this.noteCreatedAt = noteCreatedAt;
     }
 
-    @Column(name="note_lastUpdated",columnDefinition = "text")
+    @Column(name = "note_lastUpdated", columnDefinition = "text")
     private Date noteUpdatedAt;
 
     public String getNoteTitle() {
@@ -72,7 +72,6 @@ public class Note {
     }
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
-    }
-
+}
