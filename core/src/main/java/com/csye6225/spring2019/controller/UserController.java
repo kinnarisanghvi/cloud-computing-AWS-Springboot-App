@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -28,62 +29,44 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
-
-    @RequestMapping("/")
-    public ResponseEntity<String> loginSuccess() {
+    @RequestMapping(value="/", method = RequestMethod.GET)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> loginSuccess(@RequestBody User user) throws ServletException{
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        responseHeaders.set("MyResponseHeader", "MyValue");
-        //        "{\"message\":
-        return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
-    }
 
-
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<String> login(@RequestBody User login) throws ServletException {
-        String jwtToken = "";
-
-        if (login.getEmailID() == null || login.getPassword() == null) {
+        if (user.getEmailID() == null || user.getPassword() == null) {
             throw new ServletException("Please fill in username and password");
         }
 
-        String email = login.getEmailID();
-        String password = login.getPassword();
+        String email = user.getEmailID();
+        String password = user.getPassword();
         System.out.println(email + "  "+ password);
 
-        User user = userRepository.findByEmail(email);
+        User user1 = userRepository.findByEmail(email);
 
-        if (user == null) {
+        if (user1 == null) {
             throw new ServletException("User email not found.");
         }
 
-        boolean flag = Password.checkPassword(login.getPassword(),user.getPassword());
+        boolean flag = Password.checkPassword(user.getPassword(),user1.getPassword());
+        // long userid = user1.getId();
 
         if (!flag) {
             throw new ServletException("Invalid login. Please check your name and password.");
         }
-
-        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-        //                return "{message: Please provide proper credentials}";
-
-//        return "{'token': '" + jwtToken + "'}";
-//        "{\"message\":
-        return new ResponseEntity<String>("{\"bearer-token\": \"" + jwtToken + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+        responseHeaders.set("MyResponseHeader", "MyValue");
+        //        "{\"message\":
+        return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
-
-
-
 
 
 
@@ -102,7 +85,7 @@ public class UserController {
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
-                return new ResponseEntity<String>("{\"message\": \"" + user.getEmailID() + "\"}".toString(), responseHeaders, HttpStatus.OK);
+                return new ResponseEntity<String>("{\"message\": \"" + "Account created Successfully." + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
                  return new ResponseEntity<String>("{\"message\": \"" + errorList.toString() + "\"}",responseHeaders,HttpStatus.BAD_REQUEST);
