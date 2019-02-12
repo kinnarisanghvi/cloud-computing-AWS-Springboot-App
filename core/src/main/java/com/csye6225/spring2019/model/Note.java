@@ -72,6 +72,14 @@ public class Note {
     }
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "id")
     private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

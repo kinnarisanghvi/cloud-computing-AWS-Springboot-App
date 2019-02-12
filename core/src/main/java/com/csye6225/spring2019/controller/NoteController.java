@@ -4,6 +4,7 @@ import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.NoteRepository;
+import com.csye6225.spring2019.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.JdbcUtils;
@@ -22,6 +23,7 @@ public class NoteController {
 
     @Autowired
     NoteRepository noteRepository;
+    UserRepository uRepository;
 
 
     @GetMapping("/note")
@@ -33,6 +35,7 @@ public class NoteController {
     @PostMapping("/note")
     public Note newNote(@Valid @RequestBody Note note) {
 
+
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         note.setNoteId(randomUUIDString);
@@ -42,6 +45,7 @@ public class NoteController {
         DateFormat df = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
         System.out.println("Using a dateFormat date is : " + df.format(uDate));
         note.setNoteCreatedAt(sDate);
+
         return noteRepository.save(note);
     }
 
