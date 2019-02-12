@@ -38,50 +38,36 @@ public class UserController {
     @RequestMapping(value="/", method = RequestMethod.GET, headers = "text")
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> loginSuccess() {
+    public ResponseEntity<String> loginSuccess(@RequestBody User user) throws ServletException{
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
+
+        if (user.getEmailID() == null || user.getPassword() == null) {
+            throw new ServletException("Please fill in username and password");
+        }
+
+        String email = user.getEmailID();
+        String password = user.getPassword();
+        System.out.println(email + "  "+ password);
+
+        User user1 = userRepository.findByEmail(email);
+
+        if (user1 == null) {
+            throw new ServletException("User email not found.");
+        }
+
+        boolean flag = Password.checkPassword(user.getPassword(),user.getPassword());
+
+        if (!flag) {
+            throw new ServletException("Invalid login. Please check your name and password.");
+        }
         responseHeaders.set("MyResponseHeader", "MyValue");
         //        "{\"message\":
         return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
     }
 
-
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<String> login(@RequestBody User login) throws ServletException {
-        String jwtToken = "";
-
-        if (login.getEmailID() == null || login.getPassword() == null) {
-            throw new ServletException("Please fill in username and password");
-        }
-
-        String email = login.getEmailID();
-        String password = login.getPassword();
-        System.out.println(email + "  "+ password);
-
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new ServletException("User email not found.");
-        }
-
-        boolean flag = Password.checkPassword(login.getPassword(),user.getPassword());
-
-        if (!flag) {
-            throw new ServletException("Invalid login. Please check your name and password.");
-        }
-
-        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-        //                return "{message: Please provide proper credentials}";
-
-//        return "{'token': '" + jwtToken + "'}";
-//        "{\"message\":
-        return new ResponseEntity<String>("{\"bearer-token\": \"" + jwtToken + "\"}", responseHeaders, HttpStatus.ACCEPTED);
-    }
+    
 
     @Produces("application/json")
     @PostMapping("/users/register")
