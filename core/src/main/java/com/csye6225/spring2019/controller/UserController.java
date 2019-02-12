@@ -35,7 +35,7 @@ public class UserController {
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
-    @RequestMapping(value="/", method = RequestMethod.GET, headers = "text")
+    @RequestMapping(value="/", method = RequestMethod.GET)
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> loginSuccess(@RequestBody User user) throws ServletException{
@@ -57,7 +57,7 @@ public class UserController {
             throw new ServletException("User email not found.");
         }
 
-        boolean flag = Password.checkPassword(user.getPassword(),user.getPassword());
+        boolean flag = Password.checkPassword(user.getPassword(),user1.getPassword());
 
         if (!flag) {
             throw new ServletException("Invalid login. Please check your name and password.");

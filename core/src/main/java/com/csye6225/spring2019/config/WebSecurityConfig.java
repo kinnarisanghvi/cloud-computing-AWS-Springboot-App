@@ -24,7 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/user/register").permitAll()
-                .antMatchers(("/note/*")).permitAll()
+                .antMatchers(("/note")).authenticated()
+                .antMatchers(("/login")).authenticated()
+                .antMatchers(("/note/*")).authenticated()
                 .antMatchers("/").authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint((request, response, exception) -> {
@@ -41,14 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
      @Autowired
      public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-          auth.inMemoryAuthentication().withUser("jinansi").password("password").roles("USER");
+          auth.inMemoryAuthentication().withUser("jinansi").password("{noop}password").roles("USER");
 //          auth.userDetailsService()
      }
 
