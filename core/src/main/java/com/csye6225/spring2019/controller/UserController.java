@@ -102,7 +102,7 @@ public class UserController {
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
-                return new ResponseEntity<String>("{\"message\": \"" + user.getEmailID() + "\"}".toString(), responseHeaders, HttpStatus.OK);
+                return new ResponseEntity<String>("{\"message\": \"" + "Account created Successfully." + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
                  return new ResponseEntity<String>("{\"message\": \"" + errorList.toString() + "\"}",responseHeaders,HttpStatus.BAD_REQUEST);

@@ -37,9 +37,8 @@ public class NoteController {
         String randomUUIDString = uuid.toString();
         note.setNoteId(randomUUIDString);
         java.util.Date uDate = new java.util.Date();
-        java.sql.Date sDate = new java.sql.Date();
         
-        System.out.println("Time in java.sql.Date is : " + sDate);
+//        System.out.println("Time in java.sql.Date is : " + sDate);
         DateFormat df = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
         System.out.println("Using a dateFormat date is : " + df.format(uDate));
         return noteRepository.save(note);
