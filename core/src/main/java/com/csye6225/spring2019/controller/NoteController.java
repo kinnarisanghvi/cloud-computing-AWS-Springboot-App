@@ -35,16 +35,26 @@ public class NoteController {
     @PostMapping("/note")
     public Note newNote(@Valid @RequestBody Note note) {
 
-
+        long userid=0L;
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         note.setNoteId(randomUUIDString);
+        String user_email = note.getUser().getEmailID();
+        User user1=uRepository.findByEmail(user_email);
+        if(user1!=null){
+             userid=user1.getId();
+
+        }
+        else{
+            System.out.println("Please enter user");
+        }
         java.util.Date uDate = new java.util.Date();
         java.sql.Date sDate = new java.sql.Date(uDate.getTime());
         System.out.println("Time in java.sql.Date is : " + sDate);
         DateFormat df = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
         System.out.println("Using a dateFormat date is : " + df.format(uDate));
         note.setNoteCreatedAt(sDate);
+        note.getUser().setId(userid);
 
         return noteRepository.save(note);
     }
@@ -59,6 +69,7 @@ public class NoteController {
     public Note updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note) {
 
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
+
 
         note1.setNoteTitle(note.getNoteTitle());
         note1.setNoteContent(note.getNoteContent());
