@@ -58,6 +58,7 @@ public class UserController {
         }
 
         boolean flag = Password.checkPassword(user.getPassword(),user1.getPassword());
+        // long userid = user1.getId();
 
         if (!flag) {
             throw new ServletException("Invalid login. Please check your name and password.");
