@@ -17,11 +17,11 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Column
+    @Column(name = "emailid")
     private String emailID;
 
     @NotBlank
-    @Column
+    @Column(name= "password")
     private String password;
 
 
