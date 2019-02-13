@@ -17,15 +17,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
@@ -35,20 +33,29 @@ public class UserController {
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
+
     @RequestMapping(value="/", method = RequestMethod.GET)
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> loginSuccess(@RequestBody User user) throws ServletException{
+    public ResponseEntity<String> loginSuccess(@RequestHeader(value="Authorization") HttpServletRequest request) throws ServletException{
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
-        if (user.getEmailID() == null || user.getPassword() == null) {
+        String header = request.getHeader("Authorization");
+
+        assert header.substring(0, 6).equals("Basic");
+        String basicAuthEncoded = header.substring(6);
+        String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
+        final String[] userDetails1 = basicAuthAsString.split(":", 2);
+
+
+        if (userDetails1[0] == null || userDetails1[1] == null) {
             throw new ServletException("Please fill in username and password");
         }
 
-        String email = user.getEmailID();
-        String password = user.getPassword();
+        String email = userDetails1[0];
+        String password = userDetails1[1];
         System.out.println(email + "  "+ password);
 
         User user1 = userRepository.findByEmail(email);
@@ -57,7 +64,7 @@ public class UserController {
             throw new ServletException("User email not found.");
         }
 
-        boolean flag = Password.checkPassword(user.getPassword(),user1.getPassword());
+        boolean flag = Password.checkPassword(password,user1.getPassword());
         // long userid = user1.getId();
 
         if (!flag) {
@@ -71,7 +78,8 @@ public class UserController {
 
 
     @Produces("application/json")
-    @PostMapping("/users/register")
+//    @Consumes("application/json")
+    @PostMapping("/user/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
         List<String> errorList = new ArrayList<String>();
         List<User> users = userRepository.findAll();

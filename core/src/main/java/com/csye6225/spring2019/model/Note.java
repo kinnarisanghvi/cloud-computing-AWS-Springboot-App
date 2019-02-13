@@ -15,7 +15,7 @@ public class Note {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    @Column(name = "noteid")
+    @Column(name = "note_id")
     private String noteId;
 
     @Column(name = "note_title")
@@ -72,7 +72,7 @@ public class Note {
     }
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public User getUser() {
