@@ -43,7 +43,7 @@ public class UserController {
             String basicAuthEncoded = header.substring(6);
             String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
             userDetails = basicAuthAsString.split(":", 2);
-
+            System.out.println("userdetail "+userDetails+ " "+ userDetails[0]);
             User userExists = userRepository.findByEmail(userDetails[0]);
             String email = userDetails[0];
             String password = userDetails[1];
