@@ -5,6 +5,9 @@ import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
+import javax.servlet.http.HttpServletResponse;
+import com.csye6225.spring2019.utils.UserCheck;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +16,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 
 @RestController
 public class NoteController {
@@ -28,24 +31,33 @@ public class NoteController {
     NoteRepository noteRepository;
     @Autowired
     UserRepository uRepository;
+    @Autowired
+    UserCheck uCheck;
+
     HttpHeaders responseHeaders = new HttpHeaders();
+    HttpServletRequest request;
+    HttpServletResponse response;
 
 
     @GetMapping("/note")
-    public ResponseEntity<Object> getAllNote() throws JSONException {
-        List<Note> notes = noteRepository.findAll();
-        List<JSONObject> entities = new ArrayList<JSONObject>();
-        for (Note n : notes) {
-            JSONObject entity = new JSONObject();
-            entity.put("Id", n.getNoteId());
-            entity.put("User", n.getUser().getEmailID());
-            entity.put("Title", n.getNoteTitle());
-            entity.put("Content", n.getNoteContent());
-            entity.put("Created At", n.getNoteCreatedAt());
-            entity.put("Last Updated At", n.getNoteUpdatedAt());
-            entities.add(entity);
+    public ResponseEntity<Object> getAllNote() throws JSONException, ServletException {
+        String auth_user= uCheck.loginUser(request,response);
+        if(auth_user.equalsIgnoreCase("Success")) {
+            List<Note> notes = noteRepository.findAll();
+            List<JSONObject> entities = new ArrayList<JSONObject>();
+            for (Note n : notes) {
+                JSONObject entity = new JSONObject();
+                entity.put("Id", n.getNoteId());
+                entity.put("User", n.getUser().getEmailID());
+                entity.put("Title", n.getNoteTitle());
+                entity.put("Content", n.getNoteContent());
+                entity.put("Created At", n.getNoteCreatedAt());
+                entity.put("Last Updated At", n.getNoteUpdatedAt());
+                entities.add(entity);
+            }
+            return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
         }
-        return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
+        return null;
     }
 
     @PostMapping("/note")
