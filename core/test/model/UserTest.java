@@ -2,6 +2,7 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+;
 import com.csye6225.spring2019.model.User;
 import org.junit.jupiter.api.Test;
 
