@@ -92,7 +92,7 @@ public class NoteController {
             java.util.Date uDate = new java.util.Date();
             java.sql.Date sDate = new java.sql.Date(uDate.getTime());
             System.out.println("Time in java.sql.Date is : " + sDate);
-            DateFormat df = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
             note.setNoteCreatedAt(sDate);
             note.getUser().setId(userid);
@@ -137,7 +137,7 @@ public class NoteController {
     }
 
     @PutMapping("/note/{id}")
-    public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) {
+    public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) throws JSONException {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if(auth_user == "0") {
@@ -150,7 +150,7 @@ public class NoteController {
             auth_user_1 = auth_user.split(",");
 
             Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
-
+            List<JSONObject> entities = new ArrayList<JSONObject>();
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
 
                 note1.setNoteTitle(note.getNoteTitle());
@@ -158,11 +158,20 @@ public class NoteController {
                 java.util.Date uDate1 = new java.util.Date();
                 java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
                 System.out.println("Time in java.sql.Date is : " + sDate1);
-                DateFormat df1 = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
+                DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
                 note1.setNoteUpdatedAt(sDate1);
                 Note changedNote = noteRepository.save(note1);
-                return new ResponseEntity<Object>(changedNote, HttpStatus.MOVED_PERMANENTLY);
+                JSONObject entity = new JSONObject(); entity.put("Id", changedNote.getNoteId());
+                entity.put("User", changedNote.getUser().getEmailID());
+                entity.put("Title", changedNote.getNoteTitle());
+                entity.put("Content", changedNote.getNoteContent());
+                entity.put("Created At", changedNote.getNoteCreatedAt());
+                entity.put("Last Updated At", changedNote.getNoteUpdatedAt());
+                entities.add(entity);
+
+
+                return new ResponseEntity<Object>(entities.toString(), HttpStatus.MOVED_PERMANENTLY);
             }
             return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
         }
