@@ -31,51 +31,54 @@ public class NoteController {
     NoteRepository noteRepository;
     @Autowired
     UserRepository uRepository;
-    @Autowired
-    UserCheck uCheck;
+
+    UserCheck uCheck = new UserCheck();
+    String auth_user=null;
+    String [] auth_user_1=new String[3];
+
 
     HttpHeaders responseHeaders = new HttpHeaders();
-    HttpServletRequest request;
-    HttpServletResponse response;
+
+
 
 
     @GetMapping("/note")
-    public ResponseEntity<Object> getAllNote() throws JSONException, ServletException {
-        String auth_user= uCheck.loginUser(request,response);
-        if(auth_user.equalsIgnoreCase("Success")) {
+    public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
+        auth_user= uCheck.loginUser(request,response,uRepository);
+        auth_user_1= auth_user.split(",");
+        if(auth_user_1[0].equalsIgnoreCase("Success")) {
             List<Note> notes = noteRepository.findAll();
             List<JSONObject> entities = new ArrayList<JSONObject>();
             for (Note n : notes) {
-                JSONObject entity = new JSONObject();
-                entity.put("Id", n.getNoteId());
-                entity.put("User", n.getUser().getEmailID());
-                entity.put("Title", n.getNoteTitle());
-                entity.put("Content", n.getNoteContent());
-                entity.put("Created At", n.getNoteCreatedAt());
-                entity.put("Last Updated At", n.getNoteUpdatedAt());
-                entities.add(entity);
+                if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                    JSONObject entity = new JSONObject();
+                    entity.put("Id", n.getNoteId());
+                    entity.put("User", n.getUser().getEmailID());
+                    entity.put("Title", n.getNoteTitle());
+                    entity.put("Content", n.getNoteContent());
+                    entity.put("Created At", n.getNoteCreatedAt());
+                    entity.put("Last Updated At", n.getNoteUpdatedAt());
+                    entities.add(entity);
+
+                }
+
             }
             return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
+
         }
         return null;
     }
 
     @PostMapping("/note")
-    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note) {
+    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) throws ServletException {
 
+        auth_user= uCheck.loginUser(request,response,uRepository);
+        auth_user_1= auth_user.split(",");
         long userid = 0L;
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         note.setNoteId(randomUUIDString);
-        String user_email = note.getUser().getEmailID();
-        User user1 = uRepository.findByEmail(user_email);
-        if (user1 != null) {
-            userid = user1.getId();
-
-        } else {
-            System.out.println("Please enter user");
-            return null;
-        }
+        userid = Long.valueOf(auth_user_1[1]);
         java.util.Date uDate = new java.util.Date();
         java.sql.Date sDate = new java.sql.Date(uDate.getTime());
         System.out.println("Time in java.sql.Date is : " + sDate);
@@ -88,46 +91,68 @@ public class NoteController {
     }
 
     @GetMapping("/note/{id}")
-    public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id) throws JSONException {
-        Optional<Note> note = noteRepository.findById(id);
-        List<JSONObject> entities = new ArrayList<JSONObject>();
-        JSONObject entity = new JSONObject();
-        entity.put("Id", note.orElseThrow(RuntimeException::new).getNoteId());
-        entity.put("User", note.orElseThrow(RuntimeException::new).getUser());
-        entity.put("Title", note.orElseThrow(RuntimeException::new).getNoteTitle());
-        entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
-        entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
-        entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
-        entities.add(entity);
-        return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
-    }
+    public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id,HttpServletRequest request,HttpServletResponse response) throws JSONException, ServletException {
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        auth_user_1 = auth_user.split(",");
 
+        if (auth_user_1[0].equalsIgnoreCase("Success"))  {   // In case this if condition fails it must be unauthorized @Karan please add response codes for that
+            Optional<Note> note = noteRepository.findById(id);
+            List<JSONObject> entities = new ArrayList<JSONObject>();
+            JSONObject entity = new JSONObject();
+            if(note.get().getUser().getId()==Long.valueOf(auth_user_1[1])) { // In case this if condition fails it must be unauthorized @Karan please add response codes for that
+                entity.put("Id", note.orElseThrow(RuntimeException::new).getNoteId());
+                entity.put("User", note.orElseThrow(RuntimeException::new).getUser());
+                entity.put("Title", note.orElseThrow(RuntimeException::new).getNoteTitle());
+                entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
+                entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
+                entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
+                entities.add(entity);
+            }
+            return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
+        }
+        return null;
+    }
     @PutMapping("/note/{id}")
-    public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note) {
+    public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) throws ServletException {
+
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        auth_user_1 = auth_user.split(",");
+
 
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
 
+        if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) { // In case this if condition fails it must be unauthorized @Karan please add response codes for that
 
-        note1.setNoteTitle(note.getNoteTitle());
-        note1.setNoteContent(note.getNoteContent());
-        java.util.Date uDate1 = new java.util.Date();
-        java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
-        System.out.println("Time in java.sql.Date is : " + sDate1);
-        DateFormat df1 = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
-        System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
-        note.setNoteUpdatedAt(sDate1);
-        Note changedNote = noteRepository.save(note1);
-        return new ResponseEntity<Object>(changedNote, HttpStatus.MOVED_PERMANENTLY);
+            note1.setNoteTitle(note.getNoteTitle());
+            note1.setNoteContent(note.getNoteContent());
+            java.util.Date uDate1 = new java.util.Date();
+            java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
+            System.out.println("Time in java.sql.Date is : " + sDate1);
+            DateFormat df1 = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
+            System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
+            note.setNoteUpdatedAt(sDate1);
+            Note changedNote = noteRepository.save(note1);
+            return new ResponseEntity<Object>(changedNote, HttpStatus.MOVED_PERMANENTLY);
+        }
+        return null;
     }
-
 
     @DeleteMapping("/note/{id}")
-    public ResponseEntity<?> deleteNote(@PathVariable(value = "id") String noteid) {
+    public ResponseEntity<?> deleteNote(@PathVariable(value = "id") String noteid,HttpServletRequest request,HttpServletResponse response) throws ServletException {
+
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        auth_user_1 = auth_user.split(",");
         Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
-        noteRepository.delete(note1);
+
+        if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+            noteRepository.delete(note1);
+
 //        return new ResponseEntity<Object>("", HttpStatus.MOVED_PERMANENTLY);
-        return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
+            return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
+        }
 
-
+    return null;
     }
+
+
 }

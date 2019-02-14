@@ -3,7 +3,8 @@ package com.csye6225.spring2019.utils;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.UserRepository;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
@@ -11,9 +12,8 @@ import java.util.Base64;
 
 public class UserCheck {
 
-    @Autowired
-    UserRepository userRepository;
-    public String loginUser(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+    public String loginUser(HttpServletRequest request, HttpServletResponse response,UserRepository userRepository) throws ServletException {
 
 
         String header = request.getHeader("Authorization");
@@ -42,7 +42,7 @@ public class UserCheck {
             }
 
             //        "{\"message\":
-            return "Success";
+            return "Success"+","+userExists.getId();
         }
         return "failed";
     }
