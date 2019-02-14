@@ -89,13 +89,16 @@ public class NoteController {
             String randomUUIDString = uuid.toString();
             note.setNoteId(randomUUIDString);
             userid = Long.valueOf(auth_user_1[1]);
+            User user = new User();
+            user.setId(userid);
             java.util.Date uDate = new java.util.Date();
             java.sql.Date sDate = new java.sql.Date(uDate.getTime());
             System.out.println("Time in java.sql.Date is : " + sDate);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
             note.setNoteCreatedAt(sDate);
-            note.getUser().setId(userid);
+//            note.getUser().setId(userid);
+            note.setUser(user);
             noteRepository.save(note);
             return new ResponseEntity<Object>(note, HttpStatus.CREATED);
         }
