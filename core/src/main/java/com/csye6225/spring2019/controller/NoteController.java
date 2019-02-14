@@ -36,11 +36,7 @@ public class NoteController {
     String auth_user=null;
     String [] auth_user_1=new String[3];
 
-
     HttpHeaders responseHeaders = new HttpHeaders();
-
-
-
 
     @GetMapping("/note")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
@@ -66,7 +62,6 @@ public class NoteController {
                         entity.put("Created At", n.getNoteCreatedAt());
                         entity.put("Last Updated At", n.getNoteUpdatedAt());
                         entities.add(entity);
-
                     }
 
                 }
@@ -75,7 +70,6 @@ public class NoteController {
             }
         }
         return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
-
     }
 
     @PostMapping("/note")
@@ -140,8 +134,8 @@ public class NoteController {
                 return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
             }
         }
-
     }
+
     @PutMapping("/note/{id}")
     public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) {
 
@@ -155,7 +149,6 @@ public class NoteController {
         } else {
             auth_user_1 = auth_user.split(",");
 
-
             Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
 
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
@@ -167,7 +160,7 @@ public class NoteController {
                 System.out.println("Time in java.sql.Date is : " + sDate1);
                 DateFormat df1 = new SimpleDateFormat("dd/MM/YYYY - hh:mm:ss");
                 System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
-                note.setNoteUpdatedAt(sDate1);
+                note1.setNoteUpdatedAt(sDate1);
                 Note changedNote = noteRepository.save(note1);
                 return new ResponseEntity<Object>(changedNote, HttpStatus.MOVED_PERMANENTLY);
             }
@@ -191,14 +184,9 @@ public class NoteController {
 
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 noteRepository.delete(note1);
-
-//        return new ResponseEntity<Object>("", HttpStatus.MOVED_PERMANENTLY);
                 return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
             }
-
             return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
         }
     }
-
-
 }
