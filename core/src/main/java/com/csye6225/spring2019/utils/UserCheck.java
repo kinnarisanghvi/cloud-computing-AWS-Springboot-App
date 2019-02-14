@@ -15,7 +15,6 @@ public class UserCheck {
 
     public String loginUser(HttpServletRequest request, HttpServletResponse response,UserRepository userRepository) {
 
-
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
             String userDetails[] = new String[2];
@@ -28,7 +27,6 @@ public class UserCheck {
             String email = userDetails[0];
             String password = userDetails[1];
             System.out.println(email + "  " + password);
-
 
             if (userExists == null) {
                 return "0"; //not exists

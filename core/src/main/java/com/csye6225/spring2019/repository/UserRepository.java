@@ -19,10 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 foundUser = user1;
                 System.out.println("founduser " + foundUser);
                 break;
-
-
-
-                            }
+            }
         }
         return foundUser;
     }

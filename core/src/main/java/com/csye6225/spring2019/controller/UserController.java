@@ -48,8 +48,6 @@ public class UserController {
             String password = userDetails[1];
             System.out.println(email + "  " + password);
 
-
-
             if (userExists == null) {
                 return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
             }
