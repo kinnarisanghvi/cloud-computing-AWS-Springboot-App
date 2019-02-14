@@ -13,7 +13,7 @@ import java.util.Base64;
 public class UserCheck {
 
 
-    public String loginUser(HttpServletRequest request, HttpServletResponse response,UserRepository userRepository) throws ServletException {
+    public String loginUser(HttpServletRequest request, HttpServletResponse response,UserRepository userRepository) {
 
 
         String header = request.getHeader("Authorization");
@@ -31,19 +31,18 @@ public class UserCheck {
 
 
             if (userExists == null) {
-                throw new ServletException("User email not found.");
+                return "0"; //not exists
             }
 
             boolean flag = Password.checkPassword(password, userExists.getPassword());
             // long userid = user1.getId();
 
             if (!flag) {
-                throw new ServletException("Invalid login. Please check your name and password.");
+                return "1"; // invalid login
             }
 
-            //        "{\"message\":
             return "Success"+","+userExists.getId();
         }
-        return "failed";
+        return "2";
     }
 }

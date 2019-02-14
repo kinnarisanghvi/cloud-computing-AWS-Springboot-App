@@ -29,8 +29,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) throws ServletException
-    {
+    public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
 
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -52,20 +51,20 @@ public class UserController {
 
 
             if (userExists == null) {
-                throw new ServletException("User email not found.");
+                return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
             }
 
             boolean flag = Password.checkPassword(password, userExists.getPassword());
             // long userid = user1.getId();
 
             if (!flag) {
-                throw new ServletException("Invalid login. Please check your name and password.");
+                return new ResponseEntity<String>("{\"Message\": \"Invalid Login.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
             }
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
             return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
-        return null;
+        return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @Produces("application/json")
@@ -93,7 +92,7 @@ public class UserController {
             return new ResponseEntity<String>("{\"message\": \"Invalid Email\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
 
         }
-        return null;
+        return new ResponseEntity<String>("{\"message\": \"BAD Request\"}", responseHeaders, HttpStatus.BAD_GATEWAY);
     }
 
     public boolean isValidEmailAddress(String email) {
