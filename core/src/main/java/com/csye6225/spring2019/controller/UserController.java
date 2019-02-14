@@ -1,94 +1,72 @@
 package com.csye6225.spring2019.controller;
-
-
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
-//import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
-import io.jsonwebtoken.Jwts;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.jsonwebtoken.SignatureAlgorithm;
-
-
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
 
-    @RequestMapping("/")
-    public ResponseEntity<String> loginSuccess() {
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        responseHeaders.set("MyResponseHeader", "MyValue");
-        //        "{\"message\":
-        return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+
+        String header = request.getHeader("Authorization");
+        if (header != null && header.contains("Basic")) {
+            String userDetails[] = new String[2];
+            assert header.substring(0, 6).equals("Basic");
+            String basicAuthEncoded = header.substring(6);
+            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
+            userDetails = basicAuthAsString.split(":", 2);
+            System.out.println("userdetail "+userDetails+ " "+ userDetails[0]);
+            User userExists = userRepository.findByEmail(userDetails[0]);
+            String email = userDetails[0];
+            String password = userDetails[1];
+            System.out.println(email + "  " + password);
+
+            if (userExists == null) {
+                return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
+            }
+
+            boolean flag = Password.checkPassword(password, userExists.getPassword());
+            // long userid = user1.getId();
+
+            if (!flag) {
+                return new ResponseEntity<String>("{\"Message\": \"Invalid Login.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
+            }
+            responseHeaders.set("MyResponseHeader", "MyValue");
+            //        "{\"message\":
+            return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
-
-
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<String> login(@RequestBody User login) throws ServletException {
-        String jwtToken = "";
-
-        if (login.getEmailID() == null || login.getPassword() == null) {
-            throw new ServletException("Please fill in username and password");
-        }
-
-        String email = login.getEmailID();
-        String password = login.getPassword();
-        System.out.println(email + "  "+ password);
-
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new ServletException("User email not found.");
-        }
-
-        boolean flag = Password.checkPassword(login.getPassword(),user.getPassword());
-
-        if (!flag) {
-            throw new ServletException("Invalid login. Please check your name and password.");
-        }
-
-        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-        //                return "{message: Please provide proper credentials}";
-
-//        return "{'token': '" + jwtToken + "'}";
-//        "{\"message\":
-        return new ResponseEntity<String>("{\"bearer-token\": \"" + jwtToken + "\"}", responseHeaders, HttpStatus.ACCEPTED);
-    }
-
-
-
-
-
 
     @Produces("application/json")
-    @PostMapping("/users/register")
+    @PostMapping("/user/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
         List<String> errorList = new ArrayList<String>();
         List<User> users = userRepository.findAll();
@@ -102,7 +80,7 @@ public class UserController {
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
-                return new ResponseEntity<String>("{\"message\": \"" + user.getEmailID() + "\"}".toString(), responseHeaders, HttpStatus.OK);
+                return new ResponseEntity<String>("{\"message\": \"" + "Account created Successfully." + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
                  return new ResponseEntity<String>("{\"message\": \"" + errorList.toString() + "\"}",responseHeaders,HttpStatus.BAD_REQUEST);
@@ -112,9 +90,7 @@ public class UserController {
             return new ResponseEntity<String>("{\"message\": \"Invalid Email\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
 
         }
-
-
-        return null;
+        return new ResponseEntity<String>("{\"message\": \"BAD Request\"}", responseHeaders, HttpStatus.BAD_GATEWAY);
     }
 
     public boolean isValidEmailAddress(String email) {
@@ -133,7 +109,6 @@ public class UserController {
         errorList.clear();
 
         boolean flag=true;
-
         if (passwordhere.length() < 8) {
             errorList.add("Password length must have atleast 8 character !!");
             flag=false;
@@ -156,8 +131,5 @@ public class UserController {
         }
 
         return flag;
-
     }
-
-
 }
