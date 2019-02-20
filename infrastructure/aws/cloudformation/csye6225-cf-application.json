@@ -2,12 +2,20 @@
    "AWSTemplateFormatVersion":"2010-09-09",
    "Description":"Cloud formation application file for resources like webapp,db SG and EC2 instance",
    "Parameters":{
-      "NetworkStackParameters":{
-         "Description":"name of network stack",
-         "Type":"String"
-      },
       "KeyPairName":{
          "Description":"key pair name",
+         "Type":"String"
+      },
+      "VPCID":{
+         "Description":"vpc id",
+         "Type":"String"
+      },
+      "subnetID":{
+         "Description":"subnet id",
+         "Type":"String"
+      },
+      "AMIID":{
+         "Description":"AMI id",
          "Type":"String"
       }
    },
@@ -44,9 +52,7 @@
                }
             ],
             "VpcId":{
-               "Fn::ImportValue":{
-                  "Fn::Sub":"${NetworkStackParameters}-VPCID"
-               }
+               "Ref":"VPCID"
             }
          }
       },
@@ -68,21 +74,19 @@
                }
             ],
             "VpcId":{
-               "Fn::ImportValue":{
-                  "Fn::Sub":"${NetworkStackParameters}-VPCID"
-               }
+               "Ref":"VPCID"
             }
          }
       },
       "MyEC2Instance":{
          "Type":"AWS::EC2::Instance",
          "Properties":{
-            "ImageId":"ami-0d2b1748a9f1fcf83",
+            "ImageId":{
+               "Ref":"AMIID"
+            },
             "InstanceType":"t2.micro",
             "SubnetId":{
-               "Fn::ImportValue":{
-                  "Fn::Sub":"${NetworkStackParameters}-SUBNETID"
-               }
+               "Ref":"subnetID"
             },
             "InstanceType":"t2.micro",
             "SecurityGroupIds":[
