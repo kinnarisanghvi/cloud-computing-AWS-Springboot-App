@@ -1,19 +1,29 @@
 { "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Cloud formation application file for resources like webapp,db SG and EC2 instance",
+  "Parameters" : {
+      "NetworkStackParameters": {
+      "Description": "name of network stack",
+      "Type": "String"
+    },
+
+    "KeyPairName":{
+      "Description": "key pair name",
+      "Type":"String"
+    }
+    },
   "Resources":{
   "MyEC2Instance": {
     "Type": "AWS::EC2::Instance",
     "Properties":{ 
-      "ImageId": "ami-0e38401e3813dbbc4",
+      "ImageId": "ami-0d2b1748a9f1fcf83",
       "InstanceType":"t2.micro",
       "BlockDeviceMappings":[
         {
-          "DeviceName": "/dev/sda",
+          "DeviceName": "/dev/sda1",
           "Ebs":
              { 
-                   "volume_size":"20",
-                    "volume_type": "gp2",
-                    "delete_on_termination": "true"
+                   "VolumeSize":"20",
+                    "VolumeType": "gp2"
 		}
 	}]}}
 }}
