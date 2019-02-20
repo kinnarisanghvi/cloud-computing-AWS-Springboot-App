@@ -10,8 +10,12 @@
          "Description":"vpc id",
          "Type":"String"
       },
-      "subnetID":{
+      "subnetID1":{
          "Description":"subnet id",
+         "Type":"String"
+      },
+	"subnetID2":{
+         "Description":"subnet id 2",
          "Type":"String"
       },
       "AMIID":{
@@ -74,7 +78,7 @@
             },
             "InstanceType":"t2.micro",
             "SubnetId":{
-               "Ref":"subnetID"
+               "Ref":"subnetID1"
             },
             "InstanceType":"t2.micro",
             "SecurityGroupIds":[
@@ -122,9 +126,14 @@
          "Type":"AWS::RDS::DBSubnetGroup",
          "Properties":{
             "DBSubnetGroupDescription":"DB Private Subnet1",
-            "SubnetIds":[{
-               "Ref":"subnetID"
-            }]
+            "SubnetIds":[
+		{
+               "Ref":"subnetID1"
+            	},
+		{
+		"Ref":"subnetID2"
+		}
+	    ]
          }
       },
       "myDBInstance":{
@@ -132,9 +141,9 @@
          "Properties":{
             "DBName":"csye6225",
             "Engine":"MySQL",
-            "EngineVersion":"5.7.25",
+            "EngineVersion":"5.6.34",
             "DBSubnetGroupName":{
-               "Ref":"subnetID"
+               "Ref":"myDBSubnet"
             },
 	    "AllocatedStorage":"50",	
             "MasterUsername":"csye6225master",
