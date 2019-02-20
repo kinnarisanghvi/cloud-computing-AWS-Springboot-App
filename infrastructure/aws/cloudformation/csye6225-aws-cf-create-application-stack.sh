@@ -17,5 +17,5 @@ read subnetID
 echo "Please enter your AMI ID"
 read AMIID
 
-aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" VPCID="$VPCID" subnetID="$subnetID" AMIID="$AMIID"s
+aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" VPCID="$VPCID" subnetID="$subnetID" AMIID="$AMIID"
 
