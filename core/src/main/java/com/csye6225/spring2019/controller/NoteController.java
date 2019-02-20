@@ -61,6 +61,7 @@ public class NoteController {
                         entity.put("Content", n.getNoteContent());
                         entity.put("Created At", n.getNoteCreatedAt());
                         entity.put("Last Updated At", n.getNoteUpdatedAt());
+                        entity.put("attachments",n.getAttachment());
                         entities.add(entity);
                     }
 
@@ -127,6 +128,7 @@ public class NoteController {
                     entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
                     entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
                     entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
+                    entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachment());
                     entities.add(entity);
                     return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
                 } else {
@@ -171,6 +173,7 @@ public class NoteController {
                 entity.put("Content", changedNote.getNoteContent());
                 entity.put("Created At", changedNote.getNoteCreatedAt());
                 entity.put("Last Updated At", changedNote.getNoteUpdatedAt());
+                entity.put("attachments",changedNote.getAttachment());
                 entities.add(entity);
 
 

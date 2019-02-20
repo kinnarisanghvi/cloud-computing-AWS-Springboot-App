@@ -75,6 +75,19 @@ public class Note {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany
+    @JoinColumn (name="attachment_id")
+    private Attachment attachment;
+
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
+    }
+
     public User getUser() {
         return user;
     }
