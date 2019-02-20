@@ -45,12 +45,6 @@
                   "CidrIp":"0.0.0.0/0"
                }
             ],
-            "Tags":[
-               {
-                  "Key":"Name",
-                  "Value":"csye6225-webapp"
-               }
-            ],
             "VpcId":{
                "Ref":"VPCID"
             }
@@ -67,12 +61,6 @@
                "ToPort":"3306",
                "CidrIp":"0.0.0.0/0"
             },
-            "Tags":[
-               {
-                  "Key":"Name",
-                  "Value":"csye6225-rds"
-               }
-            ],
             "VpcId":{
                "Ref":"VPCID"
             }
@@ -117,7 +105,7 @@
                   "AttributeType":"S"
                }
             ],
-            "KeySchema":[
+	     "KeySchema":[
                {
                   "AttributeName":"id",
                   "KeyType":"HASH"
@@ -130,56 +118,31 @@
             "TableName":"csye6225"
          }
       },
-     
       "myDBSubnet":{
          "Type":"AWS::RDS::DBSubnetGroup",
          "Properties":{
             "DBSubnetGroupDescription":"DB Private Subnet1",
-            "SubnetIds":[
-               {
-                  "Fn::ImportValue":{
-                     "Fn::Sub":"${NetworkStackParameters}-SUBNETID1"
-                  }
-               },
-               {
-                  "Fn::ImportValue":{
-                     "Fn::Sub":"${NetworkStackParameters}-SUBNETID2"
-                  }
-               }
-            ]
+            "SubnetIds":[{
+               "Ref":"subnetID"
+            }]
          }
       },
       "myDBInstance":{
          "Type":"AWS::RDS::DBInstance",
          "Properties":{
-            "DBName":"mydb",
-            "AllocatedStorage":"50",
-            "DBInstanceClass":"db.t2.medium",
-            "DBInstanceIdentifier":"csye6225-fall2018",
-            "Engine":"Postgres",
-            "EngineVersion":"10.5",
+            "DBName":"csye6225",
+            "Engine":"MySQL",
+            "EngineVersion":"5.7.25",
             "DBSubnetGroupName":{
-               "Ref":"myDBSubnet"
+               "Ref":"subnetID"
             },
-            "MasterUsername":{
-               "Ref":"UserName"
-            },
-            "MasterUserPassword":{
-               "Ref":"Password"
-            },
+	    "AllocatedStorage":"50",	
+            "MasterUsername":"csye6225master",
+            "MasterUserPassword":"csye6225password",
             "MultiAZ":false,
-            "VPCSecurityGroups":[
-               {
-                  "Ref":"csye6225rds"
-               }
-            ],
+            "DBInstanceClass":"db.t2.medium",
             "PubliclyAccessible":false,
-            "Tags":[
-               {
-                  "Key":"Name",
-                  "Value":"mysql-Database"
-               }
-            ]
+            "DBInstanceIdentifier":"csye6225-spring2019"
          }
       }
    }
