@@ -10,8 +10,12 @@
          "Description":"vpc id",
          "Type":"String"
       },
-      "subnetID":{
+      "subnetID1":{
          "Description":"subnet id",
+         "Type":"String"
+      },
+	"subnetID2":{
+         "Description":"subnet id 2",
          "Type":"String"
       },
       "AMIID":{
@@ -45,12 +49,6 @@
                   "CidrIp":"0.0.0.0/0"
                }
             ],
-            "Tags":[
-               {
-                  "Key":"Name",
-                  "Value":"csye6225-webapp"
-               }
-            ],
             "VpcId":{
                "Ref":"VPCID"
             }
@@ -63,16 +61,10 @@
             "GroupDescription":"SG for DB server",
             "SecurityGroupIngress":{
                "IpProtocol":"tcp",
-               "FromPort":"5432",
-               "ToPort":"5432",
+               "FromPort":"3306",
+               "ToPort":"3306",
                "CidrIp":"0.0.0.0/0"
             },
-            "Tags":[
-               {
-                  "Key":"Name",
-                  "Value":"csye6225-rds"
-               }
-            ],
             "VpcId":{
                "Ref":"VPCID"
             }
@@ -86,7 +78,7 @@
             },
             "InstanceType":"t2.micro",
             "SubnetId":{
-               "Ref":"subnetID"
+               "Ref":"subnetID1"
             },
             "InstanceType":"t2.micro",
             "SecurityGroupIds":[
@@ -106,6 +98,60 @@
                   }
                }
             ]
+         }
+      },
+      "myDynamoDBTable":{
+         "Type":"AWS::DynamoDB::Table",
+         "Properties":{
+            "AttributeDefinitions":[
+               {
+                  "AttributeName":"id",
+                  "AttributeType":"S"
+               }
+            ],
+	     "KeySchema":[
+               {
+                  "AttributeName":"id",
+                  "KeyType":"HASH"
+               }
+            ],
+            "ProvisionedThroughput":{
+               "ReadCapacityUnits":"5",
+               "WriteCapacityUnits":"5"
+            },
+            "TableName":"csye6225"
+         }
+      },
+      "myDBSubnet":{
+         "Type":"AWS::RDS::DBSubnetGroup",
+         "Properties":{
+            "DBSubnetGroupDescription":"DB Private Subnet1",
+            "SubnetIds":[
+		{
+               "Ref":"subnetID1"
+            	},
+		{
+		"Ref":"subnetID2"
+		}
+	    ]
+         }
+      },
+      "myDBInstance":{
+         "Type":"AWS::RDS::DBInstance",
+         "Properties":{
+            "DBName":"csye6225",
+            "Engine":"MySQL",
+            "EngineVersion":"5.6.34",
+            "DBSubnetGroupName":{
+               "Ref":"myDBSubnet"
+            },
+	    "AllocatedStorage":"50",	
+            "MasterUsername":"csye6225master",
+            "MasterUserPassword":"csye6225password",
+            "MultiAZ":false,
+            "DBInstanceClass":"db.t2.medium",
+            "PubliclyAccessible":false,
+            "DBInstanceIdentifier":"csye6225-spring2019"
          }
       }
    }
