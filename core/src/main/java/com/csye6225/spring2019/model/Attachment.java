@@ -2,9 +2,7 @@ package com.csye6225.spring2019.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 public class Attachment {
 
@@ -17,6 +15,17 @@ public class Attachment {
     @Column(name = "url")
     private String url;
 
+    @ManyToOne
+    @JoinColumn(name="note_id")
+    private Note note;
+
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
+    }
 
     public String getAttachmentId() {
         return attachmentId;
