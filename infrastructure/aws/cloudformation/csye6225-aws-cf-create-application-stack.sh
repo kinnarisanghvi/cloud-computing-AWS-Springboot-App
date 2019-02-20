@@ -12,6 +12,6 @@ echo "Please enter the key pair name for your stack: "
 read keyname
 
 
-aws cloudformation deploy --template ./csye6225-cf-application.yaml --stack-name "$appstack" --parameter-overrides NetworkStackParameters="$networkstack" KeyPairName="$keyname"
+aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides NetworkStackParameters="$networkstack" KeyPairName="$keyname"
 
 

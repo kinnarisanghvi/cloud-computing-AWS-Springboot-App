@@ -1,30 +1,108 @@
-{ "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Cloud formation application file for resources like webapp,db SG and EC2 instance",
-  "Parameters" : {
-      "NetworkStackParameters": {
-      "Description": "name of network stack",
-      "Type": "String"
-    },
-
-    "KeyPairName":{
-      "Description": "key pair name",
-      "Type":"String"
-    }
-    },
-  "Resources":{
-  "MyEC2Instance": {
-    "Type": "AWS::EC2::Instance",
-    "Properties":{ 
-      "ImageId": "ami-0d2b1748a9f1fcf83",
-      "InstanceType":"t2.micro",
-      "BlockDeviceMappings":[
-        {
-          "DeviceName": "/dev/sda1",
-          "Ebs":
-             { 
-                   "VolumeSize":"20",
-                    "VolumeType": "gp2"
-		}
-	}]}}
-}}
-
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Description":"Cloud formation application file for resources like webapp,db SG and EC2 instance",
+   "Parameters":{
+      "NetworkStackParameters":{
+         "Description":"name of network stack",
+         "Type":"String"
+      },
+      "KeyPairName":{
+         "Description":"key pair name",
+         "Type":"String"
+      }
+   },
+   "Resources":{
+      "csye6225webapp":{
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{
+            "GroupName":"csye6225webapp",
+            "GroupDescription":"SG for web server",
+            "SecurityGroupIngress":[
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"22",
+                  "ToPort":"22",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"80",
+                  "ToPort":"80",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"443",
+                  "ToPort":"443",
+                  "CidrIp":"0.0.0.0/0"
+               }
+            ],
+            "Tags":[
+               {
+                  "Key":"Name",
+                  "Value":"csye6225-webapp"
+               }
+            ],
+            "VpcId":{
+               "Fn::ImportValue":{
+                  "Fn::Sub":"${NetworkStackParameters}-VPCID"
+               }
+            }
+         }
+      },
+      "csye6225rds":{
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{
+            "GroupName":"db_server_sg",
+            "GroupDescription":"SG for DB server",
+            "SecurityGroupIngress":{
+               "IpProtocol":"tcp",
+               "FromPort":"5432",
+               "ToPort":"5432",
+               "CidrIp":"0.0.0.0/0"
+            },
+            "Tags":[
+               {
+                  "Key":"Name",
+                  "Value":"csye6225-rds"
+               }
+            ],
+            "VpcId":{
+               "Fn::ImportValue":{
+                  "Fn::Sub":"${NetworkStackParameters}-VPCID"
+               }
+            }
+         }
+      },
+      "MyEC2Instance":{
+         "Type":"AWS::EC2::Instance",
+         "Properties":{
+            "ImageId":"ami-0d2b1748a9f1fcf83",
+            "InstanceType":"t2.micro",
+            "SubnetId":{
+               "Fn::ImportValue":{
+                  "Fn::Sub":"${NetworkStackParameters}-SUBNETID"
+               }
+            },
+            "InstanceType":"t2.micro",
+            "SecurityGroupIds":[
+               {
+                  "Ref":"csye6225webapp"
+               },
+               {
+                  "Ref":"csye6225rds"
+               }
+            ],
+            "BlockDeviceMappings":[
+               {
+                  "DeviceName":"/dev/sda1",
+                  "Ebs":{
+                     "VolumeSize":"20",
+                     "VolumeType":"gp2"
+                  }
+               }
+            ]
+         }
+      }
+   }
+}
