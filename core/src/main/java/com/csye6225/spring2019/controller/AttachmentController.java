@@ -117,9 +117,42 @@ public class AttachmentController {
 
             return new ResponseEntity<Object>(entities.toString(),HttpStatus.OK);
         }
+    }
 
+    @PutMapping("/note/{idNotes}/attachments/{idAttachments}")
+    public ResponseEntity<Object> updateAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value="file") MultipartFile file, HttpServletRequest request, HttpServletResponse response, @PathVariable (value="idAttachments") String idAttachments) throws JSONException {
+        Attachment attachment = attachmentRepository.getOne(idAttachments);
+        String attachmentID = attachment.getAttachmentId();
+        String url = attachment.getUrl();
+        this.amazonClient.deleteFileFromS3Bucket(url);
+        attachmentRepository.delete(attachment);
+
+
+        String url1 = this.amazonClient.uploadFile(file);
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
+
+        Note note = noteRepository.getOne(idNotes);
+
+        Attachment attachment1 = new Attachment();
+        attachment.setAttachmentId(attachmentID);
+        attachment.setUrl(url1);
+        //note.getAttachmentList().add(attachment);
+
+
+        attachmentRepository.save(attachment1);
+
+        List<JSONObject> entities = new ArrayList<JSONObject>();
+        JSONObject entity = new JSONObject();
+
+        entity.put("id",attachment.getAttachmentId());
+        entity.put("url",attachment.getUrl());
+        entities.add(entity);
+
+        return new ResponseEntity<Object>(entities.toString(),HttpStatus.OK);
 
     }
+
 
     @DeleteMapping("/note/{idNotes}/attachments/{idAttachments}")
     public void deleteAttachment(@PathVariable(value = "idNotes") String idNotes, @PathVariable (value="idAttachments") String idAttachments){
