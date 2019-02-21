@@ -133,7 +133,10 @@ public class NoteController {
                     entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
                     entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
                     entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
-                  //  entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachment());
+                    for(int i=0;i<= note.orElseThrow(RuntimeException::new).getAttachmentList().size();i++) {
+                        entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachmentList().get(i));
+                    }
+
                     entities.add(entity);
                     return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
                 } else {
@@ -204,7 +207,12 @@ public class NoteController {
 
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 noteRepository.delete(note1);
-                //attachmentRepository.deleteById(note1.getAttachment().getAttachmentId());
+
+                for(int i=0;i<= note1.getAttachmentList().size();i++) {
+                    attachmentRepository.deleteById(note1.getAttachmentList().get(i).getAttachmentId());
+                }
+
+
 
                 return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
             }
