@@ -105,6 +105,8 @@ public class AttachmentController {
             Attachment attachment = new Attachment();
             attachment.setAttachmentId(randomUUIDString);
             attachment.setUrl(url);
+            attachment.setNote(note);
+            attachment.getNote().setNoteId(idNotes);
             //note.getAttachmentList().add(attachment);
 
 
@@ -140,7 +142,7 @@ public class AttachmentController {
             String attachmentID = attachment.getAttachmentId();
             String url = attachment.getUrl();
             this.amazonClient.deleteFileFromS3Bucket(url);
-            attachmentRepository.delete(attachment);
+
 
 
             String url1 = this.amazonClient.uploadFile(file);
@@ -150,11 +152,13 @@ public class AttachmentController {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             }
 
-            Attachment attachment1 = new Attachment();
-            attachment.setAttachmentId(attachmentID);
-            attachment.setUrl(url1);
-            //note.getAttachmentList().add(attachment);
-            attachmentRepository.save(attachment1);
+             attachment.setUrl(url1);
+             attachment.getNote().setNoteId(idNotes);
+
+
+
+
+            attachmentRepository.save(attachment);
 
 //            List<JSONObject> entities = new ArrayList<JSONObject>();
 //            JSONObject entity = new JSONObject();
