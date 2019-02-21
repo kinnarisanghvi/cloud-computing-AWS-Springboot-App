@@ -60,7 +60,7 @@ public class AmazonClient {
         try {
             File file = convertMultiPartToFile(multipartFile);
             String fileName = generateFileName(multipartFile);
-            fileUrl = awsRegion + "/" + awsS3AudioBucket + "/" + fileName;
+            fileUrl = "https://s3.amazonaws.com"+ "/" + awsS3AudioBucket + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
             file.delete();
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class AmazonClient {
 
     public String deleteFileFromS3Bucket(String fileUrl) {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-        s3client.deleteObject(new DeleteObjectRequest(awsS3AudioBucket + "/", fileName));
+        s3client.deleteObject(new DeleteObjectRequest(awsS3AudioBucket , fileName));
         return "Successfully deleted";
     }
 

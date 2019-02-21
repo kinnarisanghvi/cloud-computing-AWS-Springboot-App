@@ -43,6 +43,10 @@ public class AttachmentController {
 
     private AmazonClient amazonClient;
 
+    @Autowired
+    AttachmentController(AmazonClient amazonClient) {
+        this.amazonClient = amazonClient;
+    }
 
     @GetMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes,HttpServletRequest request, HttpServletResponse response) throws JSONException {
@@ -90,14 +94,17 @@ public class AttachmentController {
         } else if (auth_user == "2") {
             return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
         } else {
-            String url = amazonClient.uploadFile(file);
+            String url = this.amazonClient.uploadFile(file);
             UUID uuid = UUID.randomUUID();
             String randomUUIDString = uuid.toString();
+
+            Note note = noteRepository.getOne(idNotes);
 
             Attachment attachment = new Attachment();
             attachment.setAttachmentId(randomUUIDString);
             attachment.setUrl(url);
-            //attachment.getNote().setNoteId(idNotes);
+            //note.getAttachmentList().add(attachment);
+
 
             attachmentRepository.save(attachment);
 
@@ -119,7 +126,7 @@ public class AttachmentController {
 
         Attachment attachment = attachmentRepository.getOne(idAttachments);
         String url = attachment.getUrl();
-        amazonClient.deleteFileFromS3Bucket(url);
+        this.amazonClient.deleteFileFromS3Bucket(url);
         attachmentRepository.delete(attachment);
 
     }
