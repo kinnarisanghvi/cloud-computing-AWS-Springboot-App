@@ -18,7 +18,18 @@ public class Attachment {
     private String url;
 
 
+    @ManyToOne
+    @JoinColumn(name="note_id")
+    private Note note;
 
+
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
+    }
 
     public String getAttachmentId() {
         return attachmentId;

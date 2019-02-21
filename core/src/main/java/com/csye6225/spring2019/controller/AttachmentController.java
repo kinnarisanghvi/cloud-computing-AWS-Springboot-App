@@ -105,6 +105,8 @@ public class AttachmentController {
             Attachment attachment = new Attachment();
             attachment.setAttachmentId(randomUUIDString);
             attachment.setUrl(url);
+            attachment.setNote(note);
+            attachment.getNote().setNoteId(idNotes);
             //note.getAttachmentList().add(attachment);
 
 
