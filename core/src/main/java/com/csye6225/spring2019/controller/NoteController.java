@@ -3,6 +3,7 @@ package com.csye6225.spring2019.controller;
 import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
+import com.csye6225.spring2019.repository.AttachmentRepository;
 import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,8 @@ public class NoteController {
     NoteRepository noteRepository;
     @Autowired
     UserRepository uRepository;
+    @Autowired
+    AttachmentRepository attachmentRepository;
 
     UserCheck uCheck = new UserCheck();
     String auth_user=null;
@@ -61,6 +64,9 @@ public class NoteController {
                         entity.put("Content", n.getNoteContent());
                         entity.put("Created At", n.getNoteCreatedAt());
                         entity.put("Last Updated At", n.getNoteUpdatedAt());
+                        for(int i=0;i<n.getAttachmentList().size();i++) {
+                                        entity.put("attachments",n.getAttachmentList().get(i));
+                        }
                         entities.add(entity);
                     }
 
@@ -97,7 +103,7 @@ public class NoteController {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
             note.setNoteCreatedAt(sDate);
-//            note.getUser().setId(userid);
+            //note.getUser().setId(userid);
             note.setUser(user);
             noteRepository.save(note);
             return new ResponseEntity<Object>(note, HttpStatus.CREATED);
@@ -127,6 +133,10 @@ public class NoteController {
                     entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
                     entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
                     entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
+                    for(int i=0;i< note.orElseThrow(RuntimeException::new).getAttachmentList().size();i++) {
+                        entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachmentList().get(i));
+                    }
+
                     entities.add(entity);
                     return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
                 } else {
@@ -171,6 +181,7 @@ public class NoteController {
                 entity.put("Content", changedNote.getNoteContent());
                 entity.put("Created At", changedNote.getNoteCreatedAt());
                 entity.put("Last Updated At", changedNote.getNoteUpdatedAt());
+               // entity.put("attachments",changedNote.getAttachment());
                 entities.add(entity);
 
 
@@ -196,6 +207,13 @@ public class NoteController {
 
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 noteRepository.delete(note1);
+
+                for(int i=0;i< note1.getAttachmentList().size();i++) {
+                    attachmentRepository.deleteById(note1.getAttachmentList().get(i).getAttachmentId());
+                }
+
+
+
                 return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
             }
             return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);

@@ -11,9 +11,19 @@
 #zone_3="us-east-1c"
 #AWS_REGION="us-east-1"
 
-echo "Please Enter the Stack Name: "
-read stackname
 
-aws cloudformation create-stack --template-body file://./csye6225-cf-networking.json --stack-name "$stackname"
+export STACK_NAME=$1
+export STACK_ID=$(aws cloudformation create-stack --template-body file://./csye6225-cf-networking.json --stack-name "$STACK_NAME")
+echo "$STACK_ID"
+echo "Creating Stackname"
+        export STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[][ [StackStatus ] ][]" --output text)
+	while [ ${STACK_STATUS} != "CREATE_COMPLETE" ]; 
+        do
+        STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[][ [StackStatus ] ][]" --output text)
+        echo $STACK_STATUS
+        done
+        echo "Stack ${STACK_NAME} Created successfully!"
+                exit 1
+        
 
 

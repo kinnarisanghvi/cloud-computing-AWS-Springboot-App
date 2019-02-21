@@ -1,0 +1,49 @@
+Resources:
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: 'vpc-d4c975ae'
+      GroupDescription: Enable sql access via port 3306 and tomcat access via 8080
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 3306
+        IpProtocol: tcp
+        ToPort: 3306
+      - CidrIp: 0.0.0.0/0
+        FromPort: 8080
+        IpProtocol: tcp
+        ToPort: 8080
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: 'vpc-d4c975ae'
+      GroupDescription: Enable HTTP access via user defined port
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 80
+        IpProtocol: tcp
+        ToPort: 80
+      - CidrIp: 0.0.0.0/0
+        FromPort: 443
+        IpProtocol: tcp
+        ToPort: 443
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SubnetId: 'subnet-a0d7e7ea'
+      ImageId: 'ami-0ec749cb118702afe'
+      SecurityGroupIds:
+        - Ref: SSHSecurityGroup
+        - Ref: WebSecurityGroup
+      KeyName: 'centos-ssh'
+      UserData:
+        Fn::Base64:                                
+          Fn::Sub:
+              #!/bin/bash -ex
+              sudo systemctl start tomcat.service
+      
