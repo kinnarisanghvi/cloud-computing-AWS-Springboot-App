@@ -12,8 +12,10 @@ subnetName3=${1}-csye6225-subnet3
 internetGateway=${1}-csye6225-IG
 routeTable=${1}-rTable-csye6225-rTable
 
-export VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --instance-tenancy default --query 'Vpc.VpcId' --output text)
+export VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 --instance-tenancy default  --query 'Vpc.VpcId' --output text)
 
+	aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-hostnames "{\"Value\":true}"
+	aws ec2 modify-vpc-attribute --vpc-id $VPC_ID --enable-dns-support "{\"Value\":true}" 
 if [ $? -eq 0 ]
 then 
 	aws ec2 create-tags --resources $VPC_ID --tags Key=Name,Value=$vpcName
@@ -135,5 +137,4 @@ else
 	exit 1
 fi
 
-aws cloudformation deploy --template ./csye6225-cf-networking.json --stack-name "$stackname" --parameter-overrides SubnetIpBlocks="$subnets" AvailabilityZones="$zones" VPCIpBlock="$cidr"
 
