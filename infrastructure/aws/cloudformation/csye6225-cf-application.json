@@ -14,8 +14,12 @@
          "Description":"subnet id",
          "Type":"String"
       },
-	"subnetID2":{
+      "subnetID2":{
          "Description":"subnet id 2",
+         "Type":"String"
+      },
+      "subnetID3":{
+         "Description":"subnet id 3",
          "Type":"String"
       },
       "AMIID":{
@@ -93,6 +97,7 @@
                {
                   "DeviceName":"/dev/sda1",
                   "Ebs":{
+		     "DeleteOnTermination" : "true",
                      "VolumeSize":"20",
                      "VolumeType":"gp2"
                   }
@@ -132,6 +137,9 @@
             	},
 		{
 		"Ref":"subnetID2"
+		},
+		{
+		"Ref":"subnetID3"
 		}
 	    ]
          }
