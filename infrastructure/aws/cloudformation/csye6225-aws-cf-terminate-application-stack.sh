@@ -13,6 +13,6 @@ export STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAM
         STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[][ [StackStatus ] ][]" --output text)
         echo $STACK_STATUS
         done
-        echo "Stack ${STACK_NAME} delete successfully!"
+        echo "Stack deleted successfully!"
                 exit 1
 
