@@ -49,7 +49,9 @@
          "Properties":{
             "CidrBlock":{
                "Ref":"vpcblock"
-            }
+            },
+	   "EnableDnsSupport" : true,
+           "EnableDnsHostnames" : true
          }
       },
       "subnet1":{
