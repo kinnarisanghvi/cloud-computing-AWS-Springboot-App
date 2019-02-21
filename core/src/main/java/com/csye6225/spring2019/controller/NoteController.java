@@ -103,7 +103,7 @@ public class NoteController {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
             note.setNoteCreatedAt(sDate);
-            note.getUser().setId(userid);
+            //note.getUser().setId(userid);
             note.setUser(user);
             noteRepository.save(note);
             return new ResponseEntity<Object>(note, HttpStatus.CREATED);

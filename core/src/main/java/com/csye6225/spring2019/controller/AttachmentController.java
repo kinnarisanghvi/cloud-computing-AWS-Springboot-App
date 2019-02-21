@@ -43,23 +43,26 @@ public class AttachmentController {
 
     private AmazonClient amazonClient;
 
+    @Autowired
+    AttachmentController(AmazonClient amazonClient) {
+        this.amazonClient = amazonClient;
+    }
 
     @GetMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes,HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
-            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
-            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
-            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
 
             auth_user_1 = auth_user.split(",");
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
-                Note note = noteRepository.findById(idNotes).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", idNotes));
-
+                Note note = noteRepository.findBy(idNotes);
                 List<JSONObject> entities = new ArrayList<JSONObject>();
                 JSONObject entity = new JSONObject();
                 //if (note.get().getUser().getId() == Long.valueOf(auth_user_1[1])) {
@@ -70,13 +73,13 @@ public class AttachmentController {
                 }
                 //  entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachment());
 
-                return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
+                return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
 
 
             }
 
         }
-        return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
 
     }
 
@@ -84,20 +87,26 @@ public class AttachmentController {
     public ResponseEntity<Object> newAttachment(@PathVariable(value="idNotes") String idNotes ,@RequestPart(value="file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
-            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
-            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
-            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
-            String url = amazonClient.uploadFile(file);
+            String url = this.amazonClient.uploadFile(file);
             UUID uuid = UUID.randomUUID();
             String randomUUIDString = uuid.toString();
+
+            Note note = noteRepository.getOne(idNotes);
+            if(note==null){
+                return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            }
 
             Attachment attachment = new Attachment();
             attachment.setAttachmentId(randomUUIDString);
             attachment.setUrl(url);
-            //attachment.getNote().setNoteId(idNotes);
+            //note.getAttachmentList().add(attachment);
+
 
             attachmentRepository.save(attachment);
 
@@ -110,17 +119,81 @@ public class AttachmentController {
 
             return new ResponseEntity<Object>(entities.toString(),HttpStatus.OK);
         }
-
-
     }
+
+    @PutMapping("/note/{idNotes}/attachments/{idAttachments}")
+    public ResponseEntity<Object> updateAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value="file") MultipartFile file, HttpServletRequest request, HttpServletResponse response, @PathVariable (value="idAttachments") String idAttachments) throws JSONException {
+
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        if (auth_user == "0") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "1") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "2") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        }else {
+
+            Attachment attachment = attachmentRepository.getOne(idAttachments);
+            if(attachment.equals(null)){
+                return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+            }else{
+            String attachmentID = attachment.getAttachmentId();
+            String url = attachment.getUrl();
+            this.amazonClient.deleteFileFromS3Bucket(url);
+            attachmentRepository.delete(attachment);
+
+
+            String url1 = this.amazonClient.uploadFile(file);
+
+            Note note = noteRepository.getOne(idNotes);
+            if(note.equals(null)){
+                return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            }
+
+            Attachment attachment1 = new Attachment();
+            attachment.setAttachmentId(attachmentID);
+            attachment.setUrl(url1);
+            //note.getAttachmentList().add(attachment);
+            attachmentRepository.save(attachment1);
+
+//            List<JSONObject> entities = new ArrayList<JSONObject>();
+//            JSONObject entity = new JSONObject();
+//
+//            entity.put("id", attachment.getAttachmentId());
+//            entity.put("url", attachment.getUrl());
+//            entities.add(entity);
+
+            return new ResponseEntity<Object>(HttpStatus.OK);
+        }
+        }
+    }
+
 
     @DeleteMapping("/note/{idNotes}/attachments/{idAttachments}")
-    public void deleteAttachment(@PathVariable(value = "idNotes") String idNotes, @PathVariable (value="idAttachments") String idAttachments){
+    public ResponseEntity<Object>  deleteAttachment(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response, @PathVariable (value="idAttachments") String idAttachments) {
 
-        Attachment attachment = attachmentRepository.getOne(idAttachments);
-        String url = attachment.getUrl();
-        amazonClient.deleteFileFromS3Bucket(url);
-        attachmentRepository.delete(attachment);
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        Note note = noteRepository.getOne(idNotes);
+        if (auth_user == "0") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "1") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "2") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (note.equals(null)) {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        }
+         else{
+            Attachment attachment = attachmentRepository.getOne(idAttachments);
+            if(attachment.equals(null)){
+                return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+            }
+            String url = attachment.getUrl();
+            this.amazonClient.deleteFileFromS3Bucket(url);
+            attachmentRepository.delete(attachment);
+        }
 
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }
+
