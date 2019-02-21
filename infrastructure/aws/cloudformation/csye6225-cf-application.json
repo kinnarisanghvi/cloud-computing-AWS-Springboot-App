@@ -158,7 +158,7 @@
             "MasterUserPassword":"csye6225password",
             "MultiAZ":false,
             "DBInstanceClass":"db.t2.medium",
-            "PubliclyAccessible":false,
+            "PubliclyAccessible":true,
             "DBInstanceIdentifier":"csye6225-spring2019",
             "VPCSecurityGroups" : [{ "Fn::GetAtt": [ "csye6225rds", "GroupId" ]}]
          }
