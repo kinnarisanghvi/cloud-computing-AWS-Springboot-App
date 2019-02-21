@@ -2,10 +2,10 @@ package com.csye6225.spring2019.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
+@Table(name="attachments")
 public class Attachment {
 
     @Id
@@ -16,6 +16,8 @@ public class Attachment {
 
     @Column(name = "url")
     private String url;
+
+
 
 
     public String getAttachmentId() {

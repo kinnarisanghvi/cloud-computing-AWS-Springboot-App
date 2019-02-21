@@ -5,7 +5,9 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="notes")
@@ -76,16 +78,16 @@ public class Note {
     private User user;
 
     @OneToMany
-    @JoinColumn (name="attachment_id")
-    private Attachment attachment;
+    @JoinColumn(name="note_id")
+    private List<Attachment> attachmentList = new ArrayList<>();
 
 
-    public Attachment getAttachment() {
-        return attachment;
+    public List<Attachment> getAttachmentList() {
+        return attachmentList;
     }
 
-    public void setAttachment(Attachment attachment) {
-        this.attachment = attachment;
+    public void setAttachmentList(List<Attachment> attachmentList) {
+        this.attachmentList = attachmentList;
     }
 
     public User getUser() {
