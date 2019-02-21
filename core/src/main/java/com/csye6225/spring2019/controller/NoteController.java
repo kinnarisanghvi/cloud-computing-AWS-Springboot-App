@@ -64,7 +64,7 @@ public class NoteController {
                         entity.put("Content", n.getNoteContent());
                         entity.put("Created At", n.getNoteCreatedAt());
                         entity.put("Last Updated At", n.getNoteUpdatedAt());
-                        for(int i=0;i<=n.getAttachmentList().size();i++) {
+                        for(int i=0;i<n.getAttachmentList().size();i++) {
                                         entity.put("attachments",n.getAttachmentList().get(i));
                         }
                         entities.add(entity);
@@ -133,7 +133,7 @@ public class NoteController {
                     entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
                     entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
                     entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
-                    for(int i=0;i<= note.orElseThrow(RuntimeException::new).getAttachmentList().size();i++) {
+                    for(int i=0;i< note.orElseThrow(RuntimeException::new).getAttachmentList().size();i++) {
                         entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachmentList().get(i));
                     }
 
@@ -208,7 +208,7 @@ public class NoteController {
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 noteRepository.delete(note1);
 
-                for(int i=0;i<= note1.getAttachmentList().size();i++) {
+                for(int i=0;i< note1.getAttachmentList().size();i++) {
                     attachmentRepository.deleteById(note1.getAttachmentList().get(i).getAttachmentId());
                 }
 

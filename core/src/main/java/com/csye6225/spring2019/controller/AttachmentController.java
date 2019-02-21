@@ -1,5 +1,6 @@
 package com.csye6225.spring2019.controller;
 
+import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Attachment;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -56,11 +58,12 @@ public class AttachmentController {
 
             auth_user_1 = auth_user.split(",");
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
-                List<Attachment> attachment = attachmentRepository.findByNoteId(idNotes);
+                Note note = noteRepository.findById(idNotes).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", idNotes));
+
                 List<JSONObject> entities = new ArrayList<JSONObject>();
                 JSONObject entity = new JSONObject();
                 //if (note.get().getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                for (Attachment att : attachment) {
+                for (Attachment att : note.getAttachmentList()) {
                     entity.put("Id", att.getAttachmentId());
                     entity.put("Url", att.getUrl());
                     entities.add(entity);
@@ -94,7 +97,7 @@ public class AttachmentController {
             Attachment attachment = new Attachment();
             attachment.setAttachmentId(randomUUIDString);
             attachment.setUrl(url);
-            attachment.getNote().setNoteId(idNotes);
+            //attachment.getNote().setNoteId(idNotes);
 
             attachmentRepository.save(attachment);
 
