@@ -77,8 +77,7 @@ public class Note {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    @JoinColumn(name="note_id")
+    @OneToMany(mappedBy = "note")
     private List<Attachment> attachmentList = new ArrayList<>();
 
 

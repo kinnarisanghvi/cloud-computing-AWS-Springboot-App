@@ -2,9 +2,17 @@
 
 set -e
 
-echo "Please enter the Stack Name: "
-read stackname
+export STACK_NAME=$1
+export STACK_ID=$(aws cloudformation delete-stack --stack-name "$STACK_NAME")
+echo "$STACK_ID"
+echo "Deleting Stackname"
 
-aws cloudformation delete-stack --stack-name "$stackname"
+export STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[][ [StackStatus ] ][]" --output text)
+	while [ ${STACK_STATUS} != "DELETE_COMPLETE" ]; 
+        do
+        STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[][ [StackStatus ] ][]" --output text)
+        echo $STACK_STATUS
+        done
+        echo "Stack deleted successfully!"
+                exit 1
 
-echo "Your Stack "$stackname" has been removed sucessfully"
