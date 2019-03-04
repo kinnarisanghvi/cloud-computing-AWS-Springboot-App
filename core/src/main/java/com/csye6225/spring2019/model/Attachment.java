@@ -24,6 +24,7 @@ public class Attachment {
     private Note note;
 
 
+
     public Note getNote() {
         return note;
     }
