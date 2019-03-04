@@ -1,6 +1,5 @@
 package com.csye6225.spring2019.controller;
 
-import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Attachment;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
@@ -12,19 +11,20 @@ import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-
+@Configuration
 @RestController
 public class AttachmentController {
 
@@ -40,6 +40,8 @@ public class AttachmentController {
     UserCheck uCheck = new UserCheck();
     String auth_user = null;
     String[] auth_user_1 = new String[3];
+
+
 
     private AmazonClient amazonClient;
 
@@ -86,6 +88,7 @@ public class AttachmentController {
         }
     }
 
+    @Profile("dev")
     @PostMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> newAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         auth_user = uCheck.loginUser(request, response, uRepository);
@@ -129,6 +132,7 @@ public class AttachmentController {
         }
     }
 
+    @Profile("dev")
     @PutMapping("/note/{idNotes}/attachments/{idAttachments}")
     public ResponseEntity<Object> updateAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "idAttachments") String idAttachments) throws JSONException {
 
