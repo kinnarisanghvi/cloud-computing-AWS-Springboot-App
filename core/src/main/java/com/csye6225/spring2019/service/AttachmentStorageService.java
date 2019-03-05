@@ -6,16 +6,18 @@ import com.csye6225.spring2019.model.Attachment;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.UUID;
 
+@Service
 public class AttachmentStorageService {
 
     @Autowired
     AttachmentRepository attachmentRepository;
+
     @Value("${file.upload.dir}")
     private String path;
 
@@ -34,7 +36,7 @@ public class AttachmentStorageService {
 
             attachFile.setAttachmentId(randomUUIDString);
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(path)
+                    .path(path+"/")
                     .path(attachFile.getAttachmentId())
                     .toUriString();
             attachFile.setUrl(fileDownloadUri);

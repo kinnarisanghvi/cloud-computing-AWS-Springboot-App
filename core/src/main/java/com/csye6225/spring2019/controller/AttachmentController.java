@@ -11,7 +11,6 @@ import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -26,6 +25,7 @@ import java.util.UUID;
 
 @Configuration
 @RestController
+@Profile("dev")
 public class AttachmentController {
 
 
@@ -67,9 +67,9 @@ public class AttachmentController {
                 Note note = noteRepository.findBy(idNotes);
                 if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                     List<JSONObject> entities = new ArrayList<JSONObject>();
+
                     JSONObject entity = new JSONObject();
-                    //if (note.get().getUse.............................................................................................................................................................
-                    // ........................................................................................................r().getId() == Long.valueOf(auth_user_1[1])) {
+
                     for (Attachment att : note.getAttachmentList()) {
                         entity.put("Id", att.getAttachmentId());
                         entity.put("Url", att.getUrl());
