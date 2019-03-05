@@ -16,58 +16,59 @@ public class Note {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "note_id")
-    private String id;
+    private String noteId;
 
     @Column(name = "note_title")
-    private String title;
+    private String noteTitle;
 
     @Column(name = "note_content")
-    private String content;
+    private String noteContent;
 
     @Column(name = "note_createdAt", columnDefinition = "text")
-    private Date created_on;
+    private Date noteCreatedAt;
+
+    public Date getNoteCreatedAt() {
+        return noteCreatedAt;
+    }
+
+    public Date getNoteUpdatedAt() {
+        return noteUpdatedAt;
+    }
+
+    public void setNoteUpdatedAt(Date noteUpdatedAt) {
+        this.noteUpdatedAt = noteUpdatedAt;
+    }
+
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
+
+
+    public void setNoteCreatedAt(Date noteCreatedAt) {
+        this.noteCreatedAt = noteCreatedAt;
+    }
 
     @Column(name = "note_lastUpdated", columnDefinition = "text")
-    private Date updated_on;
+    private Date noteUpdatedAt;
 
-    public String getTitle() {
-        return title;
+    public String getNoteTitle() {
+        return noteTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNoteTitle(String noteTitle) {
+        this.noteTitle = noteTitle;
     }
 
-    public String getContent() {
-        return content;
+    public String getNoteContent() {
+        return noteContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Date getCreated_on() {
-        return created_on;
-    }
-
-    public void setCreated_on(Date created_on) {
-        this.created_on = created_on;
-    }
-
-    public Date getUpdated_on() {
-        return updated_on;
-    }
-
-    public void setUpdated_on(Date updated_on) {
-        this.updated_on = updated_on;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setNoteContent(String noteContent) {
+        this.noteContent = noteContent;
     }
 
     @ManyToOne

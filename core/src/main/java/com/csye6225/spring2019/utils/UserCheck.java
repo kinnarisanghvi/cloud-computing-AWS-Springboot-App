@@ -28,7 +28,7 @@ public class UserCheck {
             String password = userDetails[1];
             System.out.println(email + "  " + password);
 
-            if (userExists == null || password == null) {
+            if (userExists == null) {
                 return "0"; //not exists
             }
 

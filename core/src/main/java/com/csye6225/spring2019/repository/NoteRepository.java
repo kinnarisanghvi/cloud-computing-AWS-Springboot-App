@@ -14,7 +14,7 @@ public interface NoteRepository extends JpaRepository<Note, String> {
         Note foundNote = null;
         for (Note note1 : notes) {
             System.out.println("noterepo "+ note1);
-            if (note1.getId().equals(id)){
+            if (note1.getNoteId().equals(id)){
                 foundNote = note1;
                 System.out.println("foundnote " + foundNote);
                 break;
