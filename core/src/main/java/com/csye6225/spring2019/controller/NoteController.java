@@ -14,17 +14,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -63,12 +58,12 @@ public class NoteController {
                 for (Note n : notes) {
                     if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                         JSONObject entity = new JSONObject();
-                        entity.put("Id", n.getId());
+                        entity.put("Id", n.getNoteId());
                         entity.put("User", n.getUser().getEmailID());
-                        entity.put("Title", n.getTitle());
-                        entity.put("Content", n.getContent());
-                        entity.put("Created At", n.getCreated_on());
-                        entity.put("Last Updated At", n.getUpdated_on());
+                        entity.put("Title", n.getNoteTitle());
+                        entity.put("Content", n.getNoteContent());
+                        entity.put("Created At", n.getNoteCreatedAt());
+                        entity.put("Last Updated At", n.getNoteUpdatedAt());
                         for(int i=0;i<n.getAttachmentList().size();i++) {
                                         entity.put("attachments",n.getAttachmentList().get(i));
                         }
@@ -80,31 +75,25 @@ public class NoteController {
 
             }
         }
-        return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
     }
 
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PostMapping("/note")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) {
 
         auth_user= uCheck.loginUser(request,response,uRepository);
         if(auth_user == "0") {
-
-            //returns when id or password is nukk
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
         } else if(auth_user == "1") {
-
-            //returns when password is wrong
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
         } else if(auth_user == "2") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
         } else {
             auth_user_1 = auth_user.split(",");
             long userid = 0L;
             UUID uuid = UUID.randomUUID();
             String randomUUIDString = uuid.toString();
-            note.setId(randomUUIDString);
+            note.setNoteId(randomUUIDString);
             userid = Long.valueOf(auth_user_1[1]);
             User user = new User();
             user.setId(userid);
@@ -113,7 +102,7 @@ public class NoteController {
             System.out.println("Time in java.sql.Date is : " + sDate);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
-            note.setCreated_on(sDate);
+            note.setNoteCreatedAt(sDate);
             //note.getUser().setId(userid);
             note.setUser(user);
             noteRepository.save(note);
@@ -121,156 +110,101 @@ public class NoteController {
         }
     }
 
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/note/{id}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id,HttpServletRequest request,HttpServletResponse response) throws JSONException {
-
-        //handles the case where noteId is not passed
-        try{
-
-            String noteId = id;
-            if(id==null){
-                System.out.println("NoteId required");
-            }
-        }catch(NullPointerException e){
-            return new ResponseEntity<Object>("{\"NoteId required\"}", HttpStatus.BAD_REQUEST);
-
-        }
-
         auth_user = uCheck.loginUser(request, response, uRepository);
         if(auth_user == "0") {
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
         } else if(auth_user == "1") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
         } else if(auth_user == "2") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
         } else {
             auth_user_1 = auth_user.split(",");
 
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
                 Optional<Note> note = noteRepository.findById(id);
-
-                //checking if note_id is present in db
-                if(note.equals(null)){
-                    return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-                }
                 List<JSONObject> entities = new ArrayList<JSONObject>();
                 JSONObject entity = new JSONObject();
                 if (note.get().getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                    entity.put("id", note.orElseThrow(RuntimeException::new).getId());
-                    entity.put("content", note.orElseThrow(RuntimeException::new).getContent());
-                    entity.put("title", note.orElseThrow(RuntimeException::new).getTitle());
-                    entity.put("created_on", note.orElseThrow(RuntimeException::new).getCreated_on());
-                    entity.put("last_updated_on", note.orElseThrow(RuntimeException::new).getUpdated_on());
+                    entity.put("Id", note.orElseThrow(RuntimeException::new).getNoteId());
+                    entity.put("User", note.orElseThrow(RuntimeException::new).getUser());
+                    entity.put("Title", note.orElseThrow(RuntimeException::new).getNoteTitle());
+                    entity.put("Content", note.orElseThrow(RuntimeException::new).getNoteContent());
+                    entity.put("Created At", note.orElseThrow(RuntimeException::new).getNoteCreatedAt());
+                    entity.put("Last Updated At", note.orElseThrow(RuntimeException::new).getNoteUpdatedAt());
+                    for(int i=0;i< note.orElseThrow(RuntimeException::new).getAttachmentList().size();i++) {
+                        entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachmentList().get(i));
+                    }
 
                     entities.add(entity);
-                    return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
+                    return new ResponseEntity<Object>(entities.toString(), HttpStatus.FOUND);
                 } else {
-
-                    //this will be returned if user is not authorized on the note
-                    return new ResponseEntity<Object>( HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<Object>("{\"message\": \"User Does not exist in db\"}", HttpStatus.UNAUTHORIZED);
                 }
 
             } else {
-                return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
             }
         }
     }
 
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PutMapping("/note/{id}")
     public ResponseEntity<Object> updateNote(@PathVariable(value = "id") String noteid, @Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) throws JSONException {
 
-        Note note1;
-        //handles the case where noteId is not passed
-        try{
-
-            String noteId = noteid;
-            if(noteId==null){
-                System.out.println("NoteId required");
-            }
-        }catch(NullPointerException e){
-            return new ResponseEntity<Object>("{\"NoteId required\"}", HttpStatus.BAD_REQUEST);
-
-        }
-
         auth_user = uCheck.loginUser(request, response, uRepository);
         if(auth_user == "0") {
-            return new ResponseEntity<Object>("{\"Username and password required\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
         } else if(auth_user == "1") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
         } else if(auth_user == "2") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);}
-        else {
+            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
+        } else {
             auth_user_1 = auth_user.split(",");
 
-            try {
-                note1 = noteRepository.findById(noteid).orElseThrow(() -> new NullPointerException());
-                if(note1.equals(null)){
-                    System.out.println();
-                }
-            }catch (Exception e){
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);}
-
-            }
-
+            Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
             List<JSONObject> entities = new ArrayList<JSONObject>();
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
 
-                note1.setTitle(note.getTitle());
-                note1.setContent(note.getContent());
+                note1.setNoteTitle(note.getNoteTitle());
+                note1.setNoteContent(note.getNoteContent());
                 java.util.Date uDate1 = new java.util.Date();
                 java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
                 System.out.println("Time in java.sql.Date is : " + sDate1);
                 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
-                note1.setUpdated_on(sDate1);
-                noteRepository.save(note1);
-                return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
-        }
+                note1.setNoteUpdatedAt(sDate1);
+                Note changedNote = noteRepository.save(note1);
+                JSONObject entity = new JSONObject(); entity.put("Id", changedNote.getNoteId());
+                entity.put("User", changedNote.getUser().getEmailID());
+                entity.put("Title", changedNote.getNoteTitle());
+                entity.put("Content", changedNote.getNoteContent());
+                entity.put("Created At", changedNote.getNoteCreatedAt());
+                entity.put("Last Updated At", changedNote.getNoteUpdatedAt());
+               // entity.put("attachments",changedNote.getAttachment());
+                entities.add(entity);
 
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+
+                return new ResponseEntity<Object>(entities.toString(), HttpStatus.MOVED_PERMANENTLY);
+            }
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @DeleteMapping("/note/{id}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "id") String noteid,HttpServletRequest request,HttpServletResponse response) {
 
-        Note note1;
-
-        //handles the case where noteId is not passed
-        try{
-
-            String noteId = noteid;
-            if(noteId==null){
-                System.out.println("NoteId required");
-            }
-        }catch(NullPointerException e){
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-
-        }
-
-
         auth_user = uCheck.loginUser(request, response, uRepository);
         if(auth_user == "0") {
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
         } else if(auth_user == "1") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
         } else if(auth_user == "2") {
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
         } else {
             auth_user_1 = auth_user.split(",");
-            try {
-                note1 = noteRepository.findById(noteid).orElseThrow(() -> new NullPointerException());
-                if(note1.equals(null)){
-                    System.out.println();
-                }
-            }catch (Exception e){
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);}
+            Note note1 = noteRepository.findById(noteid).orElseThrow(() -> new ResourceNotFoundException("Note", "noteid", noteid));
 
-        }
             if (auth_user_1[0].equalsIgnoreCase("Success") && note1.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 noteRepository.delete(note1);
 
@@ -278,9 +212,11 @@ public class NoteController {
                     attachmentRepository.deleteById(note1.getAttachmentList().get(i).getAttachmentId());
                 }
 
-                return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+
+
+                return new ResponseEntity<String>("{\"message\": \"Deleted\"}", HttpStatus.ACCEPTED);
             }
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
         }
     }
 }
