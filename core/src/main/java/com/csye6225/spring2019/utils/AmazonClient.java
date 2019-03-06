@@ -63,6 +63,7 @@ public class AmazonClient {
             File file = convertMultiPartToFile(multipartFile);
             String fileName = generateFileName(multipartFile);
             fileUrl = "https://s3.amazonaws.com"+ "/" + awsS3AudioBucket + "/" + fileName;
+            System.out.println("file s3 upload url: "+ fileUrl);
             uploadFileTos3bucket(fileName, file);
             file.delete();
         } catch (Exception e) {

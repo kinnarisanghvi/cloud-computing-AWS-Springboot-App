@@ -94,7 +94,7 @@ public class AttachmentLocalStorageController {
             }
             // String attachmentID = attachment.getAttachmentId();
             else {
-                if(attachmentStorageService.deleteFile(idNotes)){
+                if(attachmentStorageService.deleteFile(idAttachments)){
                     return new ResponseEntity<Object>(HttpStatus.OK);
                 }
             }
