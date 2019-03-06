@@ -6,10 +6,16 @@ import com.csye6225.spring2019.model.Attachment;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
@@ -32,9 +38,28 @@ public class AttachmentStorageService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
+            if (file.isEmpty()) {
+                throw new FileStorageException("Failed to store empty file " + fileName);
+            }
+
+            try {
+
+                InputStream is = file.getInputStream();
+
+                Files.copy(is, Paths.get(path +"/"+ fileName),
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+
+                String msg = String.format("Failed to store file", file.getName());
+
+                throw new FileStorageException(msg);
+            }
+
             Attachment attachFile = new Attachment();
 
+
             attachFile.setAttachmentId(randomUUIDString);
+
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(path+"/")
                     .path(attachFile.getAttachmentId())
