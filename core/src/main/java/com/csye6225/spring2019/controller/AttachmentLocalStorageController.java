@@ -57,9 +57,8 @@ public class AttachmentLocalStorageController {
             if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else {
-                Attachment attachment = attachmentStorageService.storeFile(file);
-                attachment.setNote(note);
-                attachment.getNote().setNoteId(idNotes);
+                Attachment attachment = attachmentStorageService.storeFile(file,note);
+
                 List<JSONObject> entities = new ArrayList<JSONObject>();
                 JSONObject entity = new JSONObject();
 
