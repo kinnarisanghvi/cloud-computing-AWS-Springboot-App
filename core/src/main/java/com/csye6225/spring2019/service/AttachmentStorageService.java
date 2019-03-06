@@ -7,9 +7,6 @@ import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,8 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -31,9 +30,11 @@ public class AttachmentStorageService {
     @Value("${file.upload.dir}")
     private String path;
 
+    private Path fileStorageLocation = null;
+
     public Attachment storeFile(MultipartFile file, Note note) {
         // Normalize file name
-        String fileName = file.getOriginalFilename();
+        String fileName = new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         try {
@@ -47,10 +48,13 @@ public class AttachmentStorageService {
             }
 
             try {
-
+                this.fileStorageLocation = Paths.get(path).toAbsolutePath().normalize();
+                Path targetLocation = this.fileStorageLocation.resolve(fileName);
                 InputStream is = file.getInputStream();
 
-                Files.copy(is, Paths.get(path +"/"+ fileName),
+                System.out.println("location : "+ targetLocation);
+
+                Files.copy(is,targetLocation,
                         StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
 
@@ -69,7 +73,8 @@ public class AttachmentStorageService {
                     .path(path+"/")
                     .path(attachFile.getAttachmentId())
                     .toUriString();
-            attachFile.setUrl(fileDownloadUri);
+            System.out.println("file download uri: "+ fileDownloadUri);
+            attachFile.setUrl(this.fileStorageLocation.resolve(fileName).toString());
 
             return attachmentRepository.save(attachFile);
         } catch (Exception ex) {
@@ -86,11 +91,13 @@ public class AttachmentStorageService {
 
         try {
             Attachment attachment = attachmentRepository.getOne(attachmentId);
-            if (attachment.equals(null)) {
-                return false;
-            }
+            System.out.println("delete file " + attachment);
+//            if (attachment.equals(null)) {
+//                return false;
+//            }
 
             File file = new File(attachment.getUrl());
+            System.out.println("file: "+ file.getName());
             if(file.delete()) {
                 System.out.println(file.getName() + " is deleted!");
                 attachmentRepository.deleteById(attachment.getAttachmentId());
