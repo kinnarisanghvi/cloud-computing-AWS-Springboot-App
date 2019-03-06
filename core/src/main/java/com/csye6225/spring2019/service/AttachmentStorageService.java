@@ -3,6 +3,7 @@ package com.csye6225.spring2019.service;
 import com.csye6225.spring2019.exception.FileStorageException;
 import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Attachment;
+import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class AttachmentStorageService {
     @Value("${file.upload.dir}")
     private String path;
 
-    public Attachment storeFile(MultipartFile file) {
+    public Attachment storeFile(MultipartFile file, Note note) {
         // Normalize file name
         String fileName = file.getOriginalFilename();
         UUID uuid = UUID.randomUUID();
@@ -62,7 +63,8 @@ public class AttachmentStorageService {
 
 
             attachFile.setAttachmentId(randomUUIDString);
-
+            attachFile.setNote(note);
+            attachFile.getNote().setNoteId(note.getNoteId());
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(path+"/")
                     .path(attachFile.getAttachmentId())
