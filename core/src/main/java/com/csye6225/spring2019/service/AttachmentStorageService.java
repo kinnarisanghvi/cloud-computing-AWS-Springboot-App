@@ -68,7 +68,7 @@ public class AttachmentStorageService {
 
             attachFile.setAttachmentId(randomUUIDString);
             attachFile.setNote(note);
-            attachFile.getNote().setNoteId(note.getNoteId());
+            attachFile.getNote().setId(note.getId());
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(path+"/")
                     .path(attachFile.getAttachmentId())
@@ -80,6 +80,43 @@ public class AttachmentStorageService {
         } catch (Exception ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
+    }
+
+
+    public Attachment updateAttachment(String  attachmentId, MultipartFile file){
+        Attachment attachment = attachmentRepository.getOne(attachmentId);
+        String fileName = new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
+        try{
+            if(fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+            if (file.isEmpty()) {
+                throw new FileStorageException("Failed to store empty file " + fileName);
+            }
+
+            try {
+                this.fileStorageLocation = Paths.get(path).toAbsolutePath().normalize();
+                Path targetLocation = this.fileStorageLocation.resolve(fileName);
+                InputStream is = file.getInputStream();
+
+                System.out.println("updated location : "+ targetLocation);
+
+                Files.copy(is,targetLocation,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+
+                String msg = String.format("Failed to store file", file.getName());
+
+                throw new FileStorageException(msg);
+            }
+
+            attachment.setUrl(this.fileStorageLocation.resolve(fileName).toString());
+            return attachmentRepository.save(attachment);
+        }catch (Exception ex){
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+
+
     }
 
     public Attachment getFile(String fileId) {

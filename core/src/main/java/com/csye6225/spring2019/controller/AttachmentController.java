@@ -103,7 +103,7 @@ public class AttachmentController {
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
 
-
+            String fileName = new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
             Note note = noteRepository.getOne(idNotes);
             if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
@@ -116,7 +116,7 @@ public class AttachmentController {
                 attachment.setAttachmentId(randomUUIDString);
                 attachment.setUrl(url);
                 attachment.setNote(note);
-                attachment.getNote().setNoteId(idNotes);
+                attachment.getNote().setId(idNotes);
                 //note.getAttachmentList().add(attachment);
 
 
@@ -168,7 +168,7 @@ public class AttachmentController {
 
 
                     attachment.setUrl(url1);
-                    attachment.getNote().setNoteId(idNotes);
+                    attachment.getNote().setId(idNotes);
 
 
                     attachmentRepository.save(attachment);

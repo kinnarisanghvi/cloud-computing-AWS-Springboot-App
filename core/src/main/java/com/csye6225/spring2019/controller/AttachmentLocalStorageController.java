@@ -104,6 +104,35 @@ public class AttachmentLocalStorageController {
     }
 
 
+    @PutMapping("/note/{idNotes}/attachments/{idAttachments}")
+    public ResponseEntity<Object> updateAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "idAttachments") String idAttachments) throws JSONException {
 
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        auth_user_1 = auth_user.split(",");
+
+        if (auth_user == "0") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "1") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "2") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else {
+
+
+
+                Note note = noteRepository.getOne(idNotes);
+                if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
+                    return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+                }
+                // String attachmentID = attachment.getAttachmentId();
+                else {
+
+                    attachmentStorageService.updateAttachment(idAttachments, file);
+
+
+                    return new ResponseEntity<Object>(HttpStatus.OK);
+                }
+        }
+    }
 
 }
