@@ -9,6 +9,7 @@ import com.csye6225.spring2019.service.AttachmentStorageService;
 import com.csye6225.spring2019.utils.UserCheck;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -55,12 +58,52 @@ public class AttachmentLocalStorageController {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else {
                 Attachment attachment = attachmentStorageService.storeFile(file);
+                attachment.setNote(note);
+                attachment.getNote().setNoteId(idNotes);
+                List<JSONObject> entities = new ArrayList<JSONObject>();
+                JSONObject entity = new JSONObject();
+
+                entity.put("id", attachment.getAttachmentId());
+                entity.put("url", attachment.getUrl());
+                entities.add(entity);
 
 
-                return new ResponseEntity<Object>(attachment, HttpStatus.OK);
+                return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
             }
         }
     }
+
+    @DeleteMapping("/note/{idNotes}/attachments/{idAttachments}")
+    public ResponseEntity<Object> deleteAttachment(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "idAttachments") String idAttachments) {
+
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        auth_user_1 = auth_user.split(",");
+        Note note = noteRepository.getOne(idNotes);
+        if (auth_user == "0") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "1") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "2") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (note.equals(null)) {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else {
+
+
+            if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
+                return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            }
+            // String attachmentID = attachment.getAttachmentId();
+            else {
+                if(attachmentStorageService.deleteFile(idNotes)){
+                    return new ResponseEntity<Object>(HttpStatus.OK);
+                }
+            }
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+
+        }
+    }
+
 
 
 
