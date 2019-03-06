@@ -10,9 +10,6 @@
 | Karan Magdani | 001250476 | magdani.k@husky.neu.edu |
 
 
-| | | |
-| | | |
-
 ## Technology Stack
 
 
