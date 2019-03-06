@@ -82,6 +82,19 @@ public class AttachmentStorageService {
         }
     }
 
+
+    public Attachment updateAttachment(String  attachmentId, MultipartFile file){
+        Attachment attachment = attachmentRepository.getOne(attachmentId);
+        String fileName = new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
+        try{
+
+        }catch (Exception ex){
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+        
+
+    }
+
     public Attachment getFile(String fileId) {
         return attachmentRepository.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFoundException("File not found with id " ,"fileId" , fileId));
