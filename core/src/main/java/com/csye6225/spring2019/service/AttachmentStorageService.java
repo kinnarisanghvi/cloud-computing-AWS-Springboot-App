@@ -7,10 +7,13 @@ import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -75,5 +78,29 @@ public class AttachmentStorageService {
     public Attachment getFile(String fileId) {
         return attachmentRepository.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFoundException("File not found with id " ,"fileId" , fileId));
+    }
+
+    public boolean deleteFile(String attachmentId){
+
+        try {
+            Attachment attachment = attachmentRepository.getOne(attachmentId);
+            if (attachment.equals(null)) {
+                return false;
+            }
+
+            File file = new File(attachment.getUrl());
+            if(file.delete()) {
+                System.out.println(file.getName() + " is deleted!");
+                attachmentRepository.deleteById(attachment.getAttachmentId());
+                return true;
+            } else {
+                System.out.println("Delete operation is failed.");
+                return false;
+            }
+        }
+        catch(Exception e) {
+            System.out.println("Failed to Delete image !!");
+        }
+        return false;
     }
 }
