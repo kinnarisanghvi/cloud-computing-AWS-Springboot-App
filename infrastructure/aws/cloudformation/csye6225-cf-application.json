@@ -127,6 +127,7 @@
             "TableName":"csye6225"
          }
       },
+      
       "myDBSubnet":{
          "Type":"AWS::RDS::DBSubnetGroup",
          "Properties":{
@@ -144,7 +145,46 @@
 	    ]
          }
       },
-      "myDBInstance":{
+
+      "myCodeDepoly":{
+ 	 "Type":"AWS::CodeDeploy::Application",	
+ 	 "Properties":{
+   	    "ApplicationName":"csye6225-webapp",
+            "ComputePlatform":"EC2/On-premises"
+  	  }
+        },
+	"myCodeDeplymentGroup":{
+  	  "Type" : "AWS::CodeDeploy::DeploymentGroup",
+  	  "Properties" : {
+             "ApplicationName" : {"Ref":"ApplicationName"},
+	     "AutoRollbackConfiguration" : {
+ 				 "Enabled" : true,
+ 				 "Events" : ["DEPLOYMENT_FAILURE" ]
+	      },
+	    "ServiceRoleArn" : "CodeDeployServiceRole",
+	    "Deployment":{
+  		"Description":"Deploying the EC2 instance",
+ 		"IgnoreApplicationStopFailures":"false",
+  		"Revision" : {
+  			"GitHubLocation" : {
+  				"CommitId" : "String",
+  				"Repository" : "String"
+			},
+ 			"RevisionType" : "GitHub",
+		}
+             },
+	    "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
+	    "DeploymentGroupName":"csye6225-webapp-deployment",
+	    "DeploymentStyle":"In-place",
+	    "Ec2TagFilters" : [{
+ 		 "Key" : "MyEC2",
+ 		 "Type" : "KEY_AND_VALUE",
+ 		 "Value" : {"Ref":"MyEC2Instance"}
+	     } ],
+ 	 }	
+	},
+      
+	"myDBInstance":{
          "Type":"AWS::RDS::DBInstance",
          "Properties":{
             "DBName":"csye6225",
