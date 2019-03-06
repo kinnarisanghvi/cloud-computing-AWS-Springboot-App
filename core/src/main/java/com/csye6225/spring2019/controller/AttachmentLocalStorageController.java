@@ -118,10 +118,7 @@ public class AttachmentLocalStorageController {
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
 
-            Attachment attachment = attachmentRepository.getOne(idAttachments);
-            if (attachment.equals(null)) {
-                return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
-            } else {
+
 
                 Note note = noteRepository.getOne(idNotes);
                 if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
@@ -130,24 +127,11 @@ public class AttachmentLocalStorageController {
                 // String attachmentID = attachment.getAttachmentId();
                 else {
 
-                    Attachment updatedAttachment = attachmentStorageService.updateAttachment(idAttachments,file);
+                    attachmentStorageService.updateAttachment(idAttachments, file);
 
-                    attachment.setUrl(url1);
-                    attachment.getNote().setNoteId(idNotes);
-
-
-                    attachmentRepository.save(attachment);
-
-//            List<JSONObject> entities = new ArrayList<JSONObject>();
-//            JSONObject entity = new JSONObject();
-//
-//            entity.put("id", attachment.getAttachmentId());
-//            entity.put("url", attachment.getUrl());
-//            entities.add(entity);
 
                     return new ResponseEntity<Object>(HttpStatus.OK);
                 }
-            }
         }
     }
 

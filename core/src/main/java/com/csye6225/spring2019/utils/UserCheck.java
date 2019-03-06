@@ -3,9 +3,6 @@ package com.csye6225.spring2019.utils;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.UserRepository;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
-
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
@@ -36,7 +33,7 @@ public class UserCheck {
             }
 
             boolean flag = Password.checkPassword(password, userExists.getPassword());
-            // long userid = user1.getId();
+
 
             if (!flag) {
                 return "1"; // invalid login

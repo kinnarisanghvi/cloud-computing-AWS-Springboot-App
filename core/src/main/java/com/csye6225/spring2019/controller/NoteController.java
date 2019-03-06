@@ -109,7 +109,7 @@ public class NoteController {
             java.sql.Date sDate = new java.sql.Date(uDate.getTime());
             System.out.println("Time in java.sql.Date is : " + sDate);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            String created_on = String.valueOf(df);
+            String created_on = df.format(sDate);
             System.out.println("Using a dateFormat date is : " + df.format(uDate));
             note.setCreated_on(created_on);
             note.setUser(user);
@@ -124,6 +124,7 @@ public class NoteController {
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response, UserRepository userRepository) throws JSONException {
 
         Optional<Note> note = noteRepository.findById(id);
+        System.out.println("note :"+ note);
         if (note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
@@ -175,7 +176,8 @@ public class NoteController {
     @PutMapping("/note/{idNotes}")
     public ResponseEntity<Object> updateNote(@PathVariable(value = "idNotes") String id, @Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response, UserRepository ur) throws JSONException {
 
-        Note updated_note = noteRepository.findBy(id);
+        Note updated_note = noteRepository.getOne(id);
+        System.out.println("update note: "+ updated_note);
         if (updated_note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
@@ -188,7 +190,6 @@ public class NoteController {
             String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
             userDetails = basicAuthAsString.split(":", 2);
 
-            User userExists = ur.findByEmail(userDetails[0]);
             String email = userDetails[0];
 
             auth_user = uCheck.loginUser(request, response, uRepository);
@@ -200,7 +201,7 @@ public class NoteController {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "2") {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            } else if (!(note.getUser().getEmailID().equals(email))) {
+            } else if (!(updated_note.getUser().getEmailID().equals(email))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
 
@@ -213,7 +214,7 @@ public class NoteController {
                 java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
                 System.out.println("Time in java.sql.Date is : " + sDate1);
                 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                String updated_date = String.valueOf(df1);
+                String updated_date = df1.format(sDate1);
                 System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
                 updated_note.setLast_updated_on(updated_date);
                 Note changedNote = noteRepository.save(updated_note);
@@ -236,7 +237,7 @@ public class NoteController {
     @DeleteMapping("/note/{idNotes}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "idNotes") String noteid, HttpServletRequest request, HttpServletResponse response) {
 
-        Note delete_note = noteRepository.findBy(noteid);
+        Note delete_note = noteRepository.getOne(noteid);
         if (delete_note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
@@ -267,16 +268,17 @@ public class NoteController {
                 auth_user_1 = auth_user.split(",");
 
                 if (auth_user_1[0].equalsIgnoreCase("Success") && delete_note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                    noteRepository.delete(delete_note);
+
 
                     for (int i = 0; i < delete_note.getAttachmentList().size(); i++) {
                         attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getAttachmentId());
                     }
 
-                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    noteRepository.delete(delete_note);
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }
             }
         }
-        return null;
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
