@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +27,6 @@ import java.util.UUID;
 @RestController
 @Profile("dev")
 public class AttachmentController {
-
 
     @Autowired
     NoteRepository noteRepository;
@@ -42,8 +40,6 @@ public class AttachmentController {
     String auth_user = null;
     String[] auth_user_1 = new String[3];
 
-
-
     private AmazonClient amazonClient;
 
     @Autowired
@@ -53,6 +49,11 @@ public class AttachmentController {
 
     @GetMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+
+        Note note = noteRepository.findBy(idNotes);
+        if (note.equals(null)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
@@ -65,7 +66,7 @@ public class AttachmentController {
 
             auth_user_1 = auth_user.split(",");
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
-                Note note = noteRepository.findBy(idNotes);
+
                 if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                     List<JSONObject> entities = new ArrayList<JSONObject>();
 
