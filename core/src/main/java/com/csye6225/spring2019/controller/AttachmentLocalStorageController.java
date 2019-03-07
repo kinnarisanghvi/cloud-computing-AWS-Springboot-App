@@ -44,62 +44,7 @@ public class AttachmentLocalStorageController {
     UserCheck uCheck = new UserCheck();
     String auth_user = null;
     String[] auth_user_1 = new String[3];
-
-    @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note/{idNotes}/attachments")
-    public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response) throws JSONException {
-
-        Note note = noteRepository.findBy(idNotes);
-        if (note.equals(null)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        String header = request.getHeader("Authorization");
-        if (header != null && header.contains("Basic")) {
-            String userDetails[] = new String[2];
-            assert header.substring(0, 6).equals("Basic");
-            String basicAuthEncoded = header.substring(6);
-            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
-            userDetails = basicAuthAsString.split(":", 2);
-
-            User userExists = uRepository.findByEmail(userDetails[0]);
-            String email = userDetails[0];
-
-            auth_user = uCheck.loginUser(request, response, uRepository);
-            if (auth_user == "0") {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            } else if (auth_user == "1") {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            } else if (auth_user == "2") {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            } else {
-
-                auth_user_1 = auth_user.split(",");
-                if (auth_user_1[0].equalsIgnoreCase("Success")) {
-
-                    if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                        List<JSONObject> entities = new ArrayList<JSONObject>();
-
-                        JSONObject entity = new JSONObject();
-                        ArrayList<Attachment> attachments = (ArrayList<Attachment>) note.getAttachmentList();
-                        for (Attachment att : attachments) {
-                            entity.put("Id", att.getId());
-                            entity.put("Url", att.getUrl());
-                            entities.add(entity);
-                        }
-
-
-                        return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
-
-                    }
-
-                }
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        }
-        return null;
-    }
+    
 
     @PostMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> newAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
@@ -197,6 +142,8 @@ public class AttachmentLocalStorageController {
         }
     }
 
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
