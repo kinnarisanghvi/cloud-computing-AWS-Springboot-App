@@ -88,7 +88,7 @@ public class NoteController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PostMapping("/note")
-    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "4") {
@@ -117,8 +117,22 @@ public class NoteController {
             note.setCreated_on(created_on);
             note.setUser(user);
             noteRepository.save(note);
-            return new ResponseEntity<>(note, HttpStatus.CREATED);
+            List<JSONObject> entities = new ArrayList<JSONObject>();
+            JSONObject entity = new JSONObject();
+            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                entity.put("Id", note.getId());
+                entity.put("Content", note.getContent());
+                entity.put("Title", note.getTitle());
+                entity.put("Created_on", note.getCreated_on());
+                entity.put("Last_updated_on", note.getLast_updated_on());
+                for (int i = 0; i < note.getAttachmentList().size(); i++) {
+                    entity.put("attachments", note.getAttachmentList().get(i));
+                }
+                entities.add(entity);
+                return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
+            }
         }
+        return null;
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)

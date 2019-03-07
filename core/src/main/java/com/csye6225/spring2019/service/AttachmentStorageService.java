@@ -52,13 +52,16 @@ public class AttachmentStorageService {
                 Path targetLocation = this.fileStorageLocation.resolve(fileName);
                 InputStream is = file.getInputStream();
 
+                System.out.println("IS : "+is);
                 System.out.println("location : "+ targetLocation);
 
                 Files.copy(is,targetLocation,
                         StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
 
-                String msg = String.format("Failed to store file", file.getName());
+                System.out.println(e);
+                String msg = String.format("Failed to store file", file.getName()+ " "+ e.getMessage());
+                System.out.println("msg : "+msg);
 
                 throw new FileStorageException(msg);
             }
