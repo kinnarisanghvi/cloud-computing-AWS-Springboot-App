@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
@@ -44,15 +45,22 @@ public class UserController {
             userDetails = basicAuthAsString.split(":", 2);
             System.out.println("userdetail "+userDetails+ " "+ userDetails[0]);
             User userExists = userRepository.findByEmail(userDetails[0]);
-            String email = userDetails[0];
-            String password = userDetails[1];
-            System.out.println(email + "  " + password);
+            try {
+                String email = userDetails[0];
+                String password = userDetails[1];
+                if(email.equals(null) || password.equals(null)){
+                    System.out.println("Username or password is null");
+                }
+                System.out.println(email + "  " + password);
+            }catch (NullPointerException e){
+                return new ResponseEntity<String>("{\"message\":\"Enter username and password\"}", responseHeaders, HttpStatus.FORBIDDEN);
+            }
 
             if (userExists == null) {
                 return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
             }
 
-            boolean flag = Password.checkPassword(password, userExists.getPassword());
+            boolean flag = Password.checkPassword(userDetails[1], userExists.getPassword());
             // long userid = user1.getId();
 
             if (!flag) {
@@ -70,6 +78,16 @@ public class UserController {
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
         List<String> errorList = new ArrayList<String>();
         List<User> users = userRepository.findAll();
+        try{
+            String username = user.getEmailID();
+            String password = user.getPassword();
+
+            if(username.equals(null) || password.equals(null)){
+                System.out.println("Username or password is null");
+            }
+        }catch (NullPointerException e){
+            return new ResponseEntity<String>("{\"message\":\"Enter username and password\"}", responseHeaders, HttpStatus.FORBIDDEN);
+        }
         for(User user1 : users) {
 
             if (user.getEmailID().equals(user1.getEmailID())) {

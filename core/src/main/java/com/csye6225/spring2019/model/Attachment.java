@@ -1,7 +1,7 @@
 package com.csye6225.spring2019.model;
 
-import org.hibernate.annotations.GenericGenerator;
 
+import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
@@ -12,16 +12,22 @@ public class Attachment {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "id")
-    private String attachmentId;
+    private String id;
 
     @Column(name = "url")
     private String url;
-
 
     @ManyToOne
     @JoinColumn(name="note_id")
     private Note note;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Note getNote() {
         return note;
@@ -29,10 +35,6 @@ public class Attachment {
 
     public void setNote(Note note) {
         this.note = note;
-    }
-
-    public String getAttachmentId() {
-        return attachmentId;
     }
 
     public String getUrl() {
@@ -43,7 +45,5 @@ public class Attachment {
         this.url = url;
     }
 
-    public void setAttachmentId(String attachmentId) {
-        this.attachmentId = attachmentId;
     }
-}
+
