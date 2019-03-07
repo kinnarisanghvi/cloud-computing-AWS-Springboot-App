@@ -197,4 +197,48 @@ public class AttachmentLocalStorageController {
         }
     }
 
+    @GetMapping("/note/{idNotes}/attachments")
+    public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+
+        Note note = noteRepository.findBy(idNotes);
+        if (note.equals(null)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        if (auth_user == "0") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "1") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else if (auth_user == "2") {
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+        } else {
+
+            auth_user_1 = auth_user.split(",");
+            if (auth_user_1[0].equalsIgnoreCase("Success")) {
+
+                if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                    List<JSONObject> entities = new ArrayList<JSONObject>();
+
+
+                    for (Attachment att : note.getAttachmentList()) {
+                        JSONObject entity = new JSONObject();
+                        entity.put("Id", att.getId());
+                        entity.put("Url", att.getUrl());
+                        entities.add(entity);
+                    }
+
+
+                    //  entity.put("attachments",note.orElseThrow(RuntimeException::new).getAttachment());
+
+                    return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
+
+
+                }
+
+            }
+            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+
+        }
+    }
 }

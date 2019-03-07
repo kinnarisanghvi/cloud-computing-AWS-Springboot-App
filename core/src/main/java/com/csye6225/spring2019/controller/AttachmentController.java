@@ -21,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.util.*;
@@ -74,7 +78,7 @@ public class AttachmentController {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        } else if (auth_user == "1") { 
+        } else if (auth_user == "1") {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

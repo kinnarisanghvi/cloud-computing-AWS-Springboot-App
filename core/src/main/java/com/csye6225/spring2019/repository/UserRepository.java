@@ -13,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     public default User findByEmail(String email) {
         List<User> users = this.findAll();
+
         User foundUser = null;
         for (User user1 : users) {
             if (user1.getEmailID().equals(email)) {
