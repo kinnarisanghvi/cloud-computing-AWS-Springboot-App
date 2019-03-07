@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,7 +74,7 @@ public class AttachmentController {
                     JSONObject entity = new JSONObject();
 
                     for (Attachment att : note.getAttachmentList()) {
-                        entity.put("Id", att.getAttachmentId());
+                        entity.put("Id", att.getId());
                         entity.put("Url", att.getUrl());
                         entities.add(entity);
                     }
@@ -113,7 +114,7 @@ public class AttachmentController {
                 UUID uuid = UUID.randomUUID();
                 String randomUUIDString = uuid.toString();
                 Attachment attachment = new Attachment();
-                attachment.setAttachmentId(randomUUIDString);
+                attachment.setId(randomUUIDString);
                 attachment.setUrl(url);
                 attachment.setNote(note);
                 attachment.getNote().setId(idNotes);
@@ -125,7 +126,7 @@ public class AttachmentController {
                 List<JSONObject> entities = new ArrayList<JSONObject>();
                 JSONObject entity = new JSONObject();
 
-                entity.put("id", attachment.getAttachmentId());
+                entity.put("id", attachment.getId());
                 entity.put("url", attachment.getUrl());
                 entities.add(entity);
 
@@ -172,13 +173,6 @@ public class AttachmentController {
 
 
                     attachmentRepository.save(attachment);
-
-//            List<JSONObject> entities = new ArrayList<JSONObject>();
-//            JSONObject entity = new JSONObject();
-//
-//            entity.put("id", attachment.getAttachmentId());
-//            entity.put("url", attachment.getUrl());
-//            entities.add(entity);
 
                     return new ResponseEntity<Object>(HttpStatus.OK);
                 }

@@ -9,6 +9,7 @@ import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
 import com.csye6225.spring2019.utils.UserCheck;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -68,9 +68,12 @@ public class NoteController {
                         entity.put("Title", n.getTitle());
                         entity.put("Created_on", n.getCreated_on());
                         entity.put("Last_updated_on", n.getLast_updated_on());
+                        JSONObject attachmentobj = new JSONObject();
                         for (int i = 0; i < n.getAttachmentList().size(); i++) {
-                            entity.put("attachments", n.getAttachmentList().get(i));
+                            attachmentobj.put("id", n.getAttachmentList().get(i).getId());
+                            attachmentobj.put("url",n.getAttachmentList().get(i).getUrl());
                         }
+                        entity.put("attachment", attachmentobj);
                         entities.add(entity);
                     }
 
@@ -123,7 +126,7 @@ public class NoteController {
     @GetMapping("/note/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response, UserRepository userRepository) throws JSONException {
 
-        Optional<Note> note = noteRepository.findById(id);
+        Note note = noteRepository.getOne(id);
         System.out.println("note :"+ note);
         if (note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
@@ -136,12 +139,13 @@ public class NoteController {
             String basicAuthEncoded = header.substring(6);
             String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
             userDetails = basicAuthAsString.split(":", 2);
-
+            System.out.println("userdetails : "+ userDetails[0]);
             User userExists = userRepository.findByEmail(userDetails[0]);
+            System.out.println("user exists: "+ userExists);
             String email = userDetails[0];
-            String password = userDetails[1];
 
             auth_user = uCheck.loginUser(request, response, uRepository);
+            System.out.println("auth user in update: "+ auth_user);
             if (auth_user == "4") {
                 return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
@@ -150,20 +154,23 @@ public class NoteController {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "2") {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
-            } else if (!(note.get().getUser().getEmailID().equals(email))) {
+            } else if (!(note.getUser().getEmailID().equals(email))) {
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             }
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
-            if (note.get().getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                entity.put("Id", note.orElseThrow(RuntimeException::new).getId());
-                entity.put("Content", note.orElseThrow(RuntimeException::new).getContent());
-                entity.put("Title", note.orElseThrow(RuntimeException::new).getTitle());
-                entity.put("Created_on", note.orElseThrow(RuntimeException::new).getCreated_on());
-                entity.put("Last_updated_on", note.orElseThrow(RuntimeException::new).getLast_updated_on());
-                for (int i = 0; i < note.get().getAttachmentList().size(); i++) {
-                    entity.put("attachments", note.orElseThrow(RuntimeException::new).getAttachmentList().get(i));
+            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                entity.put("Id", note.getId());
+                entity.put("Content", note.getContent());
+                entity.put("Title", note.getTitle());
+                entity.put("Created_on", note.getCreated_on());
+                entity.put("Last_updated_on", note.getLast_updated_on());
+                JSONObject attachmentobj = new JSONObject();
+                for (int i = 0; i < note.getAttachmentList().size(); i++) {
+                    attachmentobj.put("id", note.getAttachmentList().get(i).getId());
+                    attachmentobj.put("url",note.getAttachmentList().get(i).getUrl());
                 }
+                entity.put("attachment", attachmentobj);
                 entities.add(entity);
                 return new ResponseEntity<>(entities.toString(), HttpStatus.NO_CONTENT);
             }
@@ -193,6 +200,7 @@ public class NoteController {
             String email = userDetails[0];
 
             auth_user = uCheck.loginUser(request, response, uRepository);
+
             if (auth_user == "4") {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
@@ -204,8 +212,9 @@ public class NoteController {
             } else if (!(updated_note.getUser().getEmailID().equals(email))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
+            auth_user_1 = auth_user.split(",");
             List<JSONObject> entities = new ArrayList<JSONObject>();
+            System.out.println("auth user update note: "+ auth_user_1[0]+ " "+ auth_user_1[1]);
             if (auth_user_1[0].equalsIgnoreCase("Success") && updated_note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
 
                 updated_note.setTitle(note.getTitle());
@@ -271,7 +280,7 @@ public class NoteController {
 
 
                     for (int i = 0; i < delete_note.getAttachmentList().size(); i++) {
-                        attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getAttachmentId());
+                        attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getId());
                     }
 
                     noteRepository.delete(delete_note);

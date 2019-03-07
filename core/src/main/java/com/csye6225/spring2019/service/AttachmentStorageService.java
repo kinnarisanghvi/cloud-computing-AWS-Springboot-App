@@ -66,12 +66,12 @@ public class AttachmentStorageService {
             Attachment attachFile = new Attachment();
 
 
-            attachFile.setAttachmentId(randomUUIDString);
+            attachFile.setId(randomUUIDString);
             attachFile.setNote(note);
             attachFile.getNote().setId(note.getId());
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(path+"/")
-                    .path(attachFile.getAttachmentId())
+                    .path(attachFile.getId())
                     .toUriString();
             System.out.println("file download uri: "+ fileDownloadUri);
             attachFile.setUrl(this.fileStorageLocation.resolve(fileName).toString());
@@ -137,7 +137,7 @@ public class AttachmentStorageService {
             System.out.println("file: "+ file.getName());
             if(file.delete()) {
                 System.out.println(file.getName() + " is deleted!");
-                attachmentRepository.deleteById(attachment.getAttachmentId());
+                attachmentRepository.deleteById(attachment.getId());
                 return true;
             } else {
                 System.out.println("Delete operation is failed.");
