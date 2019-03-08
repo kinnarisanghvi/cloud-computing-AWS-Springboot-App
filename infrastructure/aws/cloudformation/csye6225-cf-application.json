@@ -89,6 +89,21 @@
             "SubnetId":{
                "Ref":"subnetID1"
             },
+            "UserData": 
+            { 
+               "Fn::Base64": 
+               { 
+                  "Fn::Join" : 
+                  ["", 
+                     [
+                     "#!/bin/bash -xe\n",
+                     "sudo yum -y update\n",
+                     "sudo systemctl start tomcat.service",
+                     "sudo systemctl status tomcat.service"
+                     ]
+                  ]
+               }
+            },
             "SecurityGroupIds":[
                {
                   "Ref":"csye6225webapp"
@@ -158,13 +173,7 @@
             "ApplicationName":{
                "Ref":"ApplicationName"
             },
-            "AutoRollbackConfiguration":{
-               "Enabled":true,
-               "Events":[
-                  "DEPLOYMENT_FAILURE"
-               ]
-            },
-            "ServiceRoleArn":"CodeDeployServiceRole",
+            "ServiceRoleArn":"arn:aws:iam::019669310931:role/CodeDeployEC2ServiceRole",
             "Deployment":{
                "Description":"Deploying the EC2 instance",
                "IgnoreApplicationStopFailures":"false",
@@ -178,8 +187,8 @@
             },
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "DeploymentGroupName":"csye6225-webapp-deployment",
-            "DeploymentStyle":{
-                "DeploymentType":"In-place"
+            "DeploymentStyle": {
+               "DeploymentType": "In-place"
             },
             "Ec2TagFilters":[
                {
