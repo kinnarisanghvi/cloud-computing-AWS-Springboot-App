@@ -85,7 +85,11 @@
             "ImageId":{
                "Ref":"AMIID"
             },
+            "KeyName" : {
+               "Ref":"KeyPairName"
+            },
             "InstanceType":"t2.micro",
+            "IamInstanceProfile" : "CodeDeployEC2ServiceRole",
             "SubnetId":{
                "Ref":"subnetID1"
             },
@@ -98,7 +102,7 @@
                      [
                      "#!/bin/bash -xe\n",
                      "sudo yum -y update\n",
-                     "sudo systemctl start tomcat.service",
+                     "sudo systemctl start tomcat.service\n",
                      "sudo systemctl status tomcat.service"
                      ]
                   ]
@@ -163,7 +167,9 @@
       "myCodeDepoly":{
          "Type":"AWS::CodeDeploy::Application",
          "Properties":{
-            "ApplicationName":"csye6225-webapp",
+            "ApplicationName":{
+               "Ref":"ApplicationName"
+            },
             "ComputePlatform":"Server"
          }
       },
@@ -173,22 +179,16 @@
             "ApplicationName":{
                "Ref":"ApplicationName"
             },
-            "ServiceRoleArn":"arn:aws:iam::019669310931:role/CodeDeployEC2ServiceRole",
-            "Deployment":{
-               "Description":"Deploying the EC2 instance",
-               "IgnoreApplicationStopFailures":"false",
-               "Revision":{
-                  "GitHubLocation":{
-                     "CommitId":"String",
-                     "Repository":"String"
-                  },
-                  "RevisionType":"GitHub"
-               }
+            "ServiceRoleArn":"arn:aws:iam::375829056402:role/CodeDeployServiceRole",
+            "AutoRollbackConfiguration" : {
+               "Enabled" : true,
+               "Events" : ["DEPLOYMENT_FAILURE" ]
             },
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "DeploymentGroupName":"csye6225-webapp-deployment",
             "DeploymentStyle": {
-               "DeploymentType": "In-place"
+               "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL",
+               "DeploymentType": "IN_PLACE"
             },
             "Ec2TagFilters":[
                {
