@@ -1,29 +1,39 @@
 version: 2
 jobs:
   build:
+    branches:
+      only: Assignment5
     docker:
-      - image: circleci/python:2.7-jessie
+      -
+        image: 'circleci/python:2.7-jessie'
     steps:
       - checkout
-      - run:
-          name: Install packages
-          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
-      - run:
-          name: Install awscli
-          command: sudo pip install awscli
-      - run:
-          name: Download packer
-          command: |
-            wget -q https://releases.hashicorp.com/packer/1.3.4/packer_1.3.4_linux_amd64.zip 
-            unzip packer*.zip  
-            chmod +x packer
-      - run:
-          name: Validate Packer Template
-          command: ./packer validate centos-ami-template.json
-      - run:
-          name: Build AMI
-          command: |
-            ./packer build \
-            -var "aws_region=${AWS_REGION}" \
-            -var "subnet_id=${AWS_SUBNET_ID}" \
-            centos-ami-template.json
+      -
+        run:
+          name: 'Install packages'
+          command: 'sudo apt-get update && sudo apt-get install wget zip unzip -y'
+      -
+        run:
+          name: 'Install packages'
+          command: 'sudo apt-get install maven && sudo apt-get update && sudo apt-get install wget zip unzip python2.7 python-pip -y'
+      -
+        run:
+          name: 'Install awscli'
+          command: 'sudo pip install awscli'
+      -
+        run:
+          name: 'Build Artifact'
+          command: "cd core\npwd\nls -al\nmvn clean package -DskipTests\ncd target/\nls -al\ncd ../\npwd\nls -al\n"
+      -
+        run:
+          name: 'Zip Artifact'
+          command: "echo \"Hello the current build number is ${CIRCLE_BUILD_NUM}\"\npwd\nmkdir -p codedeploy_artifact\ncp infrastructure/aws/codedeploy/*.sh .\nzip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/target/webapp-0.0.1-SNAPSHOT.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact\nls -al\npwd\ncd ..\npwd\nls -al\n"
+      -
+        run:
+          name: 'Upload Artifact to S3'
+          command: "aws s3 sync codedeploy_artifact s3://code-deploy.thakkarj.me\n"
+      -
+        run:
+          name: 'Make CodeDeploy API call'
+          command: "echo \"Hello CodeDeploy\"\n"
+

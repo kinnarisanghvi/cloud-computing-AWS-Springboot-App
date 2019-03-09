@@ -25,10 +25,26 @@ public class Note {
     private String content;
 
     @Column(name = "note_createdAt", columnDefinition = "text")
-    private Date created_on;
+    private String created_on;
+
+    public void setLast_updated_on(String last_updated_on) {
+        this.last_updated_on = last_updated_on;
+    }
 
     @Column(name = "note_lastUpdated", columnDefinition = "text")
-    private Date updated_on;
+    private String last_updated_on;
+
+    public String getLast_updated_on() {
+        return last_updated_on;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -46,28 +62,12 @@ public class Note {
         this.content = content;
     }
 
-    public Date getCreated_on() {
+    public String getCreated_on() {
         return created_on;
     }
 
-    public void setCreated_on(Date created_on) {
+    public void setCreated_on(String created_on) {
         this.created_on = created_on;
-    }
-
-    public Date getUpdated_on() {
-        return updated_on;
-    }
-
-    public void setUpdated_on(Date updated_on) {
-        this.updated_on = updated_on;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     @ManyToOne
@@ -76,7 +76,6 @@ public class Note {
 
     @OneToMany(mappedBy = "note")
     private List<Attachment> attachmentList = new ArrayList<>();
-
 
     public List<Attachment> getAttachmentList() {
         return attachmentList;
