@@ -179,7 +179,7 @@
             "ApplicationName":{
                "Ref":"ApplicationName"
             },
-            "ServiceRoleArn":"arn:aws:iam::375829056402:role/CodeDeployServiceRole",
+            "ServiceRoleArn":"arn:aws:iam::019669310931:role/CodeDeployServiceRole",
             "AutoRollbackConfiguration" : {
                "Enabled" : true,
                "Events" : ["DEPLOYMENT_FAILURE" ]
