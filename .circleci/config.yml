@@ -14,10 +14,14 @@ jobs:
         run:
           name: 'Install packages'
           command: 'sudo apt-get update && sudo apt-get install wget zip unzip -y'
-      -
+      - 
         run:
           name: 'Install packages'
           command: 'sudo apt-get install maven && sudo apt-get update && sudo apt-get install wget zip unzip python2.7 python-pip -y'
+      -
+        run:
+          name: 'Install java'
+          command: 'sudo apt install openjdk-8-jdk && sudo apt install openjdk-8-jre'
       -
         run:
           name: 'Install awscli'
