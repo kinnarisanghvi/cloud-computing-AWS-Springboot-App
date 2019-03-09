@@ -2,7 +2,9 @@ version: 2
 jobs:
   build:
     branches:
-      only: Assignment5
+      only: 
+          - Assignment5
+          - master
     docker:
       -
         image: 'circleci/python:2.7-jessie'
