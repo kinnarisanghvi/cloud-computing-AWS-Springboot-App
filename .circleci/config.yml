@@ -23,7 +23,7 @@ jobs:
       -
         run:
           name: 'Build Artifact'
-          command: "cd webapp\npwd\nls -al\nmvn clean package -DskipTests\ncd target/\nls -al\ncd ../\npwd\nls -al\n"
+          command: "cd core\npwd\nls -al\nmvn clean package -DskipTests\ncd target/\nls -al\ncd ../\npwd\nls -al\n"
       -
         run:
           name: 'Zip Artifact'
