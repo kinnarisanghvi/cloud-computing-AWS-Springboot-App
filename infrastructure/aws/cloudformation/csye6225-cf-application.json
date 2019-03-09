@@ -25,6 +25,11 @@
       "AMIID":{
          "Description":"AMI id",
          "Type":"String"
+      },
+      "ApplicationName":{
+         "Description":"csye6225-webapp",
+         "Default":"csye6225-webapp",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -80,24 +85,39 @@
             "ImageId":{
                "Ref":"AMIID"
             },
+            "KeyName" : {
+               "Ref":"KeyPairName"
+            },
             "InstanceType":"t2.micro",
+            "IamInstanceProfile" : "CodeDeployEC2ServiceRole",
             "SubnetId":{
                "Ref":"subnetID1"
             },
-            "InstanceType":"t2.micro",
+            "UserData": 
+            { 
+               "Fn::Base64": 
+               { 
+                  "Fn::Join" : 
+                  ["", 
+                     [
+                     "#!/bin/bash -xe\n",
+                     "sudo yum -y update\n",
+                     "sudo systemctl start tomcat.service\n",
+                     "sudo systemctl status tomcat.service"
+                     ]
+                  ]
+               }
+            },
             "SecurityGroupIds":[
                {
                   "Ref":"csye6225webapp"
-               },
-               {
-                  "Ref":"csye6225rds"
                }
             ],
             "BlockDeviceMappings":[
                {
                   "DeviceName":"/dev/sda1",
                   "Ebs":{
-		     "DeleteOnTermination" : "true",
+                     "DeleteOnTermination":"true",
                      "VolumeSize":"20",
                      "VolumeType":"gp2"
                   }
@@ -114,7 +134,7 @@
                   "AttributeType":"S"
                }
             ],
-	     "KeySchema":[
+            "KeySchema":[
                {
                   "AttributeName":"id",
                   "KeyType":"HASH"
@@ -132,16 +152,53 @@
          "Properties":{
             "DBSubnetGroupDescription":"DB Private Subnet1",
             "SubnetIds":[
-		{
-               "Ref":"subnetID1"
-            	},
-		{
-		"Ref":"subnetID2"
-		},
-		{
-		"Ref":"subnetID3"
-		}
-	    ]
+               {
+                  "Ref":"subnetID1"
+               },
+               {
+                  "Ref":"subnetID2"
+               },
+               {
+                  "Ref":"subnetID3"
+               }
+            ]
+         }
+      },
+      "myCodeDepoly":{
+         "Type":"AWS::CodeDeploy::Application",
+         "Properties":{
+            "ApplicationName":{
+               "Ref":"ApplicationName"
+            },
+            "ComputePlatform":"Server"
+         }
+      },
+      "myCodeDeplymentGroup":{
+         "Type":"AWS::CodeDeploy::DeploymentGroup",
+         "Properties":{
+            "ApplicationName":{
+               "Ref":"ApplicationName"
+            },
+            "ServiceRoleArn":"arn:aws:iam::019669310931:role/CodeDeployServiceRole",
+            "AutoRollbackConfiguration" : {
+               "Enabled" : true,
+               "Events" : ["DEPLOYMENT_FAILURE" ]
+            },
+            "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
+            "DeploymentGroupName":"csye6225-webapp-deployment",
+            "DeploymentStyle": {
+               "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL",
+               "DeploymentType": "IN_PLACE"
+            },
+            "Ec2TagFilters":[
+               {
+                  "Key":"MyEC2",
+                  "Type":"KEY_AND_VALUE",
+                  "Value":{
+                     "Ref":"MyEC2Instance"
+                  }
+               }
+            ]
          }
       },
       "myDBInstance":{
@@ -153,14 +210,21 @@
             "DBSubnetGroupName":{
                "Ref":"myDBSubnet"
             },
-	    "AllocatedStorage":"50",	
+            "AllocatedStorage":"50",
             "MasterUsername":"csye6225master",
             "MasterUserPassword":"csye6225password",
             "MultiAZ":false,
             "DBInstanceClass":"db.t2.medium",
             "PubliclyAccessible":true,
             "DBInstanceIdentifier":"csye6225-spring2019",
-            "VPCSecurityGroups" : [{ "Fn::GetAtt": [ "csye6225rds", "GroupId" ]}]
+            "VPCSecurityGroups":[
+               {
+                  "Fn::GetAtt":[
+                     "csye6225rds",
+                     "GroupId"
+                  ]
+               }
+            ]
          }
       }
    }
