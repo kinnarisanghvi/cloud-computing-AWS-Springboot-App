@@ -33,7 +33,7 @@ jobs:
       -
         run:
           name: 'Upload Artifact to S3'
-          command: "aws s3 sync codedeploy_artifact s3://code-deploy.thakkarj.me\n"
+          command: "aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-thakkarj.me\n"
       -
         run:
           name: 'Make CodeDeploy API call'
