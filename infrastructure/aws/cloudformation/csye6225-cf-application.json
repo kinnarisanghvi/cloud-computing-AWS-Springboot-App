@@ -144,7 +144,7 @@
                      "codedeploy:GetApplicationRevision"
                   ],
                   "Resource":[
-                     "arn:aws:codedeploy:us-east-1:233571851927:application:csye6225-webapp"
+                     "arn:aws:codedeploy:us-east-1:019669310931:application:csye6225-webapp"
                   ]
                },
                {
@@ -163,9 +163,9 @@
                      "codedeploy:GetDeploymentConfig"
                   ],
                   "Resource":[
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.OneAtATime",
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.HalfAtATime",
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.AllAtOnce"
+                     "arn:aws:codedeploy:us-east-1:019669310931:deploymentconfig:CodeDeployDefault.OneAtATime",
+                     "arn:aws:codedeploy:us-east-1:019669310931:deploymentconfig:CodeDeployDefault.HalfAtATime",
+                     "arn:aws:codedeploy:us-east-1:019669310931:deploymentconfig:CodeDeployDefault.AllAtOnce"
                   ]
                }
             ]
