@@ -7,7 +7,7 @@ jobs:
         - master
     docker:
       -
-        image: 'circleci/python:2.7-jessie'
+        image: circleci/openjdk:8-jdk
     steps:
       - checkout
       -
