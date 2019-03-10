@@ -6,7 +6,8 @@ jobs:
           - Assignment5
           - master
     docker:
-      - image: circleci/openjdk:8-jdk
+      -
+        image: circleci/openjdk:8-jdk
     steps:
       - checkout
       -
@@ -16,7 +17,7 @@ jobs:
       - 
         run:
           name: 'Install packages'
-          command: 'sudo apt-get install maven && sudo apt-get update && sudo apt-get install wget zip unzip python2.7 python-pip -y'
+          command: 'sudo apt-get update && sudo apt-get install maven && sudo apt-get install wget zip unzip python2.7 python-pip -y'
       -
         run:
           name: 'Install awscli'
