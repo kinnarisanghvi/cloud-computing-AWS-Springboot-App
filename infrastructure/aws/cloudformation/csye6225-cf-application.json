@@ -214,7 +214,8 @@
                               "deploymentconfig:CodeDeployDefault.AllAtOnce"
                            ]
                         ]
-                     }                  ]
+                     }
+                  ]
                }
             ]
          },
@@ -333,7 +334,6 @@
          "SubnetId":{
             "Ref":"subnetID1"
          },
-          
          "UserData":{
             "Fn::Base64":{
                "Fn::Join":[
@@ -342,10 +342,7 @@
                      "#!/bin/bash -xe\n",
                      "sudo yum -y update\n",
                      "sudo systemctl start tomcat.service\n",
-                     "sudo systemctl status tomcat.service\n",
-                     "sudo service mysqld start\n",
-                     "service mysql status\n",
-                     "use mysql\n"
+                     "sudo systemctl status tomcat.service"
                   ]
                ]
             }
