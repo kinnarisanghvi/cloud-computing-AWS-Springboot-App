@@ -326,6 +326,11 @@
          "ImageId":{
             "Ref":"AMIID"
          },
+        "Tags" : [{
+           "Name" : "EC2Name",
+           "Value" : "csye6225Spring2019"
+            }
+         ],
          "KeyName":{
             "Ref":"KeyPairName"
          },
