@@ -6,6 +6,10 @@
          "Description":"key pair name",
          "Type":"String"
       },
+      "AccountId":{
+         "Description":"Account ID",
+         "Type":"String"
+      },
       "VPCID":{
          "Description":"vpc id",
          "Type":"String"
@@ -145,7 +149,22 @@
                      "codedeploy:GetApplicationRevision"
                   ],
                   "Resource":[
+<<<<<<< HEAD
                      "arn:aws:codedeploy:us-east-1:233571851927:application:csye6225-webapp"
+=======
+                     {
+                        "Fn::Join":[
+                           ":",
+                           [
+                              "arn:aws:codedeploy:us-east-1",
+                              {
+                                 "Ref":"AccountId"
+                              },
+                              "deploymentconfig:CodeDeployDefault.AllAtOnce"
+                           ]
+                        ]
+                     }
+>>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
                   ]
                },
                {
@@ -164,9 +183,48 @@
                      "codedeploy:GetDeploymentConfig"
                   ],
                   "Resource":[
+<<<<<<< HEAD
                      "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.OneAtATime",
                      "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.HalfAtATime",
                      "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.AllAtOnce"
+=======
+                     {
+                        "Fn::Join":[
+                           ":",
+                           [
+                              "arn:aws:codedeploy:us-east-1",
+                              {
+                                 "Ref":"AccountId"
+                              },
+                              "deploymentconfig:CodeDeployDefault.OneAtATime"
+                           ]
+                        ]
+                     },
+                     {
+                        "Fn::Join":[
+                           ":",
+                           [
+                              "arn:aws:codedeploy:us-east-1",
+                              {
+                                 "Ref":"AccountId"
+                              },
+                              "deploymentconfig:CodeDeployDefault.HalfAtATime"
+                           ]
+                        ]
+                     },
+                     {
+                        "Fn::Join":[
+                           ":",
+                           [
+                              "arn:aws:codedeploy:us-east-1",
+                              {
+                                 "Ref":"AccountId"
+                              },
+                              "deploymentconfig:CodeDeployDefault.AllAtOnce"
+                           ]
+                        ]
+                     }
+>>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
                   ]
                }
             ]
@@ -374,7 +432,16 @@
          "ApplicationName":{
             "Ref":"ApplicationName"
          },
+<<<<<<< HEAD
          "ServiceRoleArn":"arn:aws:iam::233571851927:role/CodeDeployServiceRole",
+=======
+         "ServiceRoleArn":{
+            "Fn::GetAtt":[
+               "myCodeDeployServiceRole",
+               "Arn"
+            ]
+         },
+>>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
          "AutoRollbackConfiguration":{
             "Enabled":true,
             "Events":[
