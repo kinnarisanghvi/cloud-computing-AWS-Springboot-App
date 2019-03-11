@@ -149,9 +149,6 @@
                      "codedeploy:GetApplicationRevision"
                   ],
                   "Resource":[
-<<<<<<< HEAD
-                     "arn:aws:codedeploy:us-east-1:233571851927:application:csye6225-webapp"
-=======
                      {
                         "Fn::Join":[
                            ":",
@@ -164,7 +161,6 @@
                            ]
                         ]
                      }
->>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
                   ]
                },
                {
@@ -183,11 +179,6 @@
                      "codedeploy:GetDeploymentConfig"
                   ],
                   "Resource":[
-<<<<<<< HEAD
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.OneAtATime",
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.HalfAtATime",
-                     "arn:aws:codedeploy:us-east-1:233571851927:deploymentconfig:CodeDeployDefault.AllAtOnce"
-=======
                      {
                         "Fn::Join":[
                            ":",
@@ -224,7 +215,6 @@
                            ]
                         ]
                      }
->>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
                   ]
                }
             ]
@@ -432,16 +422,12 @@
          "ApplicationName":{
             "Ref":"ApplicationName"
          },
-<<<<<<< HEAD
-         "ServiceRoleArn":"arn:aws:iam::233571851927:role/CodeDeployServiceRole",
-=======
          "ServiceRoleArn":{
             "Fn::GetAtt":[
                "myCodeDeployServiceRole",
                "Arn"
             ]
          },
->>>>>>> 7eb1b49e7f89530e197a8f64dabdabd515cda0b4
          "AutoRollbackConfiguration":{
             "Enabled":true,
             "Events":[
