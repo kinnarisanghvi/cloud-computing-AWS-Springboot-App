@@ -8,8 +8,8 @@ read appstack
 echo "Please enter the key pair name for your stack:"
 read keyname
 
-echo "Please enter your AMI ID"
-read AMIID
+#echo "Please enter your AMI ID"
+#read AMIID
 
 accountid=$(aws sts get-caller-identity --output text --query 'Account')
 echo "AWS AccountId: $accountid"
@@ -30,5 +30,18 @@ export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID
 
 echo "subnetid3 : ${subnetID3}"
 
-aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID"
+export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
+echo "AMI: ${AMIID}"
+
+echo "Creating Application stack"
+        export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
+	while [ ${AMIID} != "" ]; 
+        do
+        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
+        echo $STACK_STATUS
+        done
+        echo "Stack ${appstack} Created successfully!"
+                exit 1
+
+
 
