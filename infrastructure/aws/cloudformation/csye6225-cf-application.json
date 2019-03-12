@@ -38,211 +38,211 @@
    },
    "Resources":{
       "csye6225webapp":{
-      "Type":"AWS::EC2::SecurityGroup",
-      "Properties":{
-         "GroupName":"csye6225webapp",
-         "GroupDescription":"SG for web server",
-         "SecurityGroupIngress":[
-            {
-               "IpProtocol":"tcp",
-               "FromPort":"22",
-               "ToPort":"22",
-               "CidrIp":"0.0.0.0/0"
-            },
-            {
-               "IpProtocol":"tcp",
-               "FromPort":"80",
-               "ToPort":"80",
-               "CidrIp":"0.0.0.0/0"
-            },
-            {
-               "IpProtocol":"tcp",
-               "FromPort":"443",
-               "ToPort":"443",
-               "CidrIp":"0.0.0.0/0"
-            }
-         ],
-         "VpcId":{
-            "Ref":"VPCID"
-         }
-       }
-      },
-   "csye6225rds":{
-      "Type":"AWS::EC2::SecurityGroup",
-      "Properties":{
-         "GroupName":"db_server_sg",
-         "GroupDescription":"SG for DB server",
-         "SecurityGroupIngress":{
-            "IpProtocol":"tcp",
-            "FromPort":"3306",
-            "ToPort":"3306",
-            "CidrIp":"0.0.0.0/0"
-         },
-         "VpcId":{
-            "Ref":"VPCID"
-         }
-      }
-   },
-   "MyEC2Instance":{
-      "Type":"AWS::EC2::Instance",
-      "Properties":{
-         "ImageId":{
-            "Ref":"AMIID"
-         },
-        "Tags":[
-           {
-             "Name":"EC2Name",
-             "Value":"csye6225Spring2019"
-            }
-         ],
-         "KeyName":{
-            "Ref":"KeyPairName"
-         },
-         "InstanceType":"t2.micro",
-         "IamInstanceProfile":"CodeDeployEC2ServiceRole",
-         "SubnetId":{
-            "Ref":"subnetID1"
-         },
-         "UserData":{
-            "Fn::Base64":{
-               "Fn::Join":[
-                  "",
-                  [
-                     "#!/bin/bash -xe\n",
-                     "sudo yum -y update\n",
-                     "sudo systemctl start tomcat.service\n",
-                     "sudo systemctl status tomcat.service"
-                  ]
-               ]
-            }
-         },
-         "SecurityGroupIds":[
-            {
-               "Ref":"csye6225webapp"
-            }
-         ],
-         "BlockDeviceMappings":[
-            {
-               "DeviceName":"/dev/sda1",
-               "Ebs":{
-                  "DeleteOnTermination":"true",
-                  "VolumeSize":"20",
-                  "VolumeType":"gp2"
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{
+            "GroupName":"csye6225webapp",
+            "GroupDescription":"SG for web server",
+            "SecurityGroupIngress":[
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"22",
+                  "ToPort":"22",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"80",
+                  "ToPort":"80",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"443",
+                  "ToPort":"443",
+                  "CidrIp":"0.0.0.0/0"
                }
+            ],
+            "VpcId":{
+               "Ref":"VPCID"
             }
-         ]
-      }
-   },
-   "myDynamoDBTable":{
-      "Type":"AWS::DynamoDB::Table",
-      "Properties":{
-         "AttributeDefinitions":[
-            {
-               "AttributeName":"id",
-               "AttributeType":"S"
+         }
+      },
+      "csye6225rds":{
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{
+            "GroupName":"db_server_sg",
+            "GroupDescription":"SG for DB server",
+            "SecurityGroupIngress":{
+               "IpProtocol":"tcp",
+               "FromPort":"3306",
+               "ToPort":"3306",
+               "CidrIp":"0.0.0.0/0"
+            },
+            "VpcId":{
+               "Ref":"VPCID"
             }
-         ],
-         "KeySchema":[
-            {
-               "AttributeName":"id",
-               "KeyType":"HASH"
-            }
-         ],
-         "ProvisionedThroughput":{
-            "ReadCapacityUnits":"5",
-            "WriteCapacityUnits":"5"
-         },
-         "TableName":"csye6225"
-      }
-   },
-   "myDBSubnet":{
-      "Type":"AWS::RDS::DBSubnetGroup",
-      "Properties":{
-         "DBSubnetGroupDescription":"DB Private Subnet1",
-         "SubnetIds":[
-            {
+         }
+      },
+      "MyEC2Instance":{
+         "Type":"AWS::EC2::Instance",
+         "Properties":{
+            "ImageId":{
+               "Ref":"AMIID"
+            },
+            "Tags":[
+               {
+                  "Name":"EC2Name",
+                  "Value":"csye6225Spring2019"
+               }
+            ],
+            "KeyName":{
+               "Ref":"KeyPairName"
+            },
+            "InstanceType":"t2.micro",
+            "IamInstanceProfile":"CodeDeployEC2ServiceRole",
+            "SubnetId":{
                "Ref":"subnetID1"
             },
-            {
-               "Ref":"subnetID2"
-            },
-            {
-               "Ref":"subnetID3"
-            }
-         ]
-      }
-   },
-   "myCodeDeploy":{
-      "Type":"AWS::CodeDeploy::Application",
-      "Properties":{
-         "ApplicationName":{
-            "Ref":"ApplicationName"
-         },
-         "ComputePlatform":"Server"
-      }
-   },
-   "myCodeDeplymentGroup":{
-      "Type":"AWS::CodeDeploy::DeploymentGroup",
-      "Properties":{
-         "ApplicationName":{
-            "Ref":"ApplicationName"
-         },
-         "ServiceRoleArn":{
-            "Fn::GetAtt":[
-               "CodeDeployServiceRole",
-               "Arn"
-            ]
-         },
-         "AutoRollbackConfiguration":{
-            "Enabled":true,
-            "Events":[
-               "DEPLOYMENT_FAILURE"
-            ]
-         },
-         "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
-         "DeploymentGroupName":"csye6225-webapp-deployment",
-         "DeploymentStyle":{
-            "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
-            "DeploymentType":"IN_PLACE"
-         },
-         "Ec2TagFilters":[
-            {
-               "Key":"MyEC2",
-               "Type":"KEY_AND_VALUE",
-               "Value":{
-                  "Ref":"MyEC2Instance"
+            "UserData":{
+               "Fn::Base64":{
+                  "Fn::Join":[
+                     "",
+                     [
+                        "#!/bin/bash -xe\n",
+                        "sudo yum -y update\n",
+                        "sudo systemctl start tomcat.service\n",
+                        "sudo systemctl status tomcat.service"
+                     ]
+                  ]
                }
-            }
-         ]
-      }
-   },
-   "myDBInstance":{
-      "Type":"AWS::RDS::DBInstance",
-      "Properties":{
-         "DBName":"csye6225",
-         "Engine":"MySQL",
-         "EngineVersion":"5.6.34",
-         "DBSubnetGroupName":{
-            "Ref":"myDBSubnet"
-         },
-         "AllocatedStorage":"50",
-         "MasterUsername":"csye6225master",
-         "MasterUserPassword":"csye6225password",
-         "MultiAZ":false,
-         "DBInstanceClass":"db.t2.medium",
-         "PubliclyAccessible":true,
-         "DBInstanceIdentifier":"csye6225-spring2019",
-         "VPCSecurityGroups":[
-            {
+            },
+            "SecurityGroupIds":[
+               {
+                  "Ref":"csye6225webapp"
+               }
+            ],
+            "BlockDeviceMappings":[
+               {
+                  "DeviceName":"/dev/sda1",
+                  "Ebs":{
+                     "DeleteOnTermination":"true",
+                     "VolumeSize":"20",
+                     "VolumeType":"gp2"
+                  }
+               }
+            ]
+         }
+      },
+      "myDynamoDBTable":{
+         "Type":"AWS::DynamoDB::Table",
+         "Properties":{
+            "AttributeDefinitions":[
+               {
+                  "AttributeName":"id",
+                  "AttributeType":"S"
+               }
+            ],
+            "KeySchema":[
+               {
+                  "AttributeName":"id",
+                  "KeyType":"HASH"
+               }
+            ],
+            "ProvisionedThroughput":{
+               "ReadCapacityUnits":"5",
+               "WriteCapacityUnits":"5"
+            },
+            "TableName":"csye6225"
+         }
+      },
+      "myDBSubnet":{
+         "Type":"AWS::RDS::DBSubnetGroup",
+         "Properties":{
+            "DBSubnetGroupDescription":"DB Private Subnet1",
+            "SubnetIds":[
+               {
+                  "Ref":"subnetID1"
+               },
+               {
+                  "Ref":"subnetID2"
+               },
+               {
+                  "Ref":"subnetID3"
+               }
+            ]
+         }
+      },
+      "myCodeDeploy":{
+         "Type":"AWS::CodeDeploy::Application",
+         "Properties":{
+            "ApplicationName":{
+               "Ref":"ApplicationName"
+            },
+            "ComputePlatform":"Server"
+         }
+      },
+      "myCodeDeplymentGroup":{
+         "Type":"AWS::CodeDeploy::DeploymentGroup",
+         "Properties":{
+            "ApplicationName":{
+               "Ref":"ApplicationName"
+            },
+            "ServiceRoleArn":{
                "Fn::GetAtt":[
-                  "csye6225rds",
-                  "GroupId"
+                  "CodeDeployServiceRole",
+                  "Arn"
                ]
-            }
-         ]
-      }
-   },
-   "circleci-ec2-ami":{
+            },
+            "AutoRollbackConfiguration":{
+               "Enabled":true,
+               "Events":[
+                  "DEPLOYMENT_FAILURE"
+               ]
+            },
+            "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
+            "DeploymentGroupName":"csye6225-webapp-deployment",
+            "DeploymentStyle":{
+               "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
+               "DeploymentType":"IN_PLACE"
+            },
+            "Ec2TagFilters":[
+               {
+                  "Key":"MyEC2",
+                  "Type":"KEY_AND_VALUE",
+                  "Value":{
+                     "Ref":"MyEC2Instance"
+                  }
+               }
+            ]
+         }
+      },
+      "myDBInstance":{
+         "Type":"AWS::RDS::DBInstance",
+         "Properties":{
+            "DBName":"csye6225",
+            "Engine":"MySQL",
+            "EngineVersion":"5.6.34",
+            "DBSubnetGroupName":{
+               "Ref":"myDBSubnet"
+            },
+            "AllocatedStorage":"50",
+            "MasterUsername":"csye6225master",
+            "MasterUserPassword":"csye6225password",
+            "MultiAZ":false,
+            "DBInstanceClass":"db.t2.medium",
+            "PubliclyAccessible":true,
+            "DBInstanceIdentifier":"csye6225-spring2019",
+            "VPCSecurityGroups":[
+               {
+                  "Fn::GetAtt":[
+                     "csye6225rds",
+                     "GroupId"
+                  ]
+               }
+            ]
+         }
+      },
+      "circleci-ec2-ami":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
             "PolicyDocument":{
@@ -292,9 +292,9 @@
             "Users":[
                "circleci"
             ]
-       }
-   },
-   "CodeDeploy-EC2-S3":{
+         }
+      },
+      "CodeDeploy-EC2-S3":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
             "PolicyDocument":{
@@ -311,12 +311,12 @@
                      "Resource":"*"
                   }
                ]
-             }
-            },
+            }
+         },
          "Roles":[
             "CodeDeployEC2ServiceRole"
          ]
-        }
+      }
    },
    "CircleCI-Upload-To-S3":{
       "Type":"AWS::IAM::ManagedPolicy",
