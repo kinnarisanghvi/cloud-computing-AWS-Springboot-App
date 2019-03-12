@@ -2,12 +2,16 @@ version: 0
 os: linux
 files:
   -
-    source: ./webapp/build/libs/ROOT.war
+    source: ./out/artifacts/NotesApplication/NotesApplication.war
     destination: /opt/tomcat/webapps
 hooks:
-  AfterInstall:
+  ApplicationStart:
     -
-      location: ./afterInstall.sh
-      timeout: 180
-      runas: centos
-
+    location: ./start_server.sh
+    timeout: 180
+    runas: centos
+  ApplicationStop:
+    -
+    location: ./stop_server.sh
+    timeout: 180
+    runa: centos    
