@@ -11,8 +11,6 @@ read appstack
 #echo "Please enter your AMI ID"
 #read AMIID
 
-accountid=$(aws sts get-caller-identity --output text --query 'Account')
-echo "AWS AccountId: $accountid"
 
 export VPCID=$(aws ec2 describe-vpcs --filters "Name=tag-key,Values=Name" --query "Vpcs[*].[CidrBlock, VpcId][-1]" --output text|grep 10.0.0.0/16|awk '{print $2}')
 
@@ -33,13 +31,19 @@ echo "subnetid3 : ${subnetID3}"
 keypair=$(aws ec2 describe-key-pairs --query "KeyPairs[0].KeyName" --output text)
 echo "Key pair name: $keypair"
 
+instanceProfile=$(aws iam create-instance-profile --instance-profile-name CodeDeployEC2ServiceRoleProfile)
+echo instanceProfile
+
+ec2role=$(aws iam add-role-to-instance-profile --instance-profile-name CodeDeployEC2ServiceRoleProfile --role-name CodeDeployEC2ServiceRole)
+echo ec2role
+
 
 echo "Creating Application stack"
         export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
         echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
-        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keypair" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
+        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keypair" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID" InstanceProfile="$instanceProfile")
         echo $STACK_STATUS
         done
         echo "Stack ${appstack} Created successfully!"
