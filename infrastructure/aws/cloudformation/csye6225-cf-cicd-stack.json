@@ -2,90 +2,12 @@
    "AWSTemplateFormatVersion":"2010-09-09",
    "Description":"Cloud formation application file for resources like webapp,db SG and EC2 instance",
    "Parameters":{
-      "KeyPairName":{
-         "Description":"key pair name",
-         "Type":"String"
-      },
       "AccountId":{
          "Description":"Account ID",
-         "Type":"String"
-      },
-      "AMIID":{
-         "Description":"AMI id",
-         "Type":"String"
-      },
-      "ApplicationName":{
-         "Description":"csye6225-webapp",
-         "Default":"csye6225-webapp",
          "Type":"String"
       }
    },
    "Resources":{
-      "InstanceProfile":{
-         "Type":"AWS::IAM::InstanceProfile",
-         "Properties":{
-            "Path":"/",
-            "Roles":[
-               {
-                  "Ref":"CodeDeployEC2ServiceRole"
-               }
-            ]
-         }
-      },
-      "MyEC2Instance":{
-         "Type":"AWS::EC2::Instance",
-         "Properties":{
-            "ImageId":{
-               "Ref":"AMIID"
-            },
-            "Tags":[
-               {
-                  "Key":"EC2Name",
-                  "Value":"csye6225Spring2019"
-               }
-            ],
-            "KeyName":{
-               "Ref":"KeyPairName"
-            },
-            "InstanceType":"t2.micro",
-            "IamInstanceProfile":{
-               "Ref":"InstanceProfile"
-            },
-            "SubnetId":{
-
-               "Ref":"subnetID1"
-            },
-            "UserData":{
-               "Fn::Base64":{
-                  "Fn::Join":[
-                     "",
-                     [
-                        "#!/bin/bash -xe\n",
-                        "sudo yum -y update\n",
-                        "sudo yum install mysql",
-                        "sudo systemctl start tomcat.service\n",
-                        "sudo systemctl status tomcat.service"
-                     ]
-                  ]
-               }
-            },
-            "SecurityGroupIds":[
-               {
-                  "Ref":"csye6225webapp"
-               }
-            ],
-            "BlockDeviceMappings":[
-               {
-                  "DeviceName":"/dev/sda1",
-                  "Ebs":{
-                     "DeleteOnTermination":"true",
-                     "VolumeSize":"20",
-                     "VolumeType":"gp2"
-                  }
-               }
-            ]
-         }
-      },
       "circleciEC2ami":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
