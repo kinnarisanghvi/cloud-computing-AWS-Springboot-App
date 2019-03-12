@@ -30,11 +30,9 @@ export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID
 
 echo "subnetid3 : ${subnetID3}"
 
-export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
-echo "AMI: ${AMIID}"
-
 echo "Creating Application stack"
         export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
+        echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
         STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
