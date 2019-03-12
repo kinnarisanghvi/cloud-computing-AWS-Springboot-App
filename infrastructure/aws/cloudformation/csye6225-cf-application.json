@@ -117,8 +117,15 @@
                      [
                         "#!/bin/bash -xe\n",
                         "sudo yum -y update\n",
+                        "sudo yum install -y wget",
+                        "wget https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm",
+                        "sudo rpm -ivh mysql57-community-release-el7-9.noarch.rpm",
+                        "sudo yum install -y mysql-server",
+                        "sudo yum install mysql"
                         "sudo systemctl start tomcat.service\n",
-                        "sudo systemctl status tomcat.service"
+                        "sudo systemctl status tomcat.service",
+                        "sudo systemctl start mysqld",
+                        "sudo systemctl status mysqld"
                      ]
                   ]
                }
@@ -133,7 +140,7 @@
                   "DeviceName":"/dev/sda1",
                   "Ebs":{
                      "DeleteOnTermination":"true",
-                     "VolumeSize":"40",
+                     "VolumeSize":"20",
                      "VolumeType":"gp2"
                   }
                }

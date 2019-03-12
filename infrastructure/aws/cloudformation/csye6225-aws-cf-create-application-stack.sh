@@ -5,8 +5,8 @@ set -e
 echo "Please Enter the Application Stack Name: "
 read appstack
 
-echo "Please enter the key pair name for your stack:"
-read keyname
+#echo "Please enter the key pair name for your stack:"
+#read keyname
 
 #echo "Please enter your AMI ID"
 #read AMIID
@@ -30,12 +30,16 @@ export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID
 
 echo "subnetid3 : ${subnetID3}"
 
+keypair=$(aws ec2 describe-key-pairs --query "KeyPairs[0].KeyName" --output text)
+echo "Key pair name: $keypair"
+
+
 echo "Creating Application stack"
         export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
         echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
-        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
+        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keypair" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
         echo $STACK_STATUS
         done
         echo "Stack ${appstack} Created successfully!"
