@@ -138,9 +138,9 @@ public class NoteController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/note/{idNotes}")
-    public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response, UserRepository userRepository) throws JSONException {
+    public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
-        Note note = noteRepository.getOne(id);
+        Note note = noteRepository.findBy(id);
         System.out.println("note :"+ note);
         if (note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
@@ -153,13 +153,15 @@ public class NoteController {
             String basicAuthEncoded = header.substring(6);
             String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
             userDetails = basicAuthAsString.split(":", 2);
-            System.out.println("userdetails : "+ userDetails[0]);
-            User userExists = userRepository.findByEmail(userDetails[0]);
-            System.out.println("user exists: "+ userExists);
             String email = userDetails[0];
+            System.out.println("userdetails : "+ userDetails[0]);
+            User userExists = uRepository.findByEmail(email);
+            System.out.println("user exists: "+ userExists);
+
 
             auth_user = uCheck.loginUser(request, response, uRepository);
             System.out.println("auth user in update: "+ auth_user);
+            auth_user_1 = auth_user.split(",");
             if (auth_user == "4") {
                 return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
@@ -186,7 +188,7 @@ public class NoteController {
                 }
                 entity.put("attachment", attachmentobj);
                 entities.add(entity);
-                return new ResponseEntity<>(entities.toString(), HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(entities.toString(), HttpStatus.OK);
             }
         }
         return null;
