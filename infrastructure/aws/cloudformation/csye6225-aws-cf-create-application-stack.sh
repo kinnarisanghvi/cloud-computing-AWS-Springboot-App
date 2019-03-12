@@ -35,7 +35,7 @@ echo "Creating Application stack"
         echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
-        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
+        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keyname" AccountId="$accountid" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID")
         echo $STACK_STATUS
         done
         echo "Stack ${appstack} Created successfully!"
