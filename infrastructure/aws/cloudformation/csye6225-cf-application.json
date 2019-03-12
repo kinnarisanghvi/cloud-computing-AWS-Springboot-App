@@ -6,8 +6,8 @@
          "Description":"key pair name",
          "Type":"String"
       },
-      "InstanceProfile":{
-         "Description":"Instance Profile to be attached to EC2 Instance",
+      "AccountId":{
+         "Description":"Account ID",
          "Type":"String"
       },
       "VPCID":{
@@ -83,6 +83,17 @@
             }
          }
       },
+      "InstanceProfile":{
+         "Type":"AWS::IAM::InstanceProfile",
+         "Properties":{
+            "Path":"/",
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
+         }
+      },
       "MyEC2Instance":{
          "Type":"AWS::EC2::Instance",
          "Properties":{
@@ -108,19 +119,40 @@
             "UserData":{
                "Fn::Base64":{
                   "Fn::Join":[
-                     "",
+                     "\n",
                      [
-                        "#!/bin/bash -xe\n",
-                        "sudo yum -y update\n",
-                        "sudo yum install -y wget",
-                        "wget https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm",
-                        "sudo rpm -ivh mysql57-community-release-el7-9.noarch.rpm",
-                        "sudo yum install -y mysql-server",
-                        "sudo yum install mysql",
-                        "sudo systemctl start tomcat.service\n",
+                        "#!/bin/bash -xe",
+                        "sudo systemctl start tomcat.service",
                         "sudo systemctl status tomcat.service",
                         "sudo systemctl start mysqld",
-                        "sudo systemctl status mysqld"
+                        "sudo systemctl status mysqld",
+                        "sudo systemctl stop tomcat.service",
+                        "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat ",
+                        {
+                           "Fn::Join": [
+                              "",
+                              [
+                                 "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=\\\"jdbc:mysql:\\",
+                                 {
+                                    "Fn:GetAtt": [
+                                       "myDBInstance",
+                                       "Endpoint.Address"
+                                    ]
+                                 },
+                                 ":3306/csye6225\\\"\"' >> /opt/tomcat"
+                              ]
+                           ]
+                        },
+                        "sudo systemctl start tomcat.service",
+                        "sudo yum -y update",
+                        "sudo touch /tmp/awslogs.conf",
+                        "sudo echo '[general]' > /tmp/awslogs.conf",
+                        "sudo echo 'state_file=/var/awslogs/agent-state' >> /tmp/awslogs.conf",
+                        "sudo echo '[logstream1]' >> /tmp/awslogs.conf",
+                        "sudo echo 'file=/var/log/tomcat/csye6225-aws.log' >> /tmp/awslogs.conf",
+                        "sudo echo 'log_group_name = csye6225-webapp' >> /tmp/awslogs.conf",
+                        "sudo echo 'log_stream_name = csye6225-webapp' >> /tmp/awslogs.conf",
+                        "sudo echo 'datetime_format = %d/%b/%Y:%H:%M:%S' >> /tmp/awslogs.conf",
                      ]
                   ]
                }
