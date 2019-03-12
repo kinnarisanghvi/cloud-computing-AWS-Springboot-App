@@ -39,7 +39,7 @@ echo ec2role
 
 
 echo "Creating Application stack"
-        export AMIID=$(aws ec2 describe-images --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
+        export AMIID=$(aws ec2 describe-images --owners self --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
         echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
