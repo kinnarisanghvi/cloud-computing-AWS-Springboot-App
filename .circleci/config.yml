@@ -21,7 +21,7 @@ jobs:
       -
         run:
           name: 'Install awscli'
-          command: 'sudo pip install awscli --upgrade --user
+          command: 'sudo pip install awscli
 '
       -
         run:
@@ -34,7 +34,8 @@ jobs:
       -
         run:
           name: 'Upload Artifact to S3'
-          command: "aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me\n"
+          command: |
+            aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me\n
       -
         run:
           name: 'Make CodeDeploy API call'
