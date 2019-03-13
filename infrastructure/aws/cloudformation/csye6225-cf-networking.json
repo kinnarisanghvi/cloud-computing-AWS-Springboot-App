@@ -60,6 +60,7 @@
             "AvailabilityZone":{
                "Ref":"zone1"
             },
+            "MapPublicIpOnLaunch":true,
             "VpcId":{
                "Ref":"myVPC"
             },
@@ -79,7 +80,8 @@
             },
             "CidrBlock":{
                "Ref":"subnetip2"
-            }
+            },
+            "MapPublicIpOnLaunch":true
          }
       },
       "subnet3":{
@@ -91,6 +93,7 @@
             "VpcId":{
                "Ref":"myVPC"
             },
+            "MapPublicIpOnLaunch":true,
             "CidrBlock":{
                "Ref":"subnetip3"
             }
