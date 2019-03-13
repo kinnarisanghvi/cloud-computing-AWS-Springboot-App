@@ -6,8 +6,12 @@
          "Description":"key pair name",
          "Type":"String"
       },
-      "InstanceProfile":{
+      "CodeDeployEC2RoleInstanceProfile":{
          "Description":"Instance Profile",
+         "Type":"String"
+      },
+      "CodeDeployInstanceProfile":{
+         "Description":"Code deploy service role",
          "Type":"String"
       },
       "VPCID":{
@@ -100,7 +104,7 @@
             },
             "InstanceType":"t2.micro",
             "IamInstanceProfile":{
-               "Ref":"InstanceProfile"
+               "Ref":"CodeDeployEC2RoleInstanceProfile"
             },
             "SubnetId":{
                "Ref":"subnetID1"
@@ -219,7 +223,9 @@
             },
             "ServiceRoleArn":{
                "Fn::GetAtt":[
-                  "CodeDeployServiceRole",
+                  {
+                  "Ref":"CodeDeployInstanceProfile"
+                  },
                   "Arn"
                ]
             },
