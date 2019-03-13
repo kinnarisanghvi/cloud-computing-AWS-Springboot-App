@@ -38,9 +38,6 @@ jobs:
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip out/artifacts/NotesApplication/NotesApplication.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact
             ls -al
             pwd
-            cd ..
-            pwd
-            ls -al
       -
         run:
           name: 'Upload Artifact to S3'
