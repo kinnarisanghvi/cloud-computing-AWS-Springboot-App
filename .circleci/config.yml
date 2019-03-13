@@ -29,7 +29,7 @@ jobs:
       -
         run:
           name: 'Zip Artifact'
-          command: "echo \"Hello the current build number is ${CIRCLE_BUILD_NUM}\"\npwd\nmkdir -p codedeploy_artifact\ncp infrastructure/aws/codedeploy/*.sh .\nzip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip core/target/NotesApplication-1.0.0/NotesApplication-1.0.0.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact\nls -al\npwd\ncd ..\npwd\nls -al\n"
+          command: "echo \"Hello the current build number is ${CIRCLE_BUILD_NUM}\"\npwd\nmkdir -p codedeploy_artifact\ncp infrastructure/aws/codedeploy/*.sh .\nzip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip core/target/NotesApplication-1.0.0.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact\nls -al\npwd\ncd ..\npwd\nls -al\n"
       -
         run:
           name: 'Upload Artifact to S3'
