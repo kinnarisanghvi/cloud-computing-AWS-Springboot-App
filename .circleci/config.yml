@@ -21,8 +21,7 @@ jobs:
       -
         run:
           name: 'Install awscli'
-          command: 'sudo pip install awscli
-'
+          command: 'sudo pip install awscli'
       -
         run:
           name: 'Build Artifact'
@@ -30,22 +29,11 @@ jobs:
       -
         run:
           name: 'Zip Artifact'
-          command: |
-            echo \"Hello the current build number is ${CIRCLE_BUILD_NUM}\"
-            pwd
-            mkdir -p codedeploy_artifact
-            cp infrastructure/aws/codedeploy/*.sh .
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip out/artifacts/NotesApplication/NotesApplication.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact
-            ls -al
-            pwd
-            cd ..
-            pwd
-            ls -al
+          command: "echo \"Hello the current build number is ${CIRCLE_BUILD_NUM}\"\npwd\nmkdir -p codedeploy_artifact\ncp infrastructure/aws/codedeploy/*.sh .\nzip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip out/artifacts/NotesApplication/NotesApplication.war *.sh *.yml\nmv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/\ncd codedeploy_artifact\nls -al\npwd\ncd ..\npwd\nls -al\n"
       -
         run:
           name: 'Upload Artifact to S3'
-          command:
-            aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me
+          command: "aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me\n"
       -
         run:
           name: 'Make CodeDeploy API call'
