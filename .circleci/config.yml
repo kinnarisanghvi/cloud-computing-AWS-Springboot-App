@@ -46,7 +46,7 @@ jobs:
           name: 'Upload Artifact to S3'
           command: |
             aws configure list
-            aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me --region us-east-1a
+            aws s3 sync codedeploy_artifact http://s3.amazonaws.com/code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me
       -
         run:
           name: 'Make CodeDeploy API call'
