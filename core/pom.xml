@@ -6,7 +6,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>NotesApplication</artifactId>
 	<version>1.0.0</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>NotesApplication</name>
 	<description>Rest API for a Simple Note Taking Application</description>
@@ -137,6 +137,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>NotesApplication</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -159,6 +160,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

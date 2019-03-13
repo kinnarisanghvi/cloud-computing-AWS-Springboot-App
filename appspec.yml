@@ -2,7 +2,7 @@ version: 0
 os: linux
 files:
   -
-    source: ./out/artifacts/NotesApplication/NotesApplication.war
+    source: ./core/target/NotesApplication.war
     destination: /usr/share/tomcat/webapps
 hooks:
   hooks:
