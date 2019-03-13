@@ -95,7 +95,12 @@
                      "Resource":"*"
                   }
                ]
-            }
+            },
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
          }
       },
       "csye6225webapp":{
