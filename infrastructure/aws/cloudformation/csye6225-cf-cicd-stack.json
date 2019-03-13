@@ -60,26 +60,6 @@
             ]
          }
       },
-      "CodeDeployEC2S3":{
-         "Type":"AWS::IAM::ManagedPolicy",
-         "Properties":{
-            "PolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Action":[
-                        "s3:Get*",
-                        "s3:List*",
-                        "s3:Put*",
-                        "s3:Delete*"
-                     ],
-                     "Effect":"Allow",
-                     "Resource":"*"
-                  }
-               ]
-            }
-         }
-      },
       "CircleCIUploadToS3":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{

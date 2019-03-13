@@ -80,6 +80,24 @@
             ]
          }
       },
+       "CodeDeployEC2S3":{
+         "Type":"AWS::IAM::ManagedPolicy",
+         "Properties":{
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Action":[
+                        "s3:Get*",
+                        "s3:List*"
+                     ],
+                     "Effect":"Allow",
+                     "Resource":"*"
+                  }
+               ]
+            }
+         }
+      },
       "csye6225webapp":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
