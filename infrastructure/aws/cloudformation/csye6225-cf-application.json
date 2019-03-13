@@ -6,10 +6,6 @@
          "Description":"key pair name",
          "Type":"String"
       },
-      "InstanceProfile":{
-         "Description":"Instance Profile",
-         "Type":"String"
-      },
       "VPCID":{
          "Description":"vpc id",
          "Type":"String"
@@ -37,6 +33,76 @@
       }
    },
    "Resources":{
+      "CodeDeployEC2ServiceRole":{
+         "Type":"AWS::IAM::Role",
+         "Properties":{
+            "AssumeRolePolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                     "Principal":{
+                        "Service":[
+                           "ec2.amazonaws.com"
+                        ]
+                     },
+                     "Action":[
+                        "sts:AssumeRole"
+                     ]
+                  }
+               ]
+            },
+            "RoleName":"CodeDeployEC2ServiceRole"
+         }
+      },
+      "CodeDeployServiceRole":{
+         "Type":"AWS::IAM::Role",
+         "Properties":{
+            "RoleName":"CodeDeployServiceRole",
+            "AssumeRolePolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                     "Principal":{
+                        "Service":[
+                           "codedeploy.amazonaws.com"
+                        ]
+                     },
+                     "Action":[
+                        "sts:AssumeRole"
+                     ]
+                  }
+               ]
+            },
+            "ManagedPolicyArns":[
+               "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+            ]
+         }
+      },
+       "CodeDeployEC2S3":{
+         "Type":"AWS::IAM::ManagedPolicy",
+         "Properties":{
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Action":[
+                        "s3:Get*",
+                        "s3:List*"
+                     ],
+                     "Effect":"Allow",
+                     "Resource":"*"
+                  }
+               ]
+            },
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
+         }
+      },
       "csye6225webapp":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
@@ -83,6 +149,17 @@
             }
          }
       },
+      "InstanceProfile":{
+         "Type":"AWS::IAM::InstanceProfile",
+         "Properties":{
+            "Path":"/",
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
+         }
+      },
       "MyEC2Instance":{
          "Type":"AWS::EC2::Instance",
          "Properties":{
@@ -118,12 +195,12 @@
                         "sudo systemctl stop tomcat.service",
                         "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat ",
                         {
-                           "Fn::Join": [
+                           "Fn::Join":[
                               "",
                               [
                                  "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=\\\"jdbc:mysql:\\",
                                  {
-                                    "Fn:GetAtt": [
+                                    "Fn::GetAtt":[
                                        "myDBInstance",
                                        "Endpoint.Address"
                                     ]
@@ -141,7 +218,7 @@
                         "sudo echo 'file=/var/log/tomcat/csye6225-aws.log' >> /tmp/awslogs.conf",
                         "sudo echo 'log_group_name = csye6225-webapp' >> /tmp/awslogs.conf",
                         "sudo echo 'log_stream_name = csye6225-webapp' >> /tmp/awslogs.conf",
-                        "sudo echo 'datetime_format = %d/%b/%Y:%H:%M:%S' >> /tmp/awslogs.conf",
+                        "sudo echo 'datetime_format = %d/%b/%Y:%H:%M:%S' >> /tmp/awslogs.conf"
                      ]
                   ]
                }

@@ -1,6 +1,6 @@
 {
    "AWSTemplateFormatVersion":"2010-09-09",
-   "Description":"Cloud formation application file for resources like webapp,db SG and EC2 instance",
+   "Description":"Ci-cd stack to create CircleCi roles and policies",
    "Parameters":{
       "AccountId":{
          "Description":"Account ID",
@@ -60,26 +60,6 @@
             ]
          }
       },
-      "CodeDeployEC2S3":{
-         "Type":"AWS::IAM::ManagedPolicy",
-         "Properties":{
-            "PolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Action":[
-                        "s3:Get*",
-                        "s3:List*",
-                        "s3:Put*",
-                        "s3:Delete*"
-                     ],
-                     "Effect":"Allow",
-                     "Resource":"*"
-                  }
-               ]
-            }
-         }
-      },
       "CircleCIUploadToS3":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
@@ -100,53 +80,6 @@
             },
             "Users":[
                "circleci"
-            ]
-         }
-      },
-      "CodeDeployEC2ServiceRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
-                           "ec2.amazonaws.com"
-                        ]
-                     },
-                     "Action":[
-                        "sts:AssumeRole"
-                     ]
-                  }
-               ]
-            },
-            "RoleName":"CodeDeployEC2ServiceRole"
-         }
-      },
-      "CodeDeployServiceRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "RoleName":"CodeDeployServiceRole",
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
-                           "codedeploy.amazonaws.com"
-                        ]
-                     },
-                     "Action":[
-                        "sts:AssumeRole"
-                     ]
-                  }
-               ]
-            },
-            "ManagedPolicyArns":[
-               "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
             ]
          }
       },
