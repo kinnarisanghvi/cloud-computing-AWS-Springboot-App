@@ -1,412 +1,430 @@
 {
-   "AWSTemplateFormatVersion":"2010-09-09",
-   "Description":"Cloud formation application file for resources like webapp,db SG and EC2 instance",
-   "Parameters":{
-      "KeyPairName":{
-         "Description":"key pair name",
-         "Type":"String"
+   "AWSTemplateFormatVersion": "2010-09-09",
+   "Description": "Cloud formation application file for resources like webapp,db SG and EC2 instance",
+   "Parameters": {
+      "KeyPairName": {
+         "Description": "key pair name",
+         "Type": "String"
       },
-      "VPCID":{
-         "Description":"vpc id",
-         "Type":"String"
+      "VPCID": {
+         "Description": "vpc id",
+         "Type": "String"
       },
-      "subnetID1":{
-         "Description":"subnet id",
-         "Type":"String"
+      "subnetID1": {
+         "Description": "subnet id",
+         "Type": "String"
       },
-      "subnetID2":{
-         "Description":"subnet id 2",
-         "Type":"String"
+      "subnetID2": {
+         "Description": "subnet id 2",
+         "Type": "String"
       },
-      "subnetID3":{
-         "Description":"subnet id 3",
-         "Type":"String"
+      "subnetID3": {
+         "Description": "subnet id 3",
+         "Type": "String"
       },
-      "AMIID":{
-         "Description":"AMI id",
-         "Type":"String"
+      "AMIID": {
+         "Description": "AMI id",
+         "Type": "String"
       },
-      "ApplicationName":{
-         "Description":"csye6225-webapp",
-         "Default":"csye6225-webapp",
-         "Type":"String"
+      "ApplicationName": {
+         "Description": "csye6225-webapp",
+         "Default": "csye6225-webapp",
+         "Type": "String"
       },
-      "UserName" :{
+      "UserName": {
          "Description": "master user name",
-         "Default":"csye6225master",
-         "Type":"String"
+         "Default": "csye6225master",
+         "Type": "String"
       },
-   
-      "Password" :{
-        "Description": "master user password",
-        "Default":"csye6225password",
-        "Type":"String"
+      "Password": {
+         "Description": "master user password",
+         "Default": "csye6225password",
+         "Type": "String"
       },
-   
-      "DbName" : {
-        "Description": "RDS DB name",
-        "Default":"csye6225",
-        "Type":"String"
+      "DbName": {
+         "Description": "RDS DB name",
+         "Default": "csye6225",
+         "Type": "String"
       },
-   
-      "BucketName":{
-        "Description":"Bucket Name",
-        "Default":"csye6225-spring2019-magdanik.me.csye6225.com",
-        "Type":"String"
+      "BucketName": {
+         "Description": "Bucket Name",
+         "Default": "csye6225-spring2019-magdanik.me.csye6225.com",
+         "Type": "String"
       }
-   
    },
-   "Resources":{
-      "CodeDeployEC2ServiceRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
+   "Resources": {
+      "CodeDeployEC2ServiceRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+            "AssumeRolePolicyDocument": {
+               "Version": "2012-10-17",
+               "Statement": [
                   {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
+                     "Effect": "Allow",
+                     "Principal": {
+                        "Service": [
                            "ec2.amazonaws.com"
                         ]
                      },
-                     "Action":[
+                     "Action": [
                         "sts:AssumeRole"
                      ]
                   }
                ]
             },
-            "RoleName":"CodeDeployEC2ServiceRole"
+            "RoleName": "CodeDeployEC2ServiceRole"
          }
       },
-      "CodeDeployServiceRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "RoleName":"CodeDeployServiceRole",
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
+      "CodeDeployServiceRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+            "RoleName": "CodeDeployServiceRole",
+            "AssumeRolePolicyDocument": {
+               "Version": "2012-10-17",
+               "Statement": [
                   {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
+                     "Effect": "Allow",
+                     "Principal": {
+                        "Service": [
                            "codedeploy.amazonaws.com"
                         ]
                      },
-                     "Action":[
+                     "Action": [
                         "sts:AssumeRole"
                      ]
                   }
                ]
             },
-            "ManagedPolicyArns":[
+            "ManagedPolicyArns": [
                "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
             ]
          }
       },
-       "CodeDeployEC2S3":{
-         "Type":"AWS::IAM::ManagedPolicy",
-         "Properties":{
-            "PolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
+      "CodeDeployEC2S3": {
+         "Type": "AWS::IAM::ManagedPolicy",
+         "Properties": {
+            "PolicyDocument": {
+               "Version": "2012-10-17",
+               "Statement": [
                   {
-                     "Action":[
+                     "Action": [
                         "s3:Get*",
                         "s3:List*"
                      ],
-                     "Effect":"Allow",
-                     "Resource":"*"
+                     "Effect": "Allow",
+                     "Resource": "*"
                   }
                ]
             },
-            "Roles":[
+            "Roles": [
                {
-                  "Ref":"CodeDeployEC2ServiceRole"
+                  "Ref": "CodeDeployEC2ServiceRole"
                }
             ]
          }
       },
-      "csye6225webapp":{
-         "Type":"AWS::EC2::SecurityGroup",
-         "Properties":{
-            "GroupName":"csye6225webapp",
-            "GroupDescription":"SG for web server",
-            "SecurityGroupIngress":[
+      "csye6225webapp": {
+         "Type": "AWS::EC2::SecurityGroup",
+         "Properties": {
+            "GroupName": "csye6225webapp",
+            "GroupDescription": "SG for web server",
+            "SecurityGroupIngress": [
                {
-                  "IpProtocol":"tcp",
-                  "FromPort":"22",
-                  "ToPort":"22",
-                  "CidrIp":"0.0.0.0/0"
+                  "IpProtocol": "tcp",
+                  "FromPort": "22",
+                  "ToPort": "22",
+                  "CidrIp": "0.0.0.0/0"
                },
                {
-                  "IpProtocol":"tcp",
-                  "FromPort":"80",
-                  "ToPort":"80",
-                  "CidrIp":"0.0.0.0/0"
+                  "IpProtocol": "tcp",
+                  "FromPort": "80",
+                  "ToPort": "80",
+                  "CidrIp": "0.0.0.0/0"
                },
                {
-                  "IpProtocol":"tcp",
-                  "FromPort":"443",
-                  "ToPort":"443",
-                  "CidrIp":"0.0.0.0/0"
+                  "IpProtocol": "tcp",
+                  "FromPort": "443",
+                  "ToPort": "443",
+                  "CidrIp": "0.0.0.0/0"
                }
             ],
-            "VpcId":{
-               "Ref":"VPCID"
+            "VpcId": {
+               "Ref": "VPCID"
             }
          }
       },
-      "csye6225rds":{
-         "Type":"AWS::EC2::SecurityGroup",
-         "Properties":{
-            "GroupName":"db_server_sg",
-            "GroupDescription":"SG for DB server",
-            "SecurityGroupIngress":{
-               "IpProtocol":"tcp",
-               "FromPort":"3306",
-               "ToPort":"3306",
-               "CidrIp":"0.0.0.0/0"
+      "csye6225rds": {
+         "Type": "AWS::EC2::SecurityGroup",
+         "Properties": {
+            "GroupName": "db_server_sg",
+            "GroupDescription": "SG for DB server",
+            "SecurityGroupIngress": {
+               "IpProtocol": "tcp",
+               "FromPort": "3306",
+               "ToPort": "3306",
+               "CidrIp": "0.0.0.0/0"
             },
-            "VpcId":{
-               "Ref":"VPCID"
+            "VpcId": {
+               "Ref": "VPCID"
             }
          }
       },
-      "InstanceProfile":{
-         "Type":"AWS::IAM::InstanceProfile",
-         "Properties":{
-            "Path":"/",
-            "Roles":[
+      "InstanceProfile": {
+         "Type": "AWS::IAM::InstanceProfile",
+         "Properties": {
+            "Path": "/",
+            "Roles": [
                {
-                  "Ref":"CodeDeployEC2ServiceRole"
+                  "Ref": "CodeDeployEC2ServiceRole"
                }
             ]
          }
       },
-      "MyEC2Instance":{
-         "Type":"AWS::EC2::Instance",
-         "Properties":{
-            "ImageId":{
-               "Ref":"AMIID"
+      "MyEC2Instance": {
+         "Type": "AWS::EC2::Instance",
+         "Properties": {
+            "ImageId": {
+               "Ref": "AMIID"
             },
-            "Tags":[
+            "Tags": [
                {
-                  "Key":"EC2Name",
-                  "Value":"csye6225Spring2019"
+                  "Key": "EC2Name",
+                  "Value": "csye6225Spring2019"
                }
             ],
-            "KeyName":{
-               "Ref":"KeyPairName"
+            "KeyName": {
+               "Ref": "KeyPairName"
             },
-            "InstanceType":"t2.micro",
-            "IamInstanceProfile":{
-               "Ref":"InstanceProfile"
+            "InstanceType": "t2.micro",
+            "IamInstanceProfile": {
+               "Ref": "InstanceProfile"
             },
-            "SubnetId":{
-               "Ref":"subnetID1"
+            "SubnetId": {
+               "Ref": "subnetID1"
             },
-            "UserData":{
-               "Fn::Base64":{
-                  "Fn::Join":[
+            "UserData": {
+               "Fn::Base64": {
+                  "Fn::Join": [
                      "\n",
                      [
                         "#!/bin/bash -xe",
-                        "sudo systemctl start tomcat.service",
-                        "sudo systemctl status tomcat.service",
-                        "sudo systemctl start mysqld",
-                        "sudo systemctl status mysqld",
-                        "sudo systemctl stop tomcat.service",
-                        "sudo systemctl start tomcat.service",
-                        "sudo yum -y update",
-                        "sudo touch /tmp/awslogs.conf",
-                        "sudo echo '[general]' > /tmp/awslogs.conf",
-                        "sudo echo 'state_file=/var/awslogs/agent-state' >> /tmp/awslogs.conf",
-                        "sudo echo '[logstream1]' >> /tmp/awslogs.conf",
-                        "sudo echo 'file=/var/log/tomcat/csye6225-aws.log' >> /tmp/awslogs.conf",
-                        "sudo echo 'log_group_name = csye6225-webapp' >> /tmp/awslogs.conf",
-                        "sudo echo 'log_stream_name = csye6225-webapp' >> /tmp/awslogs.conf",
-                        "sudo echo 'datetime_format = %d/%b/%Y:%H:%M:%S' >> /tmp/awslogs.conf",
-                        "cd /usr/share/tomcat",
+                        "groupadd tomcat",
+                        "useradd -M -s /bin/nologin -g tomcat -d /opt/tomcat tomcat",
+                        "cd /tmp",
+                        "wget http://apache.mirrors.pair.com/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gz",
+                        "mkdir /opt/tomcat",
+                        "tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1",
+                        "cd /opt/tomcat",
+                        "chgrp -R tomcat /opt/tomcat",
+                        "chmod -R g+r conf",
+                        "chmod g+x conf",
+                        "chown -R tomcat webapps/ work/ temp/ logs/",
+                        "cd /usr/lib/systemd/system",
+                        "touch tomcat.service",
+                        "echo '[Unit]' > tomcat.service",
+                        "echo 'Description=Apache Tomcat Web Application Container' >> tomcat.service",
+                        "echo 'After=syslog.target network.target' >> tomcat.service",
+                        "echo '[Service]' >> tomcat.service",
+                        "echo 'Type=forking' >> tomcat.service",
+                        "echo 'Environment=JAVA_HOME=/usr/lib/jvm/jre' >> tomcat.service",
+                        "echo 'Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid' >> tomcat.service",
+                        "echo 'Environment=CATALINA_HOME=/opt/tomcat' >> tomcat.service",
+                        "echo 'Environment=CATALINA_BASE=/opt/tomcat' >> tomcat.service",
+                        "echo 'Environment=\"CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC\"' >> tomcat.service",
+                        "echo 'Environment=\"JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom\"' >> tomcat.service",
+                        "echo 'Environment=\"JAVA_OPTS=-Djava.net.preferIPv4Address=true \"' >> tomcat.service",
+                        "echo 'ExecStart=/opt/tomcat/bin/startup.sh' >> tomcat.service",
+                        "echo 'ExecStop=/bin/kill -15 $MAINPID' >> tomcat.service",
+                        "echo 'User=tomcat' >> tomcat.service",
+                        "echo 'Group=tomcat' >> tomcat.service",
+                        "echo 'UMask=0007' >> tomcat.service",
+                        "echo 'RestartSec=10' >> tomcat.service",
+                        "echo 'Restart=always' >> tomcat.service",
+                        "echo '[Install]' >> tomcat.service",
+                        "echo 'WantedBy=multi-user.target' >> tomcat.service",
+                        "systemctl daemon-reload",
+                        "systemctl enable tomcat.service",
+                        "systemctl start tomcat.service",
+                        "cd /opt/tomcat/bin",
                         "sudo touch setenv.sh",
-                          "sudo chmod 777 setenv.sh",
-                          "sudo echo '#!/bin/sh' >> setenv.sh",
-                          {
+                        "sudo chmod 777 setenv.sh",
+                        "sudo echo '#!/bin/sh' >> setenv.sh",
+                        {
                            "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:postgresql://",
-                             {
-                              "Fn::GetAtt": [
-                               "myDBInstance",
-                               "Endpoint.Address"
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:postgresql://",
+                                 {
+                                    "Fn::GetAtt": [
+                                       "myDBInstance",
+                                       "Endpoint.Address"
+                                    ]
+                                 },
+                                 ":5432/csye6225\"' >> setenv.sh \n"
                               ]
-                             },
-                             ":5432/csye6225\"' >> setenv.sh \n"
-                            ]
                            ]
-                          },
-                          {
+                        },
+                        {
                            "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
-                             {
-                              "Ref": "UserName"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+                                 {
+                                    "Ref": "UserName"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          {
+                        },
+                        {
                            "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
-                             {
-                              "Ref": "Password"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+                                 {
+                                    "Ref": "Password"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          {
+                        },
+                        {
                            "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Damazon.s3.default-bucket=",
-                             {
-                              "Ref": "BucketName"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Damazon.s3.default-bucket=",
+                                 {
+                                    "Ref": "BucketName"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
-                          "systemctl daemon-reload",
-                          "systemctl enable tomcat.service",
-                          "systemctl start tomcat.service"
+                        },
+                        "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=aws\"' >> setenv.sh \n",
+                        "systemctl daemon-reload",
+                        "systemctl enable tomcat.service",
+                        "systemctl start tomcat.service"
                      ]
                   ]
                }
             },
-            "SecurityGroupIds":[
+            "SecurityGroupIds": [
                {
-                  "Ref":"csye6225webapp"
+                  "Ref": "csye6225webapp"
                }
             ],
-            "BlockDeviceMappings":[
+            "BlockDeviceMappings": [
                {
-                  "DeviceName":"/dev/sda1",
-                  "Ebs":{
-                     "DeleteOnTermination":"true",
-                     "VolumeSize":"20",
-                     "VolumeType":"gp2"
+                  "DeviceName": "/dev/sda1",
+                  "Ebs": {
+                     "DeleteOnTermination": "true",
+                     "VolumeSize": "20",
+                     "VolumeType": "gp2"
                   }
                }
             ]
          }
       },
-      "myDynamoDBTable":{
-         "Type":"AWS::DynamoDB::Table",
-         "Properties":{
-            "AttributeDefinitions":[
+      "myDynamoDBTable": {
+         "Type": "AWS::DynamoDB::Table",
+         "Properties": {
+            "AttributeDefinitions": [
                {
-                  "AttributeName":"id",
-                  "AttributeType":"S"
+                  "AttributeName": "id",
+                  "AttributeType": "S"
                }
             ],
-            "KeySchema":[
+            "KeySchema": [
                {
-                  "AttributeName":"id",
-                  "KeyType":"HASH"
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
                }
             ],
-            "ProvisionedThroughput":{
-               "ReadCapacityUnits":"5",
-               "WriteCapacityUnits":"5"
+            "ProvisionedThroughput": {
+               "ReadCapacityUnits": "5",
+               "WriteCapacityUnits": "5"
             },
-            "TableName":"csye6225"
+            "TableName": "csye6225"
          }
       },
-      "myDBSubnet":{
-         "Type":"AWS::RDS::DBSubnetGroup",
-         "Properties":{
-            "DBSubnetGroupDescription":"DB Private Subnet1",
-            "SubnetIds":[
+      "myDBSubnet": {
+         "Type": "AWS::RDS::DBSubnetGroup",
+         "Properties": {
+            "DBSubnetGroupDescription": "DB Private Subnet1",
+            "SubnetIds": [
                {
-                  "Ref":"subnetID1"
+                  "Ref": "subnetID1"
                },
                {
-                  "Ref":"subnetID2"
+                  "Ref": "subnetID2"
                },
                {
-                  "Ref":"subnetID3"
+                  "Ref": "subnetID3"
                }
             ]
          }
       },
-      "myCodeDeploy":{
-         "Type":"AWS::CodeDeploy::Application",
-         "Properties":{
-            "ApplicationName":{
-               "Ref":"ApplicationName"
+      "myCodeDeploy": {
+         "Type": "AWS::CodeDeploy::Application",
+         "Properties": {
+            "ApplicationName": {
+               "Ref": "ApplicationName"
             },
-            "ComputePlatform":"Server"
+            "ComputePlatform": "Server"
          }
       },
-      "myCodeDeplymentGroup":{
-         "Type":"AWS::CodeDeploy::DeploymentGroup",
-         "Properties":{
-            "ApplicationName":{
-               "Ref":"ApplicationName"
+      "myCodeDeplymentGroup": {
+         "Type": "AWS::CodeDeploy::DeploymentGroup",
+         "Properties": {
+            "ApplicationName": {
+               "Ref": "ApplicationName"
             },
-            "ServiceRoleArn":{
-               "Fn::GetAtt":[
+            "ServiceRoleArn": {
+               "Fn::GetAtt": [
                   "CodeDeployServiceRole",
                   "Arn"
                ]
             },
-            "AutoRollbackConfiguration":{
-               "Enabled":true,
-               "Events":[
+            "AutoRollbackConfiguration": {
+               "Enabled": true,
+               "Events": [
                   "DEPLOYMENT_FAILURE"
                ]
             },
-            "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
-            "DeploymentGroupName":"csye6225-webapp-deployment",
-            "DeploymentStyle":{
-               "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
-               "DeploymentType":"IN_PLACE"
+            "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+            "DeploymentGroupName": "csye6225-webapp-deployment",
+            "DeploymentStyle": {
+               "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL",
+               "DeploymentType": "IN_PLACE"
             },
-            "Ec2TagFilters":[
+            "Ec2TagFilters": [
                {
-                  "Key":"EC2Name",
-                  "Type":"KEY_AND_VALUE",
-                  "Value":"csye6225Spring2019"
+                  "Key": "EC2Name",
+                  "Type": "KEY_AND_VALUE",
+                  "Value": "csye6225Spring2019"
                }
             ]
          }
       },
-      "myDBInstance":{
-         "Type":"AWS::RDS::DBInstance",
-         "Properties":{
-            "DBName":"csye6225",
-            "Engine":"MySQL",
-            "EngineVersion":"5.6.34",
-            "DBSubnetGroupName":{
-               "Ref":"myDBSubnet"
+      "myDBInstance": {
+         "Type": "AWS::RDS::DBInstance",
+         "Properties": {
+            "DBName": "csye6225",
+            "Engine": "MySQL",
+            "EngineVersion": "5.6.34",
+            "DBSubnetGroupName": {
+               "Ref": "myDBSubnet"
             },
-            "AllocatedStorage":"50",
-            "MasterUsername":"csye6225master",
-            "MasterUserPassword":"csye6225password",
-            "MultiAZ":false,
-            "DBInstanceClass":"db.t2.medium",
-            "PubliclyAccessible":true,
-            "DBInstanceIdentifier":"csye6225-spring2019",
-            "VPCSecurityGroups":[
+            "AllocatedStorage": "50",
+            "MasterUsername": "csye6225master",
+            "MasterUserPassword": "csye6225password",
+            "MultiAZ": false,
+            "DBInstanceClass": "db.t2.medium",
+            "PubliclyAccessible": true,
+            "DBInstanceIdentifier": "csye6225-spring2019",
+            "VPCSecurityGroups": [
                {
-                  "Fn::GetAtt":[
+                  "Fn::GetAtt": [
                      "csye6225rds",
                      "GroupId"
                   ]
