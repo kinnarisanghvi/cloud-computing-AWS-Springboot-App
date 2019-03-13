@@ -193,7 +193,7 @@
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
                         "sudo systemctl stop tomcat.service",
-                        "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev\\\"\" >> /opt/tomcat ",
+                        "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev\\\"\" >> /usr/share/tomcat",
                         {
                            "Fn::Join":[
                               "",
@@ -205,7 +205,7 @@
                                        "Endpoint.Address"
                                     ]
                                  },
-                                 ":3306/csye6225\\\"\"' >> /opt/tomcat"
+                                 ":3306/csye6225\\\"\"' >> /usr/share/tomcat"
                               ]
                            ]
                         },
