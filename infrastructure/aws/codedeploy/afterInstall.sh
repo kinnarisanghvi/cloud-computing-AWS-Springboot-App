@@ -1,4 +1,2 @@
-sudo systemctl stop tomcat.service
+sudo systemctl stop tomcat
 
-
-sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war

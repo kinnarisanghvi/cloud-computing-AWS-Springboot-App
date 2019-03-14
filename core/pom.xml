@@ -6,6 +6,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>NotesApplication</artifactId>
 	<version>1.0.0</version>
+	<packaging>war</packaging>
 
 	<name>NotesApplication</name>
 	<description>Rest API for a Simple Note Taking Application</description>
@@ -24,6 +25,10 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -136,6 +141,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>NotesApplication</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -157,8 +163,5 @@
 				</configuration>
 			</plugin>
 		</plugins>
-
 	</build>
-    <packaging>war</packaging>
-
 </project>

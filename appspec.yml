@@ -1,17 +1,14 @@
-version: 0
+version: 0.0
 os: linux
 files:
-  -
-    source: ./out/artifacts/NotesApplication/NotesApplication.war
-    destination: /opt/tomcat/webapps
+  - source: /core/target/NotesApplication.war
+    destination: /opt/tomcat/apache-tomcat-9.0.16/webapps
 hooks:
+  BeforeInstall:
+    - location: ./start_server.sh
+  AfterInstall:
+    - location: ./stop_server.sh
+      timeout: 180
   ApplicationStart:
-    -
-    location: ./start_server.sh
-    timeout: 180
-    runas: centos
-  ApplicationStop:
-    -
-    location: ./stop_server.sh
-    timeout: 180
-    runa: centos    
+    - location: ./start_server.sh
+      timeout: 3600
