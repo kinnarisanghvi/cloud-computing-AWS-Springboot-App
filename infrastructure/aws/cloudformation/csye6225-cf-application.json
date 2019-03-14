@@ -201,6 +201,7 @@
                         "echo \"export CATALINA_HOME='/opt/tomcat/'\" >> ~/.bashrc",
                         "sudo systemctl start tomcat.service",
                         "sudo systemctl status tomcat.service",
+                        "echo export aws_bucket_name=\"csye6225-spring2019-magdanik.me.csye6225.com\" >> /etc/profile",
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
                         "sudo systemctl stop tomcat.service",
