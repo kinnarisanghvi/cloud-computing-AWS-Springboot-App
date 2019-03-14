@@ -50,10 +50,9 @@ public class AmazonClient {
 
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
+        File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") +
+                file.getOriginalFilename());
+        file.transferTo(convFile);
         return convFile;
     }
     private void uploadFileTos3bucket(String fileName, File file) {
