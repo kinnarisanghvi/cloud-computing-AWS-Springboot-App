@@ -70,7 +70,9 @@
                      "Effect":"Allow",
                      "Action":[
                         "s3:GetObject",
-                        "s3:PutObject"
+                        "s3:PutObject",
+                        "s3:List*",
+                        "s3:*"
                      ],
                      "Resource":[
                         "*"
@@ -117,7 +119,18 @@
                         "codedeploy:GetDeployment"
                      ],
                      "Resource":[
-                        "*"
+                        {
+                           "Fn::Join":[
+                              ":",
+                              [
+                                 "arn:aws:codedeploy:us-east-1",
+                                 {
+                                    "Ref":"AccountId"
+                                 },
+                                 "csye6225-webapp"
+                              ]
+                           ]
+                        }
                      ]
                   },
                   {
