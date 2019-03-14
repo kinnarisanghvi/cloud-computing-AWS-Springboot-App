@@ -38,7 +38,7 @@ public class AmazonClient {
     private String awsRegion;
 
 
-    @Value("${aws_bucket_name}")
+    @Value("${bucketName}")
     private String awsS3AudioBucket;
 
 
