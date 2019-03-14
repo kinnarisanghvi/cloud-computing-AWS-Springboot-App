@@ -209,7 +209,7 @@
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
                         "sudo systemctl stop tomcat.service",
-                          "cd /opt/tomcat/apache-tomcat-9.0.16/bin",
+                        "cd /opt/tomcat/apache-tomcat-9.0.16/bin",
                           "sudo touch setenv.sh",
                           "sudo chmod 777 setenv.sh",
                           "sudo echo '#!/bin/sh' >> setenv.sh",
@@ -217,7 +217,7 @@
                            "Fn::Join": [
                             "",
                             [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://",
+                             "sudo export 'RDS_MYSQL_DB_HOST=\"jdbc:mysql://",
                              {
                               "Fn::GetAtt": [
                                "myDBInstance",
@@ -232,7 +232,7 @@
                            "Fn::Join": [
                             "",
                             [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+                             "export 'RDS_MYSQL_DB_USERNAME=",
                              {
                               "Ref": "DatabaseUsername"
                              },
@@ -240,11 +240,11 @@
                             ]
                            ]
                           },
-                             {
+                          {
                            "Fn::Join": [
                             "",
                             [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.bucketName=",
+                             "export 'bucketName=",
                              {
                               "Ref": "bucketName"
                              },
@@ -256,7 +256,7 @@
                            "Fn::Join": [
                             "",
                             [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+                             "export 'RDS_MYSQL_DB_PASSWORD' =",
                              {
                               "Ref": "DatabasePassword"
                              },
@@ -264,7 +264,7 @@
                             ]
                            ]
                           },
-                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
+                          "export 'PROFILE=\"dev\"' >> setenv.sh \n",
                           "/sbin/iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080",
                           "systemctl daemon-reload",
                           "systemctl enable tomcat.service",
