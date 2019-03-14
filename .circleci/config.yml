@@ -3,8 +3,7 @@ jobs:
   build:
     branches:
       only: 
-          - Assignment5
-          - master
+        Assignment5
     docker:
       -
         image: circleci/openjdk:8-jdk
@@ -38,5 +37,5 @@ jobs:
         run:
           name: 'Make CodeDeploy API call'
           command: 
-            "aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name csye6225-webapp-deployment --s3-location bucket=code-deploy.csye6225-spring2019-magdanik.me,bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip"
+            "aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name csye6225-webapp-deployment --s3-location bucket=code-deploy.csye6225-spring2019-${S3_BUCKET_NAME}.me,bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip"
 
