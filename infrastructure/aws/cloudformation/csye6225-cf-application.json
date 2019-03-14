@@ -33,11 +33,13 @@
       },
       "DatabaseUsername":{
          "Description":"database_username",
-         "Default":"csye6225master"
+         "Default":"csye6225master",
+         "Type":"String"
       },
       "DatabasePassword":{
          "Description":"database_password",
-         "Default":"csye6225password"
+         "Default":"csye6225password",
+         "Type":"String"
       }
    },
    "Resources": {
