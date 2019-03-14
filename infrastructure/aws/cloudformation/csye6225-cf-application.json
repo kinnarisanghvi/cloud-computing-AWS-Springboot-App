@@ -153,11 +153,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "arn:aws:s3:::csye6225-spring2019-",
+                                 "arn:aws:s3:::code-deploy.csye6225-spring2019-",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 ".me.csye6225.com/*"
+                                 ".me/*"
                               ]
                            ]
                         }
