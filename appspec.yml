@@ -7,9 +7,12 @@ hooks:
   BeforeInstall:
     - location: ./removeRoot.sh
       timeout: 3600
+      runas: centos
   AfterInstall:
     - location: ./stop_server.sh
+      runas: centos
       timeout: 180
   ApplicationStart:
     - location: ./start_server.sh
       timeout: 3600
+      runas: centos
