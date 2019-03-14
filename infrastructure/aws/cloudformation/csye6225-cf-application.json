@@ -40,6 +40,11 @@
          "Description":"database_password",
          "Default":"csye6225password",
          "Type":"String"
+      },
+      "bucketName":{
+         "Description":"bucket",
+         "Default":"csye6225-spring2019-sanghviki.me.csye6225.com",
+         "Type":"String"
       }
    },
    "Resources": {
@@ -232,6 +237,18 @@
                              "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
                              {
                               "Ref": "DatabaseUsername"
+                             },
+                             "\"' >> setenv.sh \n"
+                            ]
+                           ]
+                          },
+                             {
+                           "Fn::Join": [
+                            "",
+                            [
+                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.bucketName=",
+                             {
+                              "Ref": "bucketName"
                              },
                              "\"' >> setenv.sh \n"
                             ]

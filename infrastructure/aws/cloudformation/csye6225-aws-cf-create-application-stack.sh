@@ -12,7 +12,7 @@ read appstack
 #read AMIID
 
 
-export VPCID=$(aws ec2 describe-vpcs --filters "Name=tag-key,Values=Name" --query "Vpcs[*].[CidrBlock, VpcId][-1]" --output text|grep 10.0.0.0/16|awk '{print $2}')
+export VPCID=$(aws ec2 describe-vpcs --filters "Name=cidr,Values=10.0.0.0/16" --query "Vpcs[*].[CidrBlock, VpcId][-1]" --output text|grep 10.0.0.0/16|awk '{print $2}')
 
 echo "vpcId : $VPCID"
 
@@ -24,8 +24,8 @@ export subnetID2=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID
 
 echo "subnetid2 : ${subnetID2}"
 
-export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.3.0/24|grep us-east-1c|awk '{print $1}')
 
+export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.3.0/24|grep us-east-1c|awk '{print $1}')
 echo "subnetid3 : ${subnetID3}"
 
 keypair=$(aws ec2 describe-key-pairs --query "KeyPairs[0].KeyName" --output text)

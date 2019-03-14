@@ -8,7 +8,7 @@ import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
 import com.csye6225.spring2019.utils.UserCheck;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -248,9 +248,14 @@ public class NoteController {
                     entity.put("content", changedNote.getContent());
                     entity.put("created_on", changedNote.getCreated_on());
                     entity.put("Last Updated At", changedNote.getLast_updated_on());
-                    for (int i = 0; i < note.getAttachmentList().size(); i++) {
-                        entity.put("attachments", note.getAttachmentList().get(i));
+                    if(note.getAttachmentList().size()==0){
+                        entity.put("attachments",note.getAttachmentList());
+                    }
+                    else {
+                        for (int i = 0; i < note.getAttachmentList().size(); i++) {
+                            entity.put("attachments", note.getAttachmentList().get(i));
 
+                        }
                     }
                     entities.add(entity);
                     return new ResponseEntity<>(entities.toString(), HttpStatus.OK
