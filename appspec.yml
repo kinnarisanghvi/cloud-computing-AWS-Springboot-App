@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /core/target/NotesApplication.war
+  - source: /core/target/ROOT.war
     destination: /opt/tomcat/apache-tomcat-9.0.16/webapps
 hooks:
   BeforeInstall:
