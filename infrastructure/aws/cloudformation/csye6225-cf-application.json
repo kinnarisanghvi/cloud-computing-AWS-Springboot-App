@@ -249,6 +249,7 @@
                           },
                           "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
                           "systemctl daemon-reload",
+                          "grep -rl 8080 server.xml | xargs sed -i 's/8080/80/g'",
                           "systemctl enable tomcat.service",
                           "systemctl start tomcat.service"
                      ]
