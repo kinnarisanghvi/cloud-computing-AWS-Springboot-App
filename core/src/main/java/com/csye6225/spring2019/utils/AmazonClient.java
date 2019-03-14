@@ -57,8 +57,8 @@ public class AmazonClient {
         return convFile;
     }
     private void uploadFileTos3bucket(String fileName, File file) {
-        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file));
+
     }
 
     public String uploadFile(MultipartFile multipartFile) {
