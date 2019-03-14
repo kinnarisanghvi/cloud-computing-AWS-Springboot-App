@@ -51,16 +51,15 @@ public class AmazonClient {
 
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        System.out.println("FIlename to convert is :++++++++" +file.getOriginalFilename() );
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
+        File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") +
+                file.getOriginalFilename());
+        file.transferTo(convFile);
         return convFile;
+
     }
     private void uploadFileTos3bucket(String fileName, File file) {
-        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file));
+
     }
 
     public String uploadFile(MultipartFile multipartFile) {
