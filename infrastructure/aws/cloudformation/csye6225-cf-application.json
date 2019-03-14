@@ -265,7 +265,7 @@
                             ]
                            ]
                           },
-                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev -Djava.io.tmpdir=/home/centos/tmp/\"' >> setenv.sh \n",
+                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev -Djava.io.tmpdir=/home/centos/tmp\"' >> setenv.sh \n",
                           "sudo systemctl daemon-reload",
                           "sudo systemctl enable tomcat.service",
                           "sudo systemctl start tomcat.service"

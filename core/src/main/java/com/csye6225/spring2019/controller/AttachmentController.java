@@ -110,10 +110,10 @@ public class AttachmentController {
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
-    @Consumes("multipart/form-data")
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @Profile("dev")
     @PostMapping("/note/{idNotes}/attachments")
-    public ResponseEntity<Object> newAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    public ResponseEntity<Object> newAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         Note note = noteRepository.getOne(idNotes);
         if (note.equals(null)) {
