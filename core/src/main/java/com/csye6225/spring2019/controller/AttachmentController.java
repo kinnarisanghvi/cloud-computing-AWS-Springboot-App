@@ -301,7 +301,7 @@ public class AttachmentController {
                 attachmentRepository.delete(attachment);
             }
 
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
         }
     }
 
