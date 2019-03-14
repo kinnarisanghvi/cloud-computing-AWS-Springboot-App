@@ -3,23 +3,23 @@ os: linux
 files:
   -
     source: ./core/target/NotesApplication.war
-    destination: /usr/share/tomcat/webapps
+    destination: /opt/tomcat/apache-tomcat-9.0.16/webapps
 hooks:
   hooks:
   BeforeInstall:
-    - location: ./start_server.sh
+    - location: ./infrastructure/aws/codedeploy/start_server.sh
       timeout: 180
       runas: centos
   AfterInstall:
-    - location: ./afterInstall.sh
+    - location: ./infrastructure/aws/codedeploy/afterInstall.sh
       timeout: 180
       runas: centos
   ApplicationStart:
-    - location: ./start_server.sh
+    - location: ./infrastructure/aws/codedeploy/start_server.sh
       timeout: 180
       runas: centos
   ApplicationStop:
-    - location: ./stop_server.sh
+    - location: ./infrastructure/aws/codedeploy/stop_server.sh
       timeout: 180
       runa: centos   
       
