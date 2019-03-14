@@ -125,9 +125,8 @@ public class NoteController {
                 entity.put("Title", note.getTitle());
                 entity.put("Created_on", note.getCreated_on());
                 entity.put("Last_updated_on", note.getLast_updated_on());
-                for (int i = 0; i < note.getAttachmentList().size(); i++) {
-                    entity.put("attachments", note.getAttachmentList().get(i));
-                }
+                entity.put("attachments", note.getAttachmentList());
+
                 entities.add(entity);
                 return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
             }
@@ -200,7 +199,7 @@ public class NoteController {
     public ResponseEntity<Object> updateNote(@PathVariable(value = "idNotes") String id, @Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response, UserRepository ur) throws JSONException {
 
         Note updated_note = noteRepository.getOne(id);
-        System.out.println("update note: "+ updated_note);
+        System.out.println("update note: " + updated_note);
         if (updated_note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
@@ -230,35 +229,38 @@ public class NoteController {
             }
             auth_user_1 = auth_user.split(",");
             List<JSONObject> entities = new ArrayList<JSONObject>();
-            System.out.println("auth user update note: "+ auth_user_1[0]+ " "+ auth_user_1[1]);
+            System.out.println("auth user update note: " + auth_user_1[0] + " " + auth_user_1[1]);
             if (auth_user_1[0].equalsIgnoreCase("Success") && updated_note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                if (note.getTitle() != null) {
+                    updated_note.setTitle(note.getTitle());
+                    updated_note.setContent(note.getContent());
+                    java.util.Date uDate1 = new java.util.Date();
+                    java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
+                    System.out.println("Time in java.sql.Date is : " + sDate1);
+                    DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    String updated_date = df1.format(sDate1);
+                    System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
+                    updated_note.setLast_updated_on(updated_date);
+                    Note changedNote = noteRepository.save(updated_note);
+                    JSONObject entity = new JSONObject();
+                    entity.put("id", changedNote.getId());
+                    entity.put("title", changedNote.getTitle());
+                    entity.put("content", changedNote.getContent());
+                    entity.put("created_on", changedNote.getCreated_on());
+                    entity.put("Last Updated At", changedNote.getLast_updated_on());
+                    for (int i = 0; i < note.getAttachmentList().size(); i++) {
+                        entity.put("attachments", note.getAttachmentList().get(i));
 
-                updated_note.setTitle(note.getTitle());
-                updated_note.setContent(note.getContent());
-                java.util.Date uDate1 = new java.util.Date();
-                java.sql.Date sDate1 = new java.sql.Date(uDate1.getTime());
-                System.out.println("Time in java.sql.Date is : " + sDate1);
-                DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                String updated_date = df1.format(sDate1);
-                System.out.println("Using a dateFormat date is : " + df1.format(uDate1));
-                updated_note.setLast_updated_on(updated_date);
-                Note changedNote = noteRepository.save(updated_note);
-                JSONObject entity = new JSONObject();
-                entity.put("id", changedNote.getId());
-                entity.put("title", changedNote.getTitle());
-                entity.put("content", changedNote.getContent());
-                entity.put("created_on", changedNote.getCreated_on());
-                entity.put("Last Updated At", changedNote.getLast_updated_on());
-                for (int i = 0; i < note.getAttachmentList().size(); i++) {
-                    entity.put("attachments", note.getAttachmentList().get(i));
+                    }
+                    entities.add(entity);
+                    return new ResponseEntity<>(entities.toString(), HttpStatus.OK
+                    );
                 }
-
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-        }
-        return null;
-    }
 
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
     @DeleteMapping("/note/{idNotes}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "idNotes") String noteid, HttpServletRequest request, HttpServletResponse response) {
 
