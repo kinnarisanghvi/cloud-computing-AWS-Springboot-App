@@ -7,6 +7,7 @@ import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Service
+@Profile("local")
 public class AttachmentStorageService {
 
     @Autowired
