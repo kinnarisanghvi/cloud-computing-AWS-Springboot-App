@@ -106,7 +106,7 @@
                                  {
                                     "Ref":"AccountId"
                                  },
-                                 "deploymentconfig:CodeDeployDefault.AllAtOnce"
+                                 "csye6225-webapp"
                               ]
                            ]
                         }
@@ -119,18 +119,7 @@
                         "codedeploy:GetDeployment"
                      ],
                      "Resource":[
-                        {
-                           "Fn::Join":[
-                              ":",
-                              [
-                                 "arn:aws:codedeploy:us-east-1",
-                                 {
-                                    "Ref":"AccountId"
-                                 },
-                                 "csye6225-webapp"
-                              ]
-                           ]
-                        }
+                         "*"
                      ]
                   },
                   {
