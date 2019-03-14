@@ -248,9 +248,14 @@ public class NoteController {
                     entity.put("content", changedNote.getContent());
                     entity.put("created_on", changedNote.getCreated_on());
                     entity.put("Last Updated At", changedNote.getLast_updated_on());
-                    for (int i = 0; i < note.getAttachmentList().size(); i++) {
-                        entity.put("attachments", note.getAttachmentList().get(i));
+                    if(note.getAttachmentList().size()==0){
+                        entity.put("attachments",note.getAttachmentList());
+                    }
+                    else {
+                        for (int i = 0; i < note.getAttachmentList().size(); i++) {
+                            entity.put("attachments", note.getAttachmentList().get(i));
 
+                        }
                     }
                     entities.add(entity);
                     return new ResponseEntity<>(entities.toString(), HttpStatus.OK
