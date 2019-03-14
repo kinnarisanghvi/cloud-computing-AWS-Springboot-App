@@ -24,7 +24,7 @@ jobs:
       -
         run:
           name: 'Build Artifact'
-          command: "cd core\npwd\nls -al\nmvn clean package\ncd target/\nls -al\ncd ../\npwd\nls -al\n"
+          command: "cd core\npwd\nls -al\nmvn resources:resources\nmvn clean package\ncd target/\nls -al\ncd ../\npwd\nls -al\n"
       -
         run:
           name: 'Zip Artifact'
