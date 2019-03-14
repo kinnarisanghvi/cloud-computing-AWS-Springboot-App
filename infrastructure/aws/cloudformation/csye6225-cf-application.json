@@ -257,7 +257,7 @@
                      "\n",
                      [
                         "#!/bin/bash -xe",
-                        "echo \"export CATALINA_HOME='/opt/tomcat/'\" >> ~/.bashrc",
+                        "echo \"export CATALINA_HOME='/opt/tomcat/apache-tomcat-9.0.16'\" >> ~/.bashrc",
                         "sudo systemctl start tomcat.service",
                         "sudo systemctl status tomcat.service",
                         "sudo systemctl start mysqld",
