@@ -5,7 +5,8 @@ files:
     destination: /opt/tomcat/apache-tomcat-9.0.16/webapps
 hooks:
   BeforeInstall:
-    - location: ./start_server.sh
+    - location: ./removeRoot.sh
+      timeout: 3600
   AfterInstall:
     - location: ./stop_server.sh
       timeout: 180

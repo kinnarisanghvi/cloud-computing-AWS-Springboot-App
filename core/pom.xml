@@ -138,7 +138,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>NotesApplication</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
