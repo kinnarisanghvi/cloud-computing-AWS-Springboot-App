@@ -208,6 +208,7 @@
                         "sudo systemctl status tomcat.service",
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
+                        "sudo mkdir /home/cetos/tmp",
                         "sudo systemctl stop tomcat.service",
                           "cd /opt/tomcat/apache-tomcat-9.0.16/bin",
                           "sudo touch setenv.sh",
@@ -264,7 +265,7 @@
                             ]
                            ]
                           },
-                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
+                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev -Djava.io.tmpdir=/home/centos/tmp/\"' >> setenv.sh \n",
                           "systemctl daemon-reload",
                           "systemctl enable tomcat.service",
                           "systemctl start tomcat.service"
