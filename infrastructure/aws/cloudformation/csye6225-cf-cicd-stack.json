@@ -70,7 +70,9 @@
                      "Effect":"Allow",
                      "Action":[
                         "s3:GetObject",
-                        "s3:PutObject"
+                        "s3:PutObject",
+                        "s3:List*",
+                        "s3:*"
                      ],
                      "Resource":[
                         "*"
@@ -104,7 +106,7 @@
                                  {
                                     "Ref":"AccountId"
                                  },
-                                 "deploymentconfig:CodeDeployDefault.AllAtOnce"
+                                 "application:csye6225-webapp"
                               ]
                            ]
                         }
@@ -117,7 +119,7 @@
                         "codedeploy:GetDeployment"
                      ],
                      "Resource":[
-                        "*"
+                         "*"
                      ]
                   },
                   {
