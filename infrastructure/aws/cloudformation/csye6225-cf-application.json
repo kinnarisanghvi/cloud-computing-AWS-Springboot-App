@@ -45,6 +45,11 @@
          "Description":"bucket",
          "Default":"sanghviki",
          "Type":"String"
+      },
+       "profile":{
+         "Description":"profile",
+         "Default":"profile",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -271,14 +276,14 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://",
+                                 "export RDS_MYSQL_DB_HOST=\"jdbc:mysql://",
                                  {
                                     "Fn::GetAtt":[
                                        "myDBInstance",
                                        "Endpoint.Address"
                                     ]
                                  },
-                                 ":3306/csye6225\"' >> setenv.sh \n"
+                                 ":3306/csye6225\" >> setenv.sh \n"
                               ]
                            ]
                         },
@@ -286,11 +291,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+                                 "export RDS_MYSQL_DB_USERNAME=",
                                  {
                                     "Ref":"DatabaseUsername"
                                  },
-                                 "\"' >> setenv.sh \n"
+                                 "\" >> setenv.sh \n"
                               ]
                            ]
                         },
@@ -298,11 +303,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.bucketName=",
+                                 "export bucketName=",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 "\"' >> setenv.sh \n"
+                                 "\" >> setenv.sh \n"
                               ]
                            ]
                         },
@@ -310,15 +315,27 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+                                 "export RDS_MYSQL_DB_PASSWORD=",
                                  {
                                     "Ref":"DatabasePassword"
                                  },
-                                 "\"' >> setenv.sh \n"
+                                 "\" >> setenv.sh \n"
                               ]
                            ]
                         },
-                        "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
+		       {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "export PROFILE=",
+                                 {
+                                    "Ref":"profile"
+                                 },
+                                 "\" >> setenv.sh \n"
+                              ]
+                           ]
+                        },
+                      
                         "systemctl daemon-reload",
                         "systemctl enable tomcat.service",
                         "systemctl start tomcat.service"
