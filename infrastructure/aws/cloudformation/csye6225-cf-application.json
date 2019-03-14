@@ -70,6 +70,45 @@
             "RoleName":"CodeDeployEC2ServiceRole"
          }
       },
+      "AccessAttachmentToS3Bucket":{
+         "Type":"AWS::IAM::ManagedPolicy",
+         "Properties":{
+            "Description":"Policy for uploading attachments into S3",
+            "ManagedPolicyName":"Access-Attachment-To-S3-Bucket",
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Action":[
+                        "s3:PutObject",
+                        "s3:DeleteObject",
+                        "s3:GetObject"
+                     ],
+                     "Effect":"Allow",
+                     "Resource":[
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "arn:aws:s3:::csye6225-spring2019-",
+                                 {
+                                    "Ref":"bucketName"
+                                 },
+                                 ".me.csye6225.com/*"
+                              ]
+                           ]
+                        }
+                     ]
+                  }
+               ]
+            },
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
+         }
+      },
       "CodeDeployServiceRole":{
          "Type":"AWS::IAM::Role",
          "Properties":{
@@ -114,11 +153,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "arn:aws:s3:::csye6225-spring2019-",
+                                 "arn:aws:s3:::code-deploy.csye6225-spring2019-",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 ".me.csye6225.com/*"
+                                 ".me/*"
                               ]
                            ]
                         }
@@ -218,7 +257,7 @@
                      "\n",
                      [
                         "#!/bin/bash -xe",
-                        "echo \"export CATALINA_HOME='/opt/tomcat/'\" >> ~/.bashrc",
+                        "echo \"export CATALINA_HOME='/opt/tomcat/apache-tomcat-9.0.16'\" >> ~/.bashrc",
                         "sudo systemctl start tomcat.service",
                         "sudo systemctl status tomcat.service",
                         "sudo systemctl start mysqld",

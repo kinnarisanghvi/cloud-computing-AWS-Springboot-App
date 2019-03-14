@@ -106,7 +106,7 @@
                                  {
                                     "Ref":"AccountId"
                                  },
-                                 "csye6225-webapp"
+                                 "application:csye6225-webapp"
                               ]
                            ]
                         }
