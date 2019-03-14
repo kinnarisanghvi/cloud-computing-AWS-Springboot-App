@@ -8,7 +8,7 @@ import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
 import com.csye6225.spring2019.utils.UserCheck;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
