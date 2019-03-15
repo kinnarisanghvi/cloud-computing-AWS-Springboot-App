@@ -58,7 +58,8 @@ public class AmazonClient {
 
     }
     private void uploadFileTos3bucket(String fileName, File file) {
-        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file));
+        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
 
     }
 
