@@ -1,49 +1,154 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cloud formation application file for resources like webapp,db SG and
+  EC2 instance
+Parameters:
+  KeyPairName:
+    Description: key pair name
+    Type: String
+  VPCID:
+    Description: vpc id
+    Type: String
+  subnetID1:
+    Description: subnet id
+    Type: String
+  subnetID2:
+    Description: subnet id 2
+    Type: String
+  subnetID3:
+    Description: subnet id 3
+    Type: String
+  AMIID:
+    Description: AMI id
+    Type: String
 Resources:
-  SSHSecurityGroup:
+  csye6225webapp:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: 'vpc-d4c975ae'
-      GroupDescription: Enable sql access via port 3306 and tomcat access via 8080
+      GroupName: csye6225webapp
+      GroupDescription: SG for web server
       SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
-        FromPort: 3306
-        IpProtocol: tcp
-        ToPort: 3306
-      - CidrIp: 0.0.0.0/0
-        FromPort: 8080
-        IpProtocol: tcp
-        ToPort: 8080
-  WebSecurityGroup:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '443'
+        ToPort: '443'
+        CidrIp: 0.0.0.0/0
+      VpcId:
+        Ref: VPCID
+  csye6225rds:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: 'vpc-d4c975ae'
-      GroupDescription: Enable HTTP access via user defined port
+      GroupName: db_server_sg
+      GroupDescription: SG for DB server
       SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
-        FromPort: 80
         IpProtocol: tcp
-        ToPort: 80
-      - CidrIp: 0.0.0.0/0
-        FromPort: 443
-        IpProtocol: tcp
-        ToPort: 443
-      - CidrIp: 0.0.0.0/0
-        FromPort: 22
-        IpProtocol: tcp
-        ToPort: 22
-  Ec2Instance:
+        FromPort: '3306'
+        ToPort: '3306'
+        CidrIp: 0.0.0.0/0
+      VpcId:
+        Ref: VPCID
+  MyEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
+      ImageId:
+        Ref: AMIID
       InstanceType: t2.micro
-      SubnetId: 'subnet-a0d7e7ea'
-      ImageId: 'ami-0ec749cb118702afe'
+      SubnetId:
+        Ref: subnetID1
       SecurityGroupIds:
-        - Ref: SSHSecurityGroup
-        - Ref: WebSecurityGroup
-      KeyName: 'centos-ssh'
+      - Ref: csye6225webapp
+      - Ref: csye6225rds
       UserData:
-        Fn::Base64:                                
-          Fn::Sub:
-              #!/bin/bash -ex
-              sudo systemctl start tomcat.service
-      
+        Fn::Base64:
+          Fn::Join:
+            - "#!/bin/bash -ex"
+            - "\n"
+            - "sudo yum -y update"
+            - "\n"
+            - "sudo systemctl start tomcat.service"
+            - "\n"
+            - "sudo systemctl status tomcat.service"
+            - "\"\n"
+      BlockDeviceMappings:
+      - DeviceName: "/dev/sda1"
+        Ebs:
+          DeleteOnTermination: 'true'
+          VolumeSize: '20'
+          VolumeType: gp2
+  myDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: csye6225
+  myDBSubnet:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: DB Private Subnet1
+      SubnetIds:
+      - Ref: subnetID1
+      - Ref: subnetID2
+      - Ref: subnetID3
+  myCodeDepoly:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: csye6225-webapp
+      ComputePlatform: EC2/On-premises
+  myCodeDeplymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: csye6225-webapp
+      AutoRollbackConfiguration:
+        Enabled: true
+        Events:
+        - DEPLOYMENT_FAILURE
+      ServiceRoleArn: CodeDeployServiceRole
+      Deployment:
+        Description: Deploying the EC2 instance
+        IgnoreApplicationStopFailures: 'false'
+        Revision:
+          GitHubLocation:
+            CommitId: String
+            Repository: String
+          RevisionType: GitHub
+      DeploymentConfigName: CodeDeployDefault.AllAtOnce
+      DeploymentGroupName: csye6225-webapp-deployment
+      DeploymentStyle: In-place
+      Ec2TagFilters:
+      - Key: MyEC2
+        Type: KEY_AND_VALUE
+        Value:
+          Ref: MyEC2Instance
+  myDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: csye6225
+      Engine: MySQL
+      EngineVersion: 5.6.34
+      DBSubnetGroupName:
+        Ref: myDBSubnet
+      AllocatedStorage: '50'
+      MasterUsername: csye6225master
+      MasterUserPassword: csye6225password
+      MultiAZ: false
+      DBInstanceClass: db.t2.medium
+      PubliclyAccessible: true
+      DBInstanceIdentifier: csye6225-spring2019
+      VPCSecurityGroups:
+      - Fn::GetAtt:
+        - csye6225rds
+        - GroupId
