@@ -2,4 +2,5 @@
 
 set -e
 
-sudo rm -rf /opt/tomcat/apache-tomcat-9.0.16/webapps/ROOT
+cd /opt/tomcat/apache-tomcat-9.0.16/webapps/
+sudo rm -rf ROOT
