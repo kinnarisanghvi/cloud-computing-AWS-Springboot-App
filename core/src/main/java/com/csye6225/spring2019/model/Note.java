@@ -1,10 +1,8 @@
 package com.csye6225.spring2019.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,59 +16,58 @@ public class Note {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "note_id")
-    private String noteId;
+    private String id;
 
     @Column(name = "note_title")
-    private String noteTitle;
+    private String title;
 
     @Column(name = "note_content")
-    private String noteContent;
+    private String content;
 
     @Column(name = "note_createdAt", columnDefinition = "text")
-    private Date noteCreatedAt;
+    private String created_on;
 
-    public Date getNoteCreatedAt() {
-        return noteCreatedAt;
-    }
-
-    public Date getNoteUpdatedAt() {
-        return noteUpdatedAt;
-    }
-
-    public void setNoteUpdatedAt(Date noteUpdatedAt) {
-        this.noteUpdatedAt = noteUpdatedAt;
-    }
-
-    public String getNoteId() {
-        return noteId;
-    }
-
-    public void setNoteId(String noteId) {
-        this.noteId = noteId;
-    }
-
-
-    public void setNoteCreatedAt(Date noteCreatedAt) {
-        this.noteCreatedAt = noteCreatedAt;
+    public void setLast_updated_on(String last_updated_on) {
+        this.last_updated_on = last_updated_on;
     }
 
     @Column(name = "note_lastUpdated", columnDefinition = "text")
-    private Date noteUpdatedAt;
+    private String last_updated_on;
 
-    public String getNoteTitle() {
-        return noteTitle;
+    public String getLast_updated_on() {
+        return last_updated_on;
     }
 
-    public void setNoteTitle(String noteTitle) {
-        this.noteTitle = noteTitle;
+    public String getId() {
+        return id;
     }
 
-    public String getNoteContent() {
-        return noteContent;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setNoteContent(String noteContent) {
-        this.noteContent = noteContent;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getCreated_on() {
+        return created_on;
+    }
+
+    public void setCreated_on(String created_on) {
+        this.created_on = created_on;
     }
 
     @ManyToOne
@@ -79,7 +76,6 @@ public class Note {
 
     @OneToMany(mappedBy = "note")
     private List<Attachment> attachmentList = new ArrayList<>();
-
 
     public List<Attachment> getAttachmentList() {
         return attachmentList;

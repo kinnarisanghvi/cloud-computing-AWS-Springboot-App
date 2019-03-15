@@ -8,6 +8,9 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +21,12 @@ import java.io.IOException;
 import java.util.Date;
 
 @Service
+@Profile("dev")
+
 public class AmazonClient {
 
     private AmazonS3 s3client;
+
 
     @Value("${aws.access.key.id}")
     private String awsKeyId;
@@ -30,6 +36,7 @@ public class AmazonClient {
 
     @Value("${aws.region}")
     private String awsRegion;
+
 
     @Value("${aws.s3.audio.bucket}")
     private String awsS3AudioBucket;
@@ -43,15 +50,16 @@ public class AmazonClient {
 
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
+        File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") +
+                file.getOriginalFilename());
+        file.transferTo(convFile);
         return convFile;
+
     }
     private void uploadFileTos3bucket(String fileName, File file) {
         s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
+
     }
 
     public String uploadFile(MultipartFile multipartFile) {
@@ -61,6 +69,7 @@ public class AmazonClient {
             File file = convertMultiPartToFile(multipartFile);
             String fileName = generateFileName(multipartFile);
             fileUrl = "https://s3.amazonaws.com"+ "/" + awsS3AudioBucket + "/" + fileName;
+            System.out.println("file s3 upload url: "+ fileUrl);
             uploadFileTos3bucket(fileName, file);
             file.delete();
         } catch (Exception e) {
@@ -77,6 +86,11 @@ public class AmazonClient {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
         s3client.deleteObject(new DeleteObjectRequest(awsS3AudioBucket , fileName));
         return "Successfully deleted";
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
 
