@@ -1,13 +1,18 @@
-version: 0
+version: 0.0
 os: linux
 files:
-  -
-    source: ./webapp/build/libs/ROOT.war
-    destination: /opt/tomcat/webapps
+  - source: /core/target/ROOT.war
+    destination: /opt/tomcat/apache-tomcat-9.0.16/webapps
 hooks:
+  BeforeInstall:
+    - location: ./removeRoot.sh
+      timeout: 3600
+      runas: root
   AfterInstall:
-    -
-      location: ./afterInstall.sh
-      timeout: 180
+    - location: ./stop_server.sh
       runas: centos
-
+      timeout: 180
+  ApplicationStart:
+    - location: ./start_server.sh
+      timeout: 3600
+      runas: centos

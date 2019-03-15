@@ -8,7 +8,6 @@ import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import com.csye6225.spring2019.utils.AmazonClient;
 import com.csye6225.spring2019.utils.UserCheck;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
@@ -301,7 +301,7 @@ public class AttachmentController {
                 attachmentRepository.delete(attachment);
             }
 
-            return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
         }
     }
 
