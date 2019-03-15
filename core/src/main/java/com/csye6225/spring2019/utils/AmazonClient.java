@@ -45,6 +45,7 @@ public class AmazonClient {
     @PostConstruct
     private void initializeAmazon() {
         AWSCredentials credentials = new BasicAWSCredentials(this.awsKeyId, this.awsKeySecret);
+        // System.out.println("The credentials given are vvvvv:" +this.awsKeyId+" "+ this.awsKeySecret+ "and bucket name is iiiii :"+ this.awsS3AudioBucket);
         this.s3client = new AmazonS3Client(credentials);
     }
 
@@ -57,7 +58,8 @@ public class AmazonClient {
 
     }
     private void uploadFileTos3bucket(String fileName, File file) {
-        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file));
+        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
 
     }
 
