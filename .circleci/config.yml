@@ -3,8 +3,8 @@ jobs:
   build:
     branches:
       only: 
-        Assignment5
-        master
+      - Assignment5
+      - master
     docker:
       -
         image: circleci/openjdk:8-jdk
