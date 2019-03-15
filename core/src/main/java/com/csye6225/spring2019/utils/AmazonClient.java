@@ -45,6 +45,7 @@ public class AmazonClient {
     @PostConstruct
     private void initializeAmazon() {
         AWSCredentials credentials = new BasicAWSCredentials(this.awsKeyId, this.awsKeySecret);
+        // System.out.println("The credentials given are vvvvv:" +this.awsKeyId+" "+ this.awsKeySecret+ "and bucket name is iiiii :"+ this.awsS3AudioBucket);
         this.s3client = new AmazonS3Client(credentials);
     }
 
