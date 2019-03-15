@@ -262,7 +262,6 @@
                         "sudo systemctl status tomcat.service",
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
-                        "sudo mkdir /home/centos/tmp",
                         "sudo systemctl stop tomcat.service",
                         "cd /opt/tomcat/apache-tomcat-9.0.16/bin",
                           "sudo touch setenv.sh",
