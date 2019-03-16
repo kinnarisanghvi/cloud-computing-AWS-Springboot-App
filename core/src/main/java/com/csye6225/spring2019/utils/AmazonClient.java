@@ -1,8 +1,7 @@
 package com.csye6225.spring2019.utils;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -14,10 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -32,15 +29,13 @@ public class AmazonClient {
     @Value("${aws.region}")
     private String awsRegion;
 
-
     @Value("${aws.s3.audio.bucket}")
     private String awsS3AudioBucket;
 
 
     @PostConstruct
     private void initializeAmazon() {
-        // System.out.println("The credentials given are vvvvv:" +this.awsKeyId+" "+ this.awsKeySecret+ "and bucket name is iiiii :"+ this.awsS4AudioBucket);
-        this.s3client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());
+        this.s3client = new AmazonS3Client(new InstanceProfileCredentialsProvider(false));
     }
 
 
