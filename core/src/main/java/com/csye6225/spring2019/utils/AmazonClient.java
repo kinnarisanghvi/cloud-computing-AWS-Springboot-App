@@ -24,6 +24,10 @@ import java.util.Date;
 public class AmazonClient {
 
     private AmazonS3 s3client;
+    
+
+    @Value("${aws.region}")
+    private String awsRegion;
 
     @Value("${aws.s3.audio.bucket}")
     private String awsS3AudioBucket;
