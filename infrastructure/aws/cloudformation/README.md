@@ -18,6 +18,6 @@ Steps to run the csye6225-aws-cf-create-stack.sh file :
 Steps to run the csye6225-aws-cf-terminate-stack.sh file :
 1. On command prompt, go into the folder csye6225-spring2019/infrastructure/aws/cloudformation/
 2. ./csye6225-aws-cf-terminate-stack.sh 
-3. You will be prompted to enter stack name
+3. You will be prompted to enter stack-name
 4. Enter your stack name and hit enter    
 
