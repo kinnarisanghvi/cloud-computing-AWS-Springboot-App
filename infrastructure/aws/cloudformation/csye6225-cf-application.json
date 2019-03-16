@@ -70,45 +70,22 @@
             "RoleName":"CodeDeployEC2ServiceRole"
          }
       },
-      "AccessAttachmentToS3Bucket":{
-         "Type":"AWS::IAM::ManagedPolicy",
-         "Properties":{
-            "Description":"Policy for uploading attachments into S3",
-            "ManagedPolicyName":"Access-Attachment-To-S3-Bucket",
-            "PolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Action":[
-                        "s3:PutObject",
-                        "s3:DeleteObject",
-                        "s3:GetObject"
-                     ],
-                     "Effect":"Allow",
-                     "Resource":[
-                        {
-                           "Fn::Join":[
-                              "",
-                              [
-                                 "arn:aws:s3:::csye6225-spring2019-",
-                                 {
-                                    "Ref":"bucketName"
-                                 },
-                                 ".me.csye6225.com/*"
-                              ]
-                           ]
-                        }
-                     ]
-                  }
-               ]
-            },
-            "Roles":[
-               {
-                  "Ref":"CodeDeployEC2ServiceRole"
-               }
-            ]
-         }
-      },
+        "myEC2S3AccessPolicy": {
+	              "Type": "AWS::IAM::ManagedPolicy",
+	              "DependsOn": "myEC2Role",
+	              "Properties": {
+	                "ManagedPolicyName": "EC2-S3-Access",
+	                "PolicyDocument": {
+	                "Version": "2012-10-17",
+	                "Statement": [{
+	                    "Effect": "Allow",
+	                    "Action":   ["s3:Put*","s3:Get*","s3:List*","s3:Delete*"],
+	                    "Resource": "*"
+	                }]
+	              },
+	              "Roles": ["CodeDeployEC2ServiceRole"]
+	              }
+	        },
       "CodeDeployServiceRole":{
          "Type":"AWS::IAM::Role",
          "Properties":{
