@@ -27,15 +27,7 @@ import java.util.Date;
 public class AmazonClient {
 
     private AmazonS3 s3client;
-
-
-    @Value("${aws.access.key.id}")
-    private String awsKeyId;
-
-    @Value("${aws.access.key.secret}")
-    private String awsKeySecret;
-
-
+    
 
     @Value("${aws.region}")
     private String awsRegion;
