@@ -2,6 +2,7 @@ package com.csye6225.spring2019.utils;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -44,8 +45,7 @@ public class AmazonClient {
 
     @PostConstruct
     private void initializeAmazon() {
-        AWSCredentials credentials = new BasicAWSCredentials(this.awsKeyId, this.awsKeySecret);
-        this.s3client = new AmazonS3Client(credentials);
+        this.s3client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());
     }
 
 
