@@ -45,11 +45,6 @@
          "Description":"bucket",
          "Default":"sanghviki",
          "Type":"String"
-      },
-       "profile":{
-         "Description":"profile",
-         "Default":"profile",
-         "Type":"String"
       }
    },
    "Resources":{
@@ -87,7 +82,8 @@
                      "Action":[
                         "s3:PutObject",
                         "s3:DeleteObject",
-                        "s3:GetObject"
+                        "s3:GetObject",
+                        "s3:PutObjectAcl"
                      ],
                      "Effect":"Allow",
                      "Resource":[
@@ -272,67 +268,64 @@
                         "sudo touch setenv.sh",
                         "sudo chmod 777 setenv.sh",
                         "sudo echo '#!/bin/sh' >> setenv.sh",
-               
-                          {
-                           "Fn::Join": [
-                            
-                            "",
-                            [
-                                "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://",
-                               {
-                                  "Fn::GetAtt":[
-                                     "myDBInstance",
-                                     "Endpoint.Address"
-                                  ]
-                               },
-                               ":3306/csye6225\"' >> setenv.sh \n"
-                            ]
-                             ]  }
-                                                    ,
-                          {
-                           "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
-                             {
-                              "Ref": "DatabaseUsername"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.url=jdbc:mysql://",
+                                 {
+                                    "Fn::GetAtt":[
+                                       "myDBInstance",
+                                       "Endpoint.Address"
+                                    ]
+                                 },
+                                 ":3306/csye6225\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          {
-                           "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.bucketName=",
-                             {
-                              "Ref": "bucketName"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                        },
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=",
+                                 {
+                                    "Ref":"DatabaseUsername"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          {
-                           "Fn::Join": [
-                            "",
-                            [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
-                             {
-                              "Ref": "DatabasePassword"
-                             },
-                             "\"' >> setenv.sh \n"
-                            ]
+                        },
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=csye6225-spring2019-",
+                                 {
+                                    "Ref":"bucketName"
+                                 },
+                                 ".me.csye6225.com\"' >> setenv.sh \n"
+                              ]
                            ]
-                          },
-                          "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
-
+                        },
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=",
+                                 {
+                                    "Ref":"DatabasePassword"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
+                           ]
+                        },
+                        "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
                         "systemctl daemon-reload",
                         "systemctl enable tomcat.service",
                         "systemctl start tomcat.service"
-                        ]
                      ]
-                  }
+                  ]
+               }
             },
             "SecurityGroupIds":[
                {

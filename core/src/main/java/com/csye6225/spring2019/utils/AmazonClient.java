@@ -2,6 +2,7 @@ package com.csye6225.spring2019.utils;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -26,13 +27,7 @@ import java.util.Date;
 public class AmazonClient {
 
     private AmazonS3 s3client;
-
-
-    @Value("${aws.access.key.id}")
-    private String awsKeyId;
-
-    @Value("${aws.access.key.secret}")
-    private String awsKeySecret;
+    
 
     @Value("${aws.region}")
     private String awsRegion;
@@ -44,9 +39,8 @@ public class AmazonClient {
 
     @PostConstruct
     private void initializeAmazon() {
-        AWSCredentials credentials = new BasicAWSCredentials(this.awsKeyId, this.awsKeySecret);
-        // System.out.println("The credentials given are vvvvv:" +this.awsKeyId+" "+ this.awsKeySecret+ "and bucket name is iiiii :"+ this.awsS3AudioBucket);
-        this.s3client = new AmazonS3Client(credentials);
+        // System.out.println("The credentials given are vvvvv:" +this.awsKeyId+" "+ this.awsKeySecret+ "and bucket name is iiiii :"+ this.awsS4AudioBucket);
+        this.s3client = new AmazonS3Client(new DefaultAWSCredentialsProviderChain());
     }
 
 
@@ -58,7 +52,8 @@ public class AmazonClient {
 
     }
     private void uploadFileTos3bucket(String fileName, File file) {
-        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file));
+        s3client.putObject(new PutObjectRequest(awsS3AudioBucket, fileName, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
 
     }
 
