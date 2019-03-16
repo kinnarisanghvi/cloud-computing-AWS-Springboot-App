@@ -27,11 +27,7 @@ import java.util.Date;
 public class AmazonClient {
 
     private AmazonS3 s3client;
-
-
-
-
-
+    
 
     @Value("${aws.region}")
     private String awsRegion;
