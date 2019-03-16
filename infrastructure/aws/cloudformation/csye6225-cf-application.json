@@ -299,7 +299,7 @@
                            "Fn::Join": [
                             "",
                             [
-                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.bucketName=",
+                             "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=",
                              {
                               "Ref": "bucketName"
                              },
