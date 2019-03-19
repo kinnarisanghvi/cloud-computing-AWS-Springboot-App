@@ -46,7 +46,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note")
+    @GetMapping("/note-kinnari")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
@@ -87,7 +87,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping("/note")
+    @PostMapping("/note-kinnari")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
@@ -136,7 +136,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note/{idNotes}")
+    @GetMapping("/note-kinnari/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         Note note = noteRepository.findBy(id);
@@ -266,7 +266,7 @@ public class NoteController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    @DeleteMapping("/note/{idNotes}")
+    @DeleteMapping("/note-kinnari/{idNotes}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "idNotes") String noteid, HttpServletRequest request, HttpServletResponse response) {
 
         Note delete_note = noteRepository.getOne(noteid);
