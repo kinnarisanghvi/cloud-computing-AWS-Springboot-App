@@ -44,8 +44,10 @@ public class NoteController {
 
     HttpHeaders responseHeaders = new HttpHeaders();
 
+
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
+
     @GetMapping("/note-victor")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
         auth_user = uCheck.loginUser(request, response, uRepository);
@@ -85,10 +87,14 @@ public class NoteController {
         return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
+
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PostMapping("/note-victor")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    @PostMapping("/note-victor")
+    public ResponseEntity<Object> newNote(@Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) {
+
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "4") {
@@ -134,10 +140,23 @@ public class NoteController {
         return null;
     }
 
+
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/note-victor/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    @GetMapping("/note-victor/{id}")
+    public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id,HttpServletRequest request,HttpServletResponse response) throws JSONException {
+        auth_user = uCheck.loginUser(request, response, uRepository);
+        if(auth_user == "0") {
+            return new ResponseEntity<Object>("{\"message\": \"Invalid Login\"}", HttpStatus.NOT_ACCEPTABLE);
+        } else if(auth_user == "1") {
+            return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.FORBIDDEN);
+        } else if(auth_user == "2") {
+            return new ResponseEntity<Object>("{\"message\": \"Incorrect Authorization Headers\"}", HttpStatus.UNAUTHORIZED);
+        } else {
+            auth_user_1 = auth_user.split(",");
+
 
         Note note = noteRepository.findBy(id);
         System.out.println("note :"+ note);
