@@ -41,7 +41,7 @@ public class NoteController {
 
     HttpHeaders responseHeaders = new HttpHeaders();
 
-    @GetMapping("/note")
+    @GetMapping("/note-victor")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
         auth_user= uCheck.loginUser(request,response,uRepository);
         if(auth_user == "0") {
@@ -78,7 +78,7 @@ public class NoteController {
         return new ResponseEntity<Object>("{\"message\": \"Unauthorized User\"}", HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/note")
+    @PostMapping("/note-victor")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note,HttpServletRequest request,HttpServletResponse response) {
 
         auth_user= uCheck.loginUser(request,response,uRepository);
@@ -110,7 +110,7 @@ public class NoteController {
         }
     }
 
-    @GetMapping("/note/{id}")
+    @GetMapping("/note-victor/{id}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "id") String id,HttpServletRequest request,HttpServletResponse response) throws JSONException {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if(auth_user == "0") {
