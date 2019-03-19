@@ -2,10 +2,7 @@ package com.csye6225.spring2019.utils;
 
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.UserRepository;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
-
-
-import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
@@ -13,7 +10,7 @@ import java.util.Base64;
 public class UserCheck {
 
 
-    public String loginUser(HttpServletRequest request, HttpServletResponse response,UserRepository userRepository) {
+    public String loginUser(HttpServletRequest request, HttpServletResponse response, UserRepository userRepository) {
 
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
@@ -28,12 +25,15 @@ public class UserCheck {
             String password = userDetails[1];
             System.out.println(email + "  " + password);
 
+            if(email.equals(null) || password.equals(null)){
+                return "4";
+            }
             if (userExists == null) {
                 return "0"; //not exists
             }
 
             boolean flag = Password.checkPassword(password, userExists.getPassword());
-            // long userid = user1.getId();
+
 
             if (!flag) {
                 return "1"; // invalid login

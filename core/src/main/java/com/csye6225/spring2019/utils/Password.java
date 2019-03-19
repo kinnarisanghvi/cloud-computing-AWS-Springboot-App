@@ -1,5 +1,6 @@
 package com.csye6225.spring2019.utils;
 
+
 import org.mindrot.jbcrypt.BCrypt;
 
 public class Password {
