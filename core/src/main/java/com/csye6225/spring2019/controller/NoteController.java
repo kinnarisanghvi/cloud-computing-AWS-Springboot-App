@@ -46,7 +46,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note")
+    @GetMapping("/note-karan")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
