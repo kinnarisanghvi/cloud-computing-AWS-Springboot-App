@@ -176,7 +176,7 @@
        " CloudWatchAgentServerRole":{
          "Type":"AWS::IAM::Role",
          "Properties":{
-            "RoleName":"CodeDeployServiceRole",
+            "RoleName":"CloudWatchAgentServerRole",
             "ManagedPolicyArns":[
                "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
             ]
