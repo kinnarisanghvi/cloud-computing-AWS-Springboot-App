@@ -46,7 +46,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note")
+    @GetMapping("/note-victor")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
@@ -87,7 +87,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping("/note")
+    @PostMapping("/note-victor")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
@@ -136,7 +136,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note/{idNotes}")
+    @GetMapping("/note-victor/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         Note note = noteRepository.findBy(id);
@@ -195,7 +195,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @PutMapping("/note/{idNotes}")
+    @PutMapping("/note-victor/{idNotes}")
     public ResponseEntity<Object> updateNote(@PathVariable(value = "idNotes") String id, @Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response, UserRepository ur) throws JSONException {
 
         Note updated_note = noteRepository.getOne(id);
