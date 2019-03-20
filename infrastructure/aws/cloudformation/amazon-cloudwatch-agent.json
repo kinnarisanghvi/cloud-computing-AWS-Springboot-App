@@ -1,9 +1,22 @@
 {
     "agent": {
-        "metrics_collection_interval": 60,
+        "metrics_collection_interval": 10,
         "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
         "debug": "false"
     },
+  "Metrics" : [
+        {
+         "Namespace": "AWS/EC2",
+         "metrics_collected":{
+         "statsd":{
+            "service_address":"${public_ip}:${port}",
+            "metrics_collection_interval":60,
+            "metrics_aggregation_interval":300
+          }
+         },
+        "MetricName": "APIRequestCount"
+        },
+  ],
     "logs": {
         "logs_collected": {
             "files": {
