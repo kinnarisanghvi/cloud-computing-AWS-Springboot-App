@@ -1,6 +1,5 @@
 package com.csye6225.spring2019.controller;
 
-import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.AttachmentRepository;
@@ -9,7 +8,6 @@ import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
 import com.csye6225.spring2019.utils.UserCheck;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
@@ -26,7 +25,8 @@ import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 public class NoteController {
@@ -43,6 +43,8 @@ public class NoteController {
     String[] auth_user_1 = new String[3];
 
     HttpHeaders responseHeaders = new HttpHeaders();
+
+    private final static Logger logger = LoggerFactory.getLogger(NoteController.class);
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -78,10 +80,12 @@ public class NoteController {
                     }
 
                 }
+
                 return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
 
             }
         }
+        logger.warn("Unauthorized User "+ auth_user_1[1]);
         return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
