@@ -55,6 +55,10 @@ public class NoteController {
 
     private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
 
+    @Autowired
+    NoteController(AmazonClient amazonClient) {
+        this.amazonClient = amazonClient;
+    }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -369,8 +373,9 @@ public class NoteController {
 
 
                     for (int i = 0; i < delete_note.getAttachmentList().size(); i++) {
-                        attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getId());
                         this.amazonClient.deleteFileFromS3Bucket(delete_note.getAttachmentList().get(i).getUrl());
+                        attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getId());
+
                     }
 
                     noteRepository.delete(delete_note);
