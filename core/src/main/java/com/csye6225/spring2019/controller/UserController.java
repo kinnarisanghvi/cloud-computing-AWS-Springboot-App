@@ -1,5 +1,4 @@
 package com.csye6225.spring2019.controller;
-import com.csye6225.spring2019.metrics.MetricsConfig;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
@@ -12,11 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
@@ -34,13 +31,13 @@ public class UserController {
     @Autowired
     private StatsDClient statsd;
 
-    private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
-
+    private final static Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
+        LOG.info("Inside loginUser()");
         statsd.incrementCounter("/ url hit");
         if(LOG.isTraceEnabled()){
             LOG.trace(">> loginUser()");
@@ -57,7 +54,6 @@ public class UserController {
             String basicAuthEncoded = header.substring(6);
             String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
             userDetails = basicAuthAsString.split(":", 2);
-            System.out.println("userdetail "+userDetails+ " "+ userDetails[0]);
             User userExists = userRepository.findByEmail(userDetails[0]);
             try {
                 String email = userDetails[0];
@@ -74,7 +70,7 @@ public class UserController {
             }
 
             if (userExists == null) {
-                LOG.warn("User not found");
+                LOG.warn("Invalid username and password");
                 return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
             }
 
@@ -95,6 +91,8 @@ public class UserController {
     @Produces("application/json")
     @PostMapping("/user/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
+        LOG.info("Inside createUser()");
+        statsd.incrementCounter("/user/register url hit");
         List<String> errorList = new ArrayList<String>();
         List<User> users = userRepository.findAll();
         try{
@@ -105,6 +103,7 @@ public class UserController {
                 System.out.println("Username or password is null");
             }
         }catch (NullPointerException e){
+            LOG.error("Bad request");
             return new ResponseEntity<String>("{\"message\":\"Enter username and password\"}", responseHeaders, HttpStatus.FORBIDDEN);
         }
         for(User user1 : users) {
@@ -117,7 +116,7 @@ public class UserController {
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
-                LOG.info("User created"+user);
+                LOG.info("User created");
                 return new ResponseEntity<String>("{\"message\": \"" + "Account created Successfully." + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
