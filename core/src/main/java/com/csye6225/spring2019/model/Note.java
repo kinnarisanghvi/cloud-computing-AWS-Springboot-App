@@ -13,8 +13,6 @@ import java.util.List;
 public class Note {
 
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "note_id")
     private String id;
 
