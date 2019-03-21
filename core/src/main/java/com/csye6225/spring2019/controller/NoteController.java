@@ -50,20 +50,32 @@ public class NoteController {
 
     HttpHeaders responseHeaders = new HttpHeaders();
 
-    private final StatsDClient statsd = null;
+    @Autowired
+    private StatsDClient statsd;
 
     private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
+
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/note")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
+
+        LOG.info("Inside getAllNote()");
+        statsd.incrementCounter("/note url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> getAllNote()");
+        }
+
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
+            LOG.error("Bad request");
             return new ResponseEntity<Object>("unauthorized", HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Wrong password");
             return new ResponseEntity<Object>("unauthorized", HttpStatus.FORBIDDEN);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<Object>("unauthorized", HttpStatus.UNAUTHORIZED);
         } else {
             auth_user_1 = auth_user.split(",");
@@ -88,8 +100,7 @@ public class NoteController {
                     }
 
                 }
-                statsd.incrementCounter("user note created");
-                LOG.info("User created "+ auth_user_1[1]);
+                LOG.info("User created "+ entities.toString());
                 return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
 
             }
@@ -103,15 +114,23 @@ public class NoteController {
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PostMapping("/note")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
-
+        LOG.info("Inside newNote()");
+        statsd.incrementCounter("/note url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> newNote()");
+        }
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "4") {
+            LOG.warn("Bad request");
             return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
         } else if (auth_user == "0") {
+            LOG.warn("Bad request : Request without credentails ");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Bad request : Wrong password");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
             auth_user_1 = auth_user.split(",");
@@ -144,6 +163,7 @@ public class NoteController {
                 entity.put("attachments", note.getAttachmentList());
 
                 entities.add(entity);
+                LOG.info("Added note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
             }
         }
@@ -155,9 +175,15 @@ public class NoteController {
     @GetMapping("/note/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
+        LOG.info("Inside getOneNote()");
+        statsd.incrementCounter("/note/{idNotes} url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> getOneNote()");
+        }
         Note note = noteRepository.findBy(id);
         System.out.println("note :"+ note);
         if (note.equals(null)) {
+            LOG.error("Note id is not found");
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
 
@@ -178,14 +204,19 @@ public class NoteController {
             System.out.println("auth user in update: "+ auth_user);
             auth_user_1 = auth_user.split(",");
             if (auth_user == "4") {
+                LOG.info("Bad request");
                 return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "1") {
+                LOG.warn("Bad request : Wrong password");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "2") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             } else if (!(note.getUser().getEmailID().equals(email))) {
+                LOG.warn("User in not authorized on this note");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             }
             List<JSONObject> entities = new ArrayList<JSONObject>();
@@ -203,6 +234,7 @@ public class NoteController {
                 }
                 entity.put("attachment", attachmentobj);
                 entities.add(entity);
+                LOG.info("Returning note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.OK);
             }
         }
@@ -214,9 +246,12 @@ public class NoteController {
     @PutMapping("/note/{idNotes}")
     public ResponseEntity<Object> updateNote(@PathVariable(value = "idNotes") String id, @Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response, UserRepository ur) throws JSONException {
 
+        LOG.info("Inside updateNote()");
+        statsd.incrementCounter("/note/{idNotes} url for put hit");
         Note updated_note = noteRepository.getOne(id);
         System.out.println("update note: " + updated_note);
         if (updated_note.equals(null)) {
+            LOG.warn("Bad request : Request does not have noteID" );
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
 
@@ -233,12 +268,16 @@ public class NoteController {
             auth_user = uCheck.loginUser(request, response, uRepository);
 
             if (auth_user == "4") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
+                LOG.warn("Bad request : No credentails found");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "1") {
+                LOG.warn("Bad request : Wrong password");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "2") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (!(updated_note.getUser().getEmailID().equals(email))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -274,17 +313,24 @@ public class NoteController {
                         }
                     }
                     entities.add(entity);
+                    LOG.info("Updated note" +entities.toString());
                     return new ResponseEntity<>(entities.toString(), HttpStatus.OK
                     );
                 }
             }
 
         }
+        LOG.warn("Bad request");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     @DeleteMapping("/note/{idNotes}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "idNotes") String noteid, HttpServletRequest request, HttpServletResponse response) {
 
+        LOG.info("Inside deleteNote()");
+        statsd.incrementCounter("/note/{idNotes} url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> loginUser()");
+        }
         Note delete_note = noteRepository.getOne(noteid);
         if (delete_note.equals(null)) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
@@ -303,12 +349,16 @@ public class NoteController {
 
             auth_user = uCheck.loginUser(request, response, uRepository);
             if (auth_user == "4") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else if (auth_user == "0") {
+                LOG.warn("Bad request : No credetails found");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "1") {
+                LOG.warn("Bad request : Wrong password");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (auth_user == "2") {
+                LOG.warn("Bad request");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             } else if (!(delete_note.getUser().getEmailID().equals(email))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -324,10 +374,12 @@ public class NoteController {
                     }
 
                     noteRepository.delete(delete_note);
+                    LOG.info("Deleted note");
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }
             }
         }
+        LOG.warn("Bad request");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
