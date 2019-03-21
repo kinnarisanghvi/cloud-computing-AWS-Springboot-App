@@ -1,15 +1,17 @@
 package com.csye6225.spring2019.controller;
 
-import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.repository.AttachmentRepository;
 import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import javax.servlet.http.HttpServletResponse;
+
+import com.csye6225.spring2019.utils.AmazonClient;
 import com.csye6225.spring2019.utils.UserCheck;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONArray;
+
+import com.timgroup.statsd.StatsDClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @RestController
@@ -42,7 +46,13 @@ public class NoteController {
     String auth_user = null;
     String[] auth_user_1 = new String[3];
 
+    private AmazonClient amazonClient;
+
     HttpHeaders responseHeaders = new HttpHeaders();
+
+    private final StatsDClient statsd = null;
+
+    private final static Logger logger = LoggerFactory.getLogger(NoteController.class);
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -78,10 +88,14 @@ public class NoteController {
                     }
 
                 }
+                statsd.incrementCounter("user note created");
+                logger.info("User created "+ auth_user_1[1]);
                 return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
 
             }
         }
+        logger.warn("Unauthorized User "+ auth_user_1[1]);
+
         return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
@@ -108,6 +122,7 @@ public class NoteController {
             userid = Long.valueOf(auth_user_1[1]);
             User user = new User();
             user.setId(userid);
+            System.out.print("note id random "+ randomUUIDString);
             java.util.Date uDate = new java.util.Date();
             java.sql.Date sDate = new java.sql.Date(uDate.getTime());
             System.out.println("Time in java.sql.Date is : " + sDate);
@@ -121,6 +136,7 @@ public class NoteController {
             JSONObject entity = new JSONObject();
             if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
                 entity.put("Id", note.getId());
+                System.out.print("note id "+ note.getId());
                 entity.put("Content", note.getContent());
                 entity.put("Title", note.getTitle());
                 entity.put("Created_on", note.getCreated_on());
@@ -304,6 +320,7 @@ public class NoteController {
 
                     for (int i = 0; i < delete_note.getAttachmentList().size(); i++) {
                         attachmentRepository.deleteById(delete_note.getAttachmentList().get(i).getId());
+                        this.amazonClient.deleteFileFromS3Bucket(delete_note.getAttachmentList().get(i).getUrl());
                     }
 
                     noteRepository.delete(delete_note);
