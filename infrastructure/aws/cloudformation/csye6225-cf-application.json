@@ -237,7 +237,9 @@
                "IpProtocol":"tcp",
                "FromPort":"3306",
                "ToPort":"3306",
-               "CidrIp":"0.0.0.0/0"
+               "SourceSecurityGroupId": { 
+                  "Fn::GetAtt" : [ "csye6225webapp", "GroupId" ] 
+             } 
             },
             "VpcId":{
                "Ref":"VPCID"
