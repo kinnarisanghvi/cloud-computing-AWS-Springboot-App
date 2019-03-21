@@ -62,7 +62,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note-kinnari")
+    @GetMapping("/note")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
 
         LOG.info("Inside getAllNote()");
@@ -116,7 +116,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping("/note-kinnari")
+    @PostMapping("/note")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         LOG.info("Inside newNote()");
         statsd.incrementCounter("/note url hit");
@@ -176,7 +176,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note-kinnari/{idNotes}")
+    @GetMapping("/note/{idNotes}")
     public ResponseEntity<Object> getOneNote(@PathVariable(value = "idNotes") String id, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         LOG.info("Inside getOneNote()");
@@ -327,7 +327,7 @@ public class NoteController {
         LOG.warn("Bad request");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    @DeleteMapping("/note-kinnari/{idNotes}")
+    @DeleteMapping("/note/{idNotes}")
     public ResponseEntity<?> deleteNote(@PathVariable(value = "idNotes") String noteid, HttpServletRequest request, HttpServletResponse response) {
 
         LOG.info("Inside deleteNote()");
