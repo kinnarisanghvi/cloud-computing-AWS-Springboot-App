@@ -1,4 +1,5 @@
 package com.csye6225.spring2019.controller;
+import com.csye6225.spring2019.metrics.MetricsConfig;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
@@ -30,9 +31,15 @@ public class UserController {
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
-    private final StatsDClient statsd = null;
+    private StatsDClient statsd = null;
 
     private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
+
+    public UserController(){
+        MetricsConfig mc = new MetricsConfig();
+        statsd = mc.statsDClient("127.0.0.1", 8125, "statsd");
+    }
+
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
