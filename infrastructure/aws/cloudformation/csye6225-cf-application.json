@@ -67,6 +67,9 @@
                   }
                ]
             },
+            "ManagedPolicyArns":[
+               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+            ],
             "RoleName":"CodeDeployEC2ServiceRole"
          }
       },
@@ -170,31 +173,6 @@
                {
                   "Ref":"CodeDeployEC2ServiceRole"
                }
-            ]
-         }
-      },
-      "CloudWatchAgentServerRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "RoleName":"CloudWatchAgentServerRole",
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
-                           "ec2.amazonaws.com"
-                        ]
-                     },
-                     "Action":[
-                        "sts:AssumeRole"
-                     ]
-                  }
-               ]
-            },
-            "ManagedPolicyArns":[
-               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
             ]
          }
       },
