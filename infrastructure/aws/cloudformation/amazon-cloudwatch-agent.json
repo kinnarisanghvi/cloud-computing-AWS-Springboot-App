@@ -15,7 +15,7 @@
           }
          },
         "MetricName": "APIRequestCount"
-        },
+        }
   ],
     "logs": {
         "logs_collected": {
