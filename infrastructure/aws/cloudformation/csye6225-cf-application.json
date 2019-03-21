@@ -291,7 +291,7 @@
                         "sudo systemctl start mysqld",
                         "sudo systemctl status mysqld",
                         "sudo systemctl stop tomcat.service",
-                        "cd /opt/tomcat/apache-tomcat-9.0.16/bin",
+                        "cd /opt/tomcat/apache-tomcat-9.0.17/bin",
                         "sudo touch setenv.sh",
                         "sudo chmod 777 setenv.sh",
                         "sudo echo '#!/bin/sh' >> setenv.sh",
