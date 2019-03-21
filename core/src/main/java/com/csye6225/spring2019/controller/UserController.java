@@ -31,14 +31,10 @@ public class UserController {
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
-    private StatsDClient statsd = null;
+    @Autowired
+    private StatsDClient statsd;
 
     private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
-
-    public UserController(){
-        MetricsConfig mc = new MetricsConfig();
-        statsd = mc.statsDClient("127.0.0.1", 8125, "statsd");
-    }
 
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
