@@ -2,6 +2,9 @@ package com.csye6225.spring2019.controller;
 import com.csye6225.spring2019.model.User;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,10 +30,18 @@ public class UserController {
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
 
+    private final StatsDClient statsd = null;
+
+    private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
+
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
+        statsd.incrementCounter("/ url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> loginUser()");
+        }
 
         DateFormat dateFormat;
         dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -50,13 +61,17 @@ public class UserController {
                 String password = userDetails[1];
                 if(email.equals(null) || password.equals(null)){
                     System.out.println("Username or password is null");
+
                 }
                 System.out.println(email + "  " + password);
             }catch (NullPointerException e){
+                LOG.warn("Bad request");
                 return new ResponseEntity<String>("{\"message\":\"Enter username and password\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
             }
 
             if (userExists == null) {
+                LOG.warn("User not found");
                 return new ResponseEntity<String>("{\"Message\": \"User not found.\"}", responseHeaders, HttpStatus.BAD_REQUEST);
             }
 
@@ -68,6 +83,7 @@ public class UserController {
             }
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
+            LOG.info("User returned:"+userDetails[1]);
             return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
@@ -98,6 +114,7 @@ public class UserController {
             if(isValidPassword(user.getPassword(),errorList)) {
                 user.setPassword(Password.hashPassword(user.getPassword()));
                 userRepository.save(user);
+                LOG.info("User created"+user);
                 return new ResponseEntity<String>("{\"message\": \"" + "Account created Successfully." + "\"}".toString(), responseHeaders, HttpStatus.OK);
             } else {
                 if(!errorList.isEmpty()) {
