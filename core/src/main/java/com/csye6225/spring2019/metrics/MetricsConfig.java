@@ -11,7 +11,7 @@ public class MetricsConfig {
 
     @Bean
     public StatsDClient statsDClient(
-            @Value("${metrics.statsd.host:localhost}") String host,
+            @Value("${metrics.statsd.host:127.0.0.1}") String host,
             @Value("${metrics.statsd.port:8125}") int port,
             @Value("${metrics.prefix:notes-application.app}") String prefix
     ) {
