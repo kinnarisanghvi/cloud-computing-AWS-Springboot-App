@@ -1,10 +1,14 @@
 package com.csye6225.spring2019.service;
 
+import com.csye6225.spring2019.controller.UserController;
 import com.csye6225.spring2019.exception.FileStorageException;
 import com.csye6225.spring2019.exception.ResourceNotFoundException;
 import com.csye6225.spring2019.model.Attachment;
 import com.csye6225.spring2019.model.Note;
 import com.csye6225.spring2019.repository.AttachmentRepository;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -31,11 +35,17 @@ public class AttachmentStorageService {
 
     @Value("${file.upload.dir}")
     private String path;
+    @Autowired
+    private StatsDClient statsd;
+
+    private final static Logger LOG = LoggerFactory.getLogger(AttachmentStorageService.class);
 
     private Path fileStorageLocation = null;
 
     public Attachment storeFile(MultipartFile file, Note note) {
         // Normalize file name
+        LOG.info("Inside storeFile()");
+
         String fileName = new Date().getTime() + "-" + file.getOriginalFilename().replace(" ", "_");
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
@@ -64,7 +74,7 @@ public class AttachmentStorageService {
                 System.out.println(e);
                 String msg = String.format("Failed to store file", file.getName()+ " "+ e.getMessage());
                 System.out.println("msg : "+msg);
-
+                LOG.error("Failed to store file");
                 throw new FileStorageException(msg);
             }
 
@@ -80,9 +90,10 @@ public class AttachmentStorageService {
                     .toUriString();
             System.out.println("file download uri: "+ fileDownloadUri);
             attachFile.setUrl(this.fileStorageLocation.resolve(fileName).toString());
-
+            LOG.info("File saved");
             return attachmentRepository.save(attachFile);
         } catch (Exception ex) {
+            LOG.error("Could not store file");
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
@@ -143,6 +154,7 @@ public class AttachmentStorageService {
             if(file.delete()) {
                 System.out.println(file.getName() + " is deleted!");
                 attachmentRepository.deleteById(attachment.getId());
+                LOG.info("file deleted");
                 return true;
             } else {
                 System.out.println("Delete operation is failed.");
@@ -150,6 +162,7 @@ public class AttachmentStorageService {
             }
         }
         catch(Exception e) {
+            LOG.error("Could not delete file");
             System.out.println("Failed to Delete image !!");
         }
         return false;
