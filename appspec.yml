@@ -3,8 +3,6 @@ os: linux
 files:
   - source: /core/target/ROOT.war
     destination: /opt/tomcat/apache-tomcat-9.0.17/webapps
-  - source: cloudwatch-config.json
-    destination: /opt/tomcat
 hooks:
   BeforeInstall:
     - location: ./removeRoot.sh
