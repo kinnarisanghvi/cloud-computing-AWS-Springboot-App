@@ -52,7 +52,7 @@ public class NoteController {
 
     private final StatsDClient statsd = null;
 
-    private final static Logger logger = LoggerFactory.getLogger(NoteController.class);
+    private final static Logger LOG = LoggerFactory.getLogger(NoteController.class);
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -89,12 +89,12 @@ public class NoteController {
 
                 }
                 statsd.incrementCounter("user note created");
-                logger.info("User created "+ auth_user_1[1]);
+                LOG.info("User created "+ auth_user_1[1]);
                 return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
 
             }
         }
-        logger.warn("Unauthorized User "+ auth_user_1[1]);
+        LOG.warn("Unauthorized User "+ auth_user_1[1]);
 
         return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
