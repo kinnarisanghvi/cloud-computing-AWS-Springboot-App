@@ -42,10 +42,21 @@ public class UserController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/reset")
+    public void resetPassword(@Valid @RequestBody User user) {
+        LOG.info("Inside resetPassword()");
+        statsd.incrementCounter("/reset url hit");
+
+        String username = user.getEmailID();
+        amazonClient.publishSNSTopic("Email", username);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Inside loginUser()");
-        amazonClient.publishSNSTopic();
+
         statsd.incrementCounter("/ url hit");
         if(LOG.isTraceEnabled()){
             LOG.trace(">> loginUser()");

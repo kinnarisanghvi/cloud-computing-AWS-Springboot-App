@@ -82,9 +82,9 @@ public class AmazonClient {
         return "Successfully deleted";
     }
 
-    public String publishSNSTopic() {
+    public String publishSNSTopic(String key,String emailID) {
         try {
-            this.publisherService.publish("{\"mobileno\": \"+6176376750\", \"message\": \"Hello Karan! How have you been doing? Hope you are doing great. Good bye! Also fuck you\"}", SNSPublisherService.TOPIC_RESETPASSWORD);
+            this.publisherService.publish(emailID, SNSPublisherService.TOPIC_RESETPASSWORD);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         }
