@@ -327,6 +327,18 @@
                               ]
                            ]
                         },
+                          {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.sns.topic.resetpassword.ARN=",
+                                 {
+                                    "Ref":"myTopic"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
+                           ]
+                        },
                         "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
                         "systemctl daemon-reload",
                         "systemctl enable tomcat.service",
