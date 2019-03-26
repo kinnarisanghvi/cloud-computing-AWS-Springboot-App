@@ -1,2 +1,1 @@
 sudo systemctl stop tomcat
-

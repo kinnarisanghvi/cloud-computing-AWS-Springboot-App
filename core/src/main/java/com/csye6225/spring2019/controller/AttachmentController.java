@@ -8,8 +8,11 @@ import com.csye6225.spring2019.repository.NoteRepository;
 import com.csye6225.spring2019.repository.UserRepository;
 import com.csye6225.spring2019.utils.AmazonClient;
 import com.csye6225.spring2019.utils.UserCheck;
+import com.timgroup.statsd.StatsDClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -41,6 +44,12 @@ public class AttachmentController {
     @Autowired
     AttachmentRepository attachmentRepository;
 
+    @Autowired
+    private StatsDClient statsd;
+
+    private final static Logger LOG = LoggerFactory.getLogger(AttachmentController.class);
+
+
 
     UserCheck uCheck = new UserCheck();
     String auth_user = null;
@@ -59,6 +68,11 @@ public class AttachmentController {
     @GetMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> getAllAttachments(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
+        LOG.info("Inside getAllAttachments()");
+        statsd.incrementCounter("/note/{idNotes}/attachments url hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> getAllAttachments()");
+        }
         Note note = noteRepository.findBy(idNotes);
         if (note.equals(null)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -77,10 +91,13 @@ public class AttachmentController {
 
         auth_user = uCheck.loginUser(request, response, uRepository);
         if (auth_user == "0") {
+            LOG.warn("Bad request : No credentials passed");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Bad request : Wrong password");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {
 
@@ -103,6 +120,7 @@ public class AttachmentController {
                 }
 
             }
+            LOG.warn("Bad request");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         }
@@ -115,6 +133,8 @@ public class AttachmentController {
     @PostMapping("/note/{idNotes}/attachments")
     public ResponseEntity<Object> newAttachment(@PathVariable(value = "idNotes") String idNotes, @RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
+        LOG.info("Inside newAttachment()");
+        statsd.incrementCounter("/note/{idNotes}/attachments url for post hit");
         Note note = noteRepository.getOne(idNotes);
         if (note.equals(null)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -133,6 +153,7 @@ public class AttachmentController {
             String password = userDetails[1];
 
             if(email.equals(null) || password.equals(null)){
+                LOG.warn("Bad request : No credetials");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             }
         }
@@ -140,10 +161,13 @@ public class AttachmentController {
         auth_user = uCheck.loginUser(request, response, uRepository);
         auth_user_1 = auth_user.split(",");
         if (auth_user == "0") {
+            LOG.warn("Bad request : No credentials");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Bad request : Wrong password");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
 
@@ -170,7 +194,7 @@ public class AttachmentController {
                 entity.put("id", attachment.getId());
                 entity.put("url", attachment.getUrl());
                 entities.add(entity);
-
+                LOG.info("Added attachment" +entities.toString());
                 return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
             }
         }
@@ -182,6 +206,11 @@ public class AttachmentController {
     @PutMapping("/note/{idNotes}/attachments/{idAttachments}")
     public ResponseEntity<Object> updateAttachment(@PathVariable(value = "idNotes") String idNotes,  @PathVariable(value = "idAttachments") String idAttachments,@RequestPart(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
+        LOG.info("Inside updateAttachment()");
+        statsd.incrementCounter("/note/{idNotes}/attachments/{idAttachments} hit");
+        if(LOG.isTraceEnabled()){
+            LOG.trace(">> updateAttachment()");
+        }
         Attachment attachment = null;
         Note note = noteRepository.getOne(idNotes);
         if (note.equals(null)) {
@@ -194,6 +223,7 @@ public class AttachmentController {
                 attachment = a;
                 break;
             } else {
+                LOG.warn("Bad request : Note does not contain this attachment");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         }
@@ -212,6 +242,7 @@ public class AttachmentController {
             String password = userDetails[1];
 
             if(email.equals(null) || password.equals(null)){
+                LOG.warn("Bad request : Bad credentials");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         }
@@ -220,10 +251,13 @@ public class AttachmentController {
         auth_user_1 = auth_user.split(",");
 
         if (auth_user == "0") {
+            LOG.warn("Bad request : No credentials");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Bad request : Wrong password");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -238,6 +272,7 @@ public class AttachmentController {
                     attachment.getNote().setId(idNotes);
 
                     attachmentRepository.save(attachment);
+            LOG.info("updated attachment" +attachment.getId());
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }
             }
@@ -247,9 +282,12 @@ public class AttachmentController {
     @DeleteMapping("/note/{idNotes}/attachments/{idAttachments}")
     public ResponseEntity<Object> deleteAttachment(@PathVariable(value = "idNotes") String idNotes, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "idAttachments") String idAttachments) {
 
+        LOG.info("Inside deleteAttachment()");
+        statsd.incrementCounter("/note/{idNotes}/attachments url hit");
         Attachment attachment = null;
         Note note = noteRepository.getOne(idNotes);
         if (note.equals(null)) {
+            LOG.warn("Bad request : No such note");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -259,6 +297,7 @@ public class AttachmentController {
                 attachment = a;
                 break;
             } else {
+                LOG.warn("Bad request : attachment ID is not found for this note");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         }
@@ -276,6 +315,7 @@ public class AttachmentController {
             String password = userDetails[1];
 
             if(email.equals(null) || password.equals(null)){
+                LOG.warn("Bad request : No credentials found");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         }
@@ -284,14 +324,18 @@ public class AttachmentController {
         auth_user_1 = auth_user.split(",");
 
         if (auth_user == "0") {
+            LOG.warn("Bad request : No credentials");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "1") {
+            LOG.warn("Bad request : Password incorrect");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else if (auth_user == "2") {
+            LOG.warn("Bad request");
             return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
         } else {
 
             if (note.getUser().getId() != Long.valueOf(auth_user_1[1])) {
+                LOG.warn("Bad request : User is not authorized on this note");
                 return new ResponseEntity<Object>(HttpStatus.UNAUTHORIZED);
             }
             else {
@@ -301,6 +345,7 @@ public class AttachmentController {
                 attachmentRepository.delete(attachment);
             }
 
+            LOG.info("Deleted attachment");
             return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
         }
     }
