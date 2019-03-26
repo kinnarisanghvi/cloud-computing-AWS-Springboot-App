@@ -1,6 +1,7 @@
 package com.csye6225.spring2019.utils;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.csye6225.spring2019.utils.SNSPublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,9 @@ public class AmazonSNSPublisherService implements SNSPublisherService {
     private String snsTopicResetPasswordARN;
 
     @Autowired
-    public AmazonSNSPublisherService(BasicSessionCredentials sessionCredentials, String snsTopicResetPasswordARN) {
-        this.amazonSNS = AmazonSNSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(sessionCredentials)).build();
+    public AmazonSNSPublisherService(String snsTopicResetPasswordARN) {
+//        this.amazonSNS = AmazonSNSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(sessionCredentials)).build();
+        this.amazonSNS = AmazonSNSClientBuilder.standard().withCredentials(new InstanceProfileCredentialsProvider(false)).build();
         this.snsTopicResetPasswordARN = snsTopicResetPasswordARN;
     }
 
