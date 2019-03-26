@@ -172,60 +172,6 @@
                "circleci"
             ]
          }
-      },
-      "csye6225LambdaExecutionPolicy":{
-         "DependsOn":[
-            "csye6225LambdaExecutionRole"
-         ],
-         "Type":"AWS::IAM::Policy",
-         "Properties":{
-            "PolicyName":"MyLambdaToMakeLogsRolePolicy",
-            "Roles":[
-               {
-                  "Ref":"csye6225LambdaExecutionRole"
-               }
-            ],
-            "PolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Effect":"Allow",
-                     "Action":[
-                        "logs:*"
-                     ],
-                     "Resource":[
-                        "arn:aws:logs:*:*:*"
-                     ]
-                  }
-               ]
-            }
-         }
-      },
-      "csye6225LambdaExecutionRole":{
-         "Type":"AWS::IAM::Role",
-         "Properties":{
-            "ManagedPolicyArns":[
-               "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-               "arn:aws:iam::aws:policy/AmazonSESFullAccess",
-               "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-            ],
-            "AssumeRolePolicyDocument":{
-               "Version":"2012-10-17",
-               "Statement":[
-                  {
-                     "Effect":"Allow",
-                     "Principal":{
-                        "Service":[
-                           "lambda.amazonaws.com"
-                        ]
-                     },
-                     "Action":[
-                        "sts:AssumeRole"
-                     ]
-                  }
-               ]
-            }
-         }
       }
    }
 }

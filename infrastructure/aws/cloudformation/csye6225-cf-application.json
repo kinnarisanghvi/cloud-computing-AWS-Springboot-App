@@ -176,14 +176,6 @@
             ]
          }
       },
-      "myTopic":{
-        "Type" : "AWS::SNS::Topic",
-        "Properties" : {
-            "DisplayName" : "resetTopic",
-            "KmsMasterKeyId" : "reset",
-            "TopicName" : "reset"
-             }
-      },
       "csye6225webapp":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
