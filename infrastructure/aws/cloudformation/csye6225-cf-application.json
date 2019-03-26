@@ -176,14 +176,6 @@
             ]
          }
       },
-      "myTopic":{
-        "Type" : "AWS::SNS::Topic",
-        "Properties" : {
-            "DisplayName" : "resetTopic",
-            "KmsMasterKeyId" : "reset",
-            "TopicName" : "reset"
-             }
-      },
       "csye6225webapp":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
@@ -223,9 +215,12 @@
                "IpProtocol":"tcp",
                "FromPort":"3306",
                "ToPort":"3306",
-               "SourceSecurityGroupId": { 
-                  "Fn::GetAtt" : [ "csye6225webapp", "GroupId" ] 
-             } 
+               "SourceSecurityGroupId":{
+                  "Fn::GetAtt":[
+                     "csye6225webapp",
+                     "GroupId"
+                  ]
+               }
             },
             "VpcId":{
                "Ref":"VPCID"
@@ -474,6 +469,25 @@
                      "csye6225rds",
                      "GroupId"
                   ]
+               }
+            ]
+         }
+      },
+      "myTopic":{
+         "Type":"AWS::SNS::Topic",
+         "Properties":{
+            "DisplayName":"resetTopic",
+            "KmsMasterKeyId":"reset",
+            "TopicName":"reset",
+            "Subscription":[
+               {
+                  "Endpoint":{
+                     "Fn::GetAtt":[
+                        "csye6225LambdaFunction",
+                        "Arn"
+                     ]
+                  },
+                  "Protocol":"lambda"
                }
             ]
          }

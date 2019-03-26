@@ -173,7 +173,7 @@
             ]
          }
       },
-      "csye6225LambdaExecutionPolicy":{
+       "csye6225LambdaExecutionPolicy":{
          "DependsOn":[
             "csye6225LambdaExecutionRole"
          ],
