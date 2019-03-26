@@ -15,10 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application-dev.properties")
 public class AWSAppConfig {
 
-    private static final Integer TEMPORARY_CREDENTIALS_DURATION_DEFAULT = 7200;
-
-    @Value("${aws.temporary.credentials.validity.duration}") String credentialsValidityDuration;
-
     @Value("${aws.sns.topic.resetpassword.ARN}") String snsTopicResetPasswordARN;
 
 
@@ -27,23 +23,4 @@ public class AWSAppConfig {
         return this.snsTopicResetPasswordARN;
     }
 
-//    @Bean(name = "sessionCredentials")
-//    public BasicSessionCredentials sessionCredentials() {
-//        AWSSecurityTokenServiceClient sts_client = (AWSSecurityTokenServiceClient) AWSSecurityTokenServiceClientBuilder.defaultClient();
-//        GetSessionTokenRequest session_token_request = new GetSessionTokenRequest();
-//        if(this.credentialsValidityDuration == null || this.credentialsValidityDuration.trim().equals("")) {
-//            session_token_request.setDurationSeconds(TEMPORARY_CREDENTIALS_DURATION_DEFAULT);
-//        } else {
-//            session_token_request.setDurationSeconds(Integer.parseInt(this.credentialsValidityDuration));
-//        }
-//
-//        GetSessionTokenResult session_token_result =
-//                sts_client.getSessionToken(session_token_request);
-//        Credentials session_creds = session_token_result.getCredentials();
-//        BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
-//                session_creds.getAccessKeyId(),
-//                session_creds.getSecretAccessKey(),
-//                session_creds.getSessionToken());
-//        return sessionCredentials;
-//    }
 }

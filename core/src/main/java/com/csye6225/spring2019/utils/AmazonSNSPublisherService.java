@@ -3,6 +3,8 @@ package com.csye6225.spring2019.utils;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.csye6225.spring2019.utils.SNSPublisherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class AmazonSNSPublisherService implements SNSPublisherService {
 
     private AmazonSNS amazonSNS;
     private String snsTopicResetPasswordARN;
+    private final static Logger LOG = LoggerFactory.getLogger(AmazonSNSPublisherService.class);
 
     @Autowired
     public AmazonSNSPublisherService(String snsTopicResetPasswordARN) {
@@ -32,9 +35,12 @@ public class AmazonSNSPublisherService implements SNSPublisherService {
         // Get Appropriate Topic ARN
         //
         String snsTopic = getTopicARN(topic);
+        LOG.info("SNS TOPIC ARN: " +snsTopic);
+        LOG.info("SNS Topic Message: "+ message);
         //
         // Create Publish Message Request with TopicARN and Message
         //
+
         PublishRequest publishRequest = new PublishRequest(snsTopic, message);
         //
         // Publish the message
@@ -43,6 +49,7 @@ public class AmazonSNSPublisherService implements SNSPublisherService {
         //
         // Evaluate the result: Print MessageId of message published to SNS topic
         //
+        LOG.info("MessageId: " +publishResult.getMessageId());
         System.out.println("MessageId - " + publishResult.getMessageId());
 
     }
