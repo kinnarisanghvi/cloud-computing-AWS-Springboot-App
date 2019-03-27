@@ -84,7 +84,7 @@ public class AmazonClient {
 
     public String publishSNSTopic(String key,String emailID) {
         try {
-            this.publisherService.publish(emailID, SNSPublisherService.TOPIC_RESETPASSWORD);
+            this.publisherService.publish("{\"email\": \"" + emailID + "\"}",  SNSPublisherService.TOPIC_RESETPASSWORD);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         }
