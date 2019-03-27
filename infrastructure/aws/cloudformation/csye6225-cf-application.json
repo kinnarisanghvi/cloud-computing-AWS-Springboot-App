@@ -478,18 +478,7 @@
          "Properties":{
             "DisplayName":"resetTopic",
             "KmsMasterKeyId":"reset",
-            "TopicName":"reset",
-            "Subscription":[
-               {
-                  "Endpoint":{
-                     "Fn::GetAtt":[
-                        "csye6225LambdaFunction",
-                        "Arn"
-                     ]
-                  },
-                  "Protocol":"lambda"
-               }
-            ]
+            "TopicName":"reset"
          }
       }
    }
