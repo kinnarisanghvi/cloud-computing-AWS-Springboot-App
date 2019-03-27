@@ -9,10 +9,12 @@ import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@Profile("dev")
+
 public class AWSAppConfig {
 
     @Value("${aws.sns.topic.resetpassword.ARN}") String snsTopicResetPasswordARN;
