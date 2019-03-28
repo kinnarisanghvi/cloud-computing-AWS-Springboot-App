@@ -204,6 +204,7 @@
       "csye6225LambdaExecutionRole":{
          "Type":"AWS::IAM::Role",
          "Properties":{
+            "RoleName":"csye6225LambdaExecutionRole",
             "ManagedPolicyArns":[
                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
                "arn:aws:iam::aws:policy/AmazonSESFullAccess",
