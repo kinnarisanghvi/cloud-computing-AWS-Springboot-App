@@ -173,7 +173,28 @@
             ]
          }
       },
-       "csye6225LambdaExecutionPolicy":{
+      "LambdaFullAccessPolicy":{
+         "Type":"AWS::IAM::Policy",
+         "Properties":{
+            "PolicyName":"AWSLambdaFullAccess",
+            "PolicyDocument":{
+               "Version":"2012-10-17",
+               "Statement":[
+                  {
+                     "Effect":"Allow",
+                      "Action": [
+                            "logs:*"
+                      ],
+                     "Resource":"arn:aws:iam::aws:policy/AWSLambdaFullAccess"
+                  }
+               ]
+            },
+            "Users":[
+               "circleci"
+            ]
+         }
+      },
+      "csye6225LambdaExecutionPolicy":{
          "DependsOn":[
             "csye6225LambdaExecutionRole"
          ],
