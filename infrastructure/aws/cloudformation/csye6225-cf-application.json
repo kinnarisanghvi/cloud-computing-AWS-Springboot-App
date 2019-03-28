@@ -45,6 +45,10 @@
          "Description":"bucket",
          "Default":"sanghviki",
          "Type":"String"
+      },
+      "AccountId":{
+         "Description":"Account ID",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -327,7 +331,7 @@
                               ]
                            ]
                         },
-                          {
+                        {
                            "Fn::Join":[
                               "",
                               [
@@ -479,27 +483,49 @@
             ]
          }
       },
-      "myTopic": {
-         "Properties": {
-           "DisplayName": "resetPassword",
-           "TopicName":"reset_password",
-           "Subscription": [
-             {
-               "Endpoint": "arn:aws:lambda:us-east-1:375829056402:function:resetLambda",
-               "Protocol": "lambda"
-             }
-           ]
+      "myTopic":{
+         "Properties":{
+            "DisplayName":"resetPassword",
+            "TopicName":"reset_password",
+            "Subscription":[
+               {
+                  "Endpoint":{
+                     "Fn::Join":[
+                        ":",
+                        [
+                           "arn:aws:lambda:us-east-1",
+                           {
+                              "Ref":"AccountId"
+                           },
+                           "function:resetLambda"
+                        ]
+                     ]
+                  },
+                  "Protocol":"lambda"
+               }
+            ]
          },
-         "Type": "AWS::SNS::Topic"
-       },
-      "lambdaPermission": {
-         "Properties": {
-           "Action": "lambda:InvokeFunction",
-           "FunctionName": "resetLambda",
-           "Principal": "sns.amazonaws.com",
-           "SourceArn": "arn:aws:lambda:us-east-1:375829056402:function:resetLambda"
+         "Type":"AWS::SNS::Topic"
+      },
+      "lambdaPermission":{
+         "Properties":{
+            "Action":"lambda:InvokeFunction",
+            "FunctionName":"resetLambda",
+            "Principal":"sns.amazonaws.com",
+            "SourceArn":{
+               "Fn::Join":[
+                  ":",
+                  [
+                     "arn:aws:lambda:us-east-1",
+                     {
+                        "Ref":"AccountId"
+                     },
+                     "function:resetLambda"
+                  ]
+               ]
+            }
          },
-         "Type": "AWS::Lambda::Permission"
-       }
+         "Type":"AWS::Lambda::Permission"
+      }
    }
 }

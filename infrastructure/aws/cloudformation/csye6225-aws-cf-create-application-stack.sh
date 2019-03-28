@@ -11,6 +11,8 @@ read appstack
 echo "Please enter your bucketname"
 read bucketName
 
+accountid=$(aws sts get-caller-identity --output text --query 'Account')
+echo "AWS AccountId: $accountid"
 
 export VPCID=$(aws ec2 describe-vpcs --filters "Name=cidr,Values=10.0.0.0/16" --query "Vpcs[*].[CidrBlock, VpcId][-1]" --output text|grep 10.0.0.0/16|awk '{print $2}')
 
@@ -36,7 +38,7 @@ echo "Creating Application stack"
         echo "AMI ID:${AMIID}"
 	while [ ${AMIID} != "" ]; 
         do
-        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keypair" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID" bucketName="$bucketName")
+        STACK_STATUS=$(aws cloudformation deploy --template ./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$appstack" --parameter-overrides KeyPairName="$keypair" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID" bucketName="$bucketName" AccountId="$accountid")
         echo $STACK_STATUS
         done
         echo "Stack ${appstack} Created successfully!"
