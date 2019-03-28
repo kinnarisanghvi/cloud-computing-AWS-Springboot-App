@@ -173,10 +173,10 @@
             ]
          }
       },
-      "LambdaFullAccessPolicy":{
+      "LambdaDynamoDbAccessPolicy":{
          "Type":"AWS::IAM::Policy",
          "Properties":{
-            "PolicyName":"AWSLambdaFullAccess",
+            "PolicyName":"AWSLambdaDynamoDBExecutionRole",
             "PolicyDocument":{
                "Version":"2012-10-17",
                "Statement":[
