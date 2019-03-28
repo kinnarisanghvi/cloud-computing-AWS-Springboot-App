@@ -62,7 +62,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/note-victor")
+    @GetMapping("/note")
     public ResponseEntity<Object> getAllNote(HttpServletRequest request, HttpServletResponse response) throws JSONException, ServletException {
 
         LOG.info("Inside getAllNote()");
@@ -116,7 +116,7 @@ public class NoteController {
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping("/note-victor")
+    @PostMapping("/note")
     public ResponseEntity<Object> newNote(@Valid @RequestBody Note note, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         LOG.info("Inside newNote()");
         statsd.incrementCounter("/note url hit");
