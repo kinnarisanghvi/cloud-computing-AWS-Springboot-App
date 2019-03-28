@@ -479,7 +479,7 @@
            "TopicName":"reset_password",
            "Subscription": [
              {
-               "Endpoint": "arn:aws:lambda:us-east-1:375829056402:function:lambda",
+               "Endpoint": "arn:aws:lambda:us-east-1:375829056402:function:resetLambda",
                "Protocol": "lambda"
              }
            ]
@@ -489,9 +489,9 @@
       "lambdaPermission": {
          "Properties": {
            "Action": "lambda:InvokeFunction",
-           "FunctionName": "lambda",
+           "FunctionName": "resetLambda",
            "Principal": "sns.amazonaws.com",
-           "SourceArn": "arn:aws:lambda:us-east-1:375829056402:function:lambda"
+           "SourceArn": "arn:aws:lambda:us-east-1:375829056402:function:resetLambda"
          },
          "Type": "AWS::Lambda::Permission"
        }
