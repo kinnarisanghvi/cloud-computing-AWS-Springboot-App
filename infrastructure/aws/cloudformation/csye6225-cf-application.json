@@ -72,7 +72,8 @@
                ]
             },
             "ManagedPolicyArns":[
-               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+               "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
             ],
             "RoleName":"CodeDeployEC2ServiceRole"
          }

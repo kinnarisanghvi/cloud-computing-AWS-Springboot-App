@@ -182,10 +182,16 @@
                "Statement":[
                   {
                      "Effect":"Allow",
-                      "Action": [
-                            "logs:*"
-                      ],
-                     "Resource":"arn:aws:iam::aws:policy/AWSLambdaFullAccess"
+                     "Action":[
+                        "dynamodb:DescribeStream",
+                        "dynamodb:GetRecords",
+                        "dynamodb:GetShardIterator",
+                        "dynamodb:ListStreams",
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                     ],
+                     "Resource":"arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
                   }
                ]
             },
@@ -230,7 +236,8 @@
                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
                "arn:aws:iam::aws:policy/AmazonSESFullAccess",
                "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
-               "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+               "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+               "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
             ],
             "AssumeRolePolicyDocument":{
                "Version":"2012-10-17",
