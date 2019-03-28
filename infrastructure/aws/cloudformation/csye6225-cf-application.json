@@ -45,6 +45,10 @@
          "Description":"bucket",
          "Default":"sanghviki",
          "Type":"String"
+      },
+      "AccountId":{
+         "Description":"Account ID",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -68,7 +72,8 @@
                ]
             },
             "ManagedPolicyArns":[
-               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+               "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+               "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
             ],
             "RoleName":"CodeDeployEC2ServiceRole"
          }
@@ -215,9 +220,12 @@
                "IpProtocol":"tcp",
                "FromPort":"3306",
                "ToPort":"3306",
-               "SourceSecurityGroupId": { 
-                  "Fn::GetAtt" : [ "csye6225webapp", "GroupId" ] 
-             } 
+               "SourceSecurityGroupId":{
+                  "Fn::GetAtt":[
+                     "csye6225webapp",
+                     "GroupId"
+                  ]
+               }
             },
             "VpcId":{
                "Ref":"VPCID"
@@ -324,6 +332,18 @@
                               ]
                            ]
                         },
+                        {
+                           "Fn::Join":[
+                              "",
+                              [
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.sns.topic.resetpassword.ARN=",
+                                 {
+                                    "Ref":"myTopic"
+                                 },
+                                 "\"' >> setenv.sh \n"
+                              ]
+                           ]
+                        },
                         "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"' >> setenv.sh \n",
                         "systemctl daemon-reload",
                         "systemctl enable tomcat.service",
@@ -360,6 +380,11 @@
                   "AttributeType":"S"
                }
             ],
+            "TimeToLiveSpecification":
+               {
+                  "AttributeName" : "ttl",
+                  "Enabled" : true
+               },
             "KeySchema":[
                {
                   "AttributeName":"id",
@@ -457,6 +482,52 @@
                }
             ]
          }
+      },
+      "myTopic":{
+         "Properties":{
+            "DisplayName":"resetPassword",
+            "TopicName":"reset_password",
+         },
+         "Type":"AWS::SNS::Topic"
+      },
+      "MySubscription" : {
+         "Type" : "AWS::SNS::Subscription",
+         "Properties" : {
+           "Endpoint" : {
+            "Fn::Join":[
+               ":",
+               [
+                  "arn:aws:lambda:us-east-1",
+                  {
+                     "Ref":"AccountId"
+                  },
+                  "function:resetLambda"
+               ]
+            ]
+         },
+           "Protocol" : "lambda",
+           "TopicArn" : {"Ref" : "myTopic"}
+         }
+       },       
+      "lambdaPermission":{
+         "Properties":{
+            "Action":"lambda:InvokeFunction",
+            "FunctionName":"resetLambda",
+            "Principal":"sns.amazonaws.com",
+            "SourceArn":{
+               "Fn::Join":[
+                  ":",
+                  [
+                     "arn:aws:lambda:us-east-1",
+                     {
+                        "Ref":"AccountId"
+                     },
+                     "function:resetLambda"
+                  ]
+               ]
+            }
+         },
+         "Type":"AWS::Lambda::Permission"
       }
    }
 }
