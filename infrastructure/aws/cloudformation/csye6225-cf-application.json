@@ -379,6 +379,12 @@
                   "AttributeType":"S"
                }
             ],
+            "TimeToLiveSpecification":[
+               {
+                  "AttributeName" : "ttl",
+                  "Enabled" : true
+               }
+            ],
             "KeySchema":[
                {
                   "AttributeName":"id",
