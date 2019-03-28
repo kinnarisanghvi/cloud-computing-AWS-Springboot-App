@@ -1,5 +1,6 @@
 package com.csye6225.spring2019.controller;
 import com.csye6225.spring2019.model.User;
+import com.csye6225.spring2019.utils.AmazonClient;
 import com.csye6225.spring2019.utils.Password;
 import com.csye6225.spring2019.repository.UserRepository;
 import com.timgroup.statsd.StatsDClient;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 @RestController
 public class UserController {
 
+    private AmazonClient amazonClient;
     @Autowired
     UserRepository userRepository;
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -33,11 +35,29 @@ public class UserController {
 
     private final static Logger LOG = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
+    UserController(AmazonClient amazonClient) {
+        this.amazonClient = amazonClient;
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/reset")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody User user) {
+        LOG.info("Inside resetPassword()");
+        statsd.incrementCounter("/reset url hit");
+
+        String username = user.getEmailID();
+        amazonClient.publishSNSTopic("Email", username);
+        return new ResponseEntity<String>("{\"Message\": \"Reset Link Sent to Email Address.\"}", responseHeaders, HttpStatus.CREATED);
+    }
+
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<String> loginUser(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Inside loginUser()");
+
         statsd.incrementCounter("/ url hit");
         if(LOG.isTraceEnabled()){
             LOG.trace(">> loginUser()");
