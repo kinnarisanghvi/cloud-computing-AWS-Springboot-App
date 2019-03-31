@@ -530,10 +530,42 @@
          },
          "Type":"AWS::Lambda::Permission"
       },
-      "myTargetGroup":{
+      "csye6225LaunchConfig":{
+         "Type":"AWS::AutoScaling::LaunchConfiguration",
+         "Properties":{
+            "AssociatePublicIpAddress":"True",
+            "ImageId":{
+               "Ref":"EC2ImageId"
+            },
+            "InstanceType":{
+               "Ref":"EC2InstanceType"
+            },
+            "KeyName":{
+               "Ref":"KeyPairName"
+            },
+            "LaunchConfigurationName":"asg_launch_config",
+            "BlockDeviceMappings":[
+               {
+                  "DeviceName":"/dev/sdm",
+                  "Ebs":{
+                     "VolumeType":"io1",
+                     "Iops":"200",
+                     "DeleteOnTermination":"true",
+                     "VolumeSize":"20"
+                  }
+               }
+            ],
+            "SecurityGroups":[
+               {
+                  "Ref":"csye6225webapp"
+               }
+            ]
+         }
+      },
+      "csye6225TargetGroup":{
          "Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
          "Properties":{
-            "Name":"myTargetGroup",
+            "Name":"csye6225TargetGroup",
             "HealthCheckIntervalSeconds":30,
             "HealthCheckTimeoutSeconds":20,
             "Protocol":"HTTP",
@@ -561,36 +593,67 @@
             ]
          }
       },
+      "csye6225LoadBalancer":{
+         "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+         "Properties":{
+            "LoadBalancerAttributes":[
+               {
+                  "Key":"idle_timeout.timeout_seconds",
+                  "Value":"60"
+               }
+            ],
+            "Name":"csye6225LoadBalancer",
+            "Scheme":"internet-facing",
+            "Type":"application",
+            "IpAddressType":"ipv4",
+            "SecurityGroups":[
+               {
+                  "Ref":"ELBSecurityGroup"
+               }
+            ],
+            "Subnets":[
+               {
+                  "Ref":"subnetID1"
+               },
+               {
+                  "Ref":"subnetID2"
+               },
+               {
+                  "Ref":"subnetID3"
+               }
+            ],
+            "Tags":[
+               {
+                  "Key":"Name",
+                  "Value":"CSYE6225_autoscaling_group"
+               }
+            ]
+         }
+      },
       "WebServerGroup":{
          "Type":"AWS::AutoScaling::AutoScalingGroup",
          "DependsOn":[
-            "MyLoadBalancer",
-            "MyLaunchConfig"
+            "csye6225LoadBalancer",
+            "csye6225LaunchConfig"
          ],
          "Properties":{
             "AutoScalingGroupName":"WebServerGroup",
             "Cooldown":60,
             "DesiredCapacity":3,
             "LaunchConfigurationName":{
-               "Ref":"MyLaunchConfig"
+               "Ref":"csye6225LaunchConfig"
             },
             "MaxSize":10,
             "MinSize":3,
             "VPCZoneIdentifier":[
                {
-                  "Fn::ImportValue":{
-                     "Fn::Sub":"${NetworkStackParameters}-SUBNETID1"
-                  }
+                  "Ref":"subnetID1"
                },
                {
-                  "Fn::ImportValue":{
-                     "Fn::Sub":"${NetworkStackParameters}-SUBNETID4"
-                  }
+                  "Ref":"subnetID2"
                },
                {
-                  "Fn::ImportValue":{
-                     "Fn::Sub":"${NetworkStackParameters}-SUBNETID5"
-                  }
+                  "Ref":"subnetID3"
                }
             ],
             "Tags":[
@@ -602,7 +665,7 @@
             ],
             "TargetGroupARNs":[
                {
-                  "Ref":"myTargetGroup"
+                  "Ref":"csye6225TargetGroup"
                }
             ]
          }
