@@ -21,7 +21,7 @@ AMIID=$(aws ec2 describe-images --owners self --query 'sort_by(Images, &Creation
 echo "AMI ID:${AMIID}"
 
 bucketName=$(aws route53 list-hosted-zones --query "HostedZones[0].Name" --output text)
-bucketName="code-deploy.$bucketName"
+#bucketName+="csye6225.com"
 echo "Bucket name: $bucketName"
 
 hostedzoneid=$(aws route53 list-hosted-zones --query HostedZones[0].Id --output=text | awk -F '/' '{ print $3 }')
@@ -35,6 +35,22 @@ echo "Key pair name: $keypair"
 
 accountid=$(aws sts get-caller-identity --output text --query 'Account')
 echo "AWS AccountId: $accountid"
+
+export VPCID=$(aws ec2 describe-vpcs --filters "Name=cidr,Values=10.0.0.0/16" --query "Vpcs[*].[CidrBlock, VpcId][-1]" --output text|grep 10.0.0.0/16|awk '{print $2}')
+
+echo "vpcId : $VPCID"
+
+export subnetID1=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.1.0/24|grep us-east-1a|awk '{print $1}')
+
+echo "subnetid1 : ${subnetID1}"
+
+export subnetID2=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.2.0/24|grep us-east-1b|awk '{print $1}')
+
+echo "subnetid2 : ${subnetID2}"
+
+
+export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.3.0/24|grep us-east-1c|awk '{print $1}')
+echo "subnetid3 : ${subnetID3}"
 
 
 aws cloudformation deploy --template ./csye6225-cf-auto-scaling-application.json --stack-name "$autoscalestack" --parameter-overrides NetworkStackParameters="$networkstack" CICDStackParameter="$cicdname" KeyPairName="$keypair" BucketName="$bucketName" AccountId="$accountid" LaunchConfigurationName="$launchConfigurationName" EC2ImageId="$ec2ImageId" EC2InstanceType="$ec2InstanceType" HostedZoneId="$hostedzoneid" HostedZoneName="$hostedzonename" CertificateArn="$certificatearn" ApplicationName="$codedeployapplicationname" AssociatePublicAddress="$associatePublicAddress"
