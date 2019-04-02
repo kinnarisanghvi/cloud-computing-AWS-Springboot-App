@@ -489,10 +489,16 @@
             "Subscription":[
                {
                   "Endpoint":{
-                     "Fn::GetAtt":[
-                        "MyLambdaFunction",
-                        "Arn"
-                     ]
+                     "Fn::Join":[
+                  ":",
+                  [
+                     "arn:aws:lambda:us-east-1",
+                     {
+                        "Ref":"AccountId"
+                     },
+                     "function:resetLambda"
+                  ]
+               ]
                   },
                   "Protocol":"lambda"
                }
