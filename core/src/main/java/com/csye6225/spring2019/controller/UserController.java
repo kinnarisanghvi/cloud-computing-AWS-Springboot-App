@@ -43,13 +43,19 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody User user) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody String emailID) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
 
-        String username = user.getEmailID();
+
+        String username = emailID;
+        User userExists = userRepository.findByEmail(username);
+        if(userExists == null){
+
+            return new ResponseEntity<String>( responseHeaders, HttpStatus.UNAUTHORIZED);
+        }
         amazonClient.publishSNSTopic("Email", username);
-        return new ResponseEntity<String>("{\"Message\": \"Reset Link Sent to Email Address.\"}", responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<String>( responseHeaders, HttpStatus.CREATED);
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
