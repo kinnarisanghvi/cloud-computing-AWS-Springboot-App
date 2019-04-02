@@ -5,18 +5,6 @@ set -e
 echo "Please Enter the Auto-Scaling Stack Name: "
 read autoscalestack
 
-echo "Please Enter the Network stack name: "
-read networkstack
-
-echo "Please Enter the CICD stack name: "
-read cicdname
-
-echo "True/False for AssociatePublicIpAddress: "
-read associatePublicAddress
-
-echo "Please Enter the Application Stack Name: "
-read appstack
-
 AMIID=$(aws ec2 describe-images --owners self --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
 echo "AMI ID:${AMIID}"
 
@@ -53,7 +41,7 @@ export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID
 echo "subnetid3 : ${subnetID3}"
 
 
-aws cloudformation deploy --template ./csye6225-cf-auto-scaling-application.json --stack-name "$autoscalestack" --parameter-overrides NetworkStackParameters="$networkstack" CICDStackParameter="$cicdname" KeyPairName="$keypair" BucketName="$bucketName" AccountId="$accountid" LaunchConfigurationName="$launchConfigurationName" EC2ImageId="$ec2ImageId" EC2InstanceType="$ec2InstanceType" HostedZoneId="$hostedzoneid" HostedZoneName="$hostedzonename" CertificateArn="$certificatearn" ApplicationName="$codedeployapplicationname" AssociatePublicAddress="$associatePublicAddress"
+aws cloudformation deploy --template ./csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$autoscalestack" --parameter-overrides KeyPairName="$keypair" BucketName="$bucketName" AccountId="$accountid" LaunchConfigurationName="$launchConfigurationName" EC2ImageId="$ec2ImageId" EC2InstanceType="$ec2InstanceType" HostedZoneId="$hostedzoneid" HostedZoneName="$hostedzonename" CertificateArn="$certificatearn" AssociatePublicAddress="$associatePublicAddress" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID"
 
 
 

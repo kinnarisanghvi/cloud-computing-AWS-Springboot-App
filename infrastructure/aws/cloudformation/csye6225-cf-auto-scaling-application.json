@@ -535,11 +535,9 @@
          "Properties":{
             "AssociatePublicIpAddress":"True",
             "ImageId":{
-               "Ref":"EC2ImageId"
+               "Ref":"AMIID"
             },
-            "InstanceType":{
-               "Ref":"EC2InstanceType"
-            },
+            "InstanceType":"t2.micro",
             "KeyName":{
                "Ref":"KeyPairName"
             },
@@ -589,6 +587,23 @@
                {
                   "Key":"Name",
                   "Value":"CSYE6225_autoscaling_group"
+               }
+            ]
+         }
+      },
+      "ELBSecurityGroup":{
+         "Type":"AWS::EC2::SecurityGroup",
+         "Properties":{
+            "GroupDescription":"csye6225-elb",
+            "VpcId":{
+               "Ref":"VPCID"
+            },
+            "SecurityGroupIngress":[
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"443",
+                  "ToPort":"443",
+                  "CidrIp":"0.0.0.0/0"
                }
             ]
          }
