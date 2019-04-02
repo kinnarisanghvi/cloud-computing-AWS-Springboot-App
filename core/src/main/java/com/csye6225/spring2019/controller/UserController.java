@@ -43,13 +43,37 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody User user) {
+    public ResponseEntity<String> resetPassword(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
 
-        String username = user.getEmailID();
-        amazonClient.publishSNSTopic("Email", username);
-        return new ResponseEntity<String>("{\"Message\": \"Reset Link Sent to Email Address.\"}", responseHeaders, HttpStatus.CREATED);
+        String header = request.getHeader("Authorization");
+        String email = null;
+        if (header.contains("Basic")) {
+            String userDetails[] = new String[2];
+            assert header.substring(0, 6).equals("Basic");
+            String basicAuthEncoded = header.substring(6);
+            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
+            userDetails = basicAuthAsString.split(":", 2);
+            User userExists = userRepository.findByEmail(userDetails[0]);
+            try {
+                email = userDetails[0];
+
+                if (email.equals(null) || userExists == null) {
+                    System.out.println("Username is null");
+
+                }
+            } catch (NullPointerException e) {
+                LOG.warn("Bad request");
+                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
+            }
+
+
+            amazonClient.publishSNSTopic("Email", email);
+            return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
+        }
+        return null;
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
