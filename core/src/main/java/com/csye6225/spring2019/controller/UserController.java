@@ -43,19 +43,37 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody String emailID) {
+    public ResponseEntity<String> resetPassword(HttpServletRequest request, HttpServletResponse response) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
 
+        String header = request.getHeader("Authorization");
+        String email = null;
+        if (header.contains("Basic")) {
+            String userDetails[] = new String[2];
+            assert header.substring(0, 6).equals("Basic");
+            String basicAuthEncoded = header.substring(6);
+            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
+            userDetails = basicAuthAsString.split(":", 2);
+            User userExists = userRepository.findByEmail(userDetails[0]);
+            try {
+                email = userDetails[0];
 
-        String username = emailID;
-        User userExists = userRepository.findByEmail(username);
-        if(userExists == null){
+                if (email.equals(null) || userExists == null) {
+                    System.out.println("Username is null");
 
-            return new ResponseEntity<String>( responseHeaders, HttpStatus.UNAUTHORIZED);
+                }
+            } catch (NullPointerException e) {
+                LOG.warn("Bad request");
+                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
+            }
+
+
+            amazonClient.publishSNSTopic("Email", email);
+            return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
         }
-        amazonClient.publishSNSTopic("Email", username);
-        return new ResponseEntity<String>( responseHeaders, HttpStatus.CREATED);
+        return null;
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
