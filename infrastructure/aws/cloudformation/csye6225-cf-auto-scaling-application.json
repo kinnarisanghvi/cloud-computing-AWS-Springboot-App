@@ -289,11 +289,14 @@
          }
       },
       "myCodeDeplymentGroup":{
+         "DependsOn":["myCodeDeploy","csye6225TargetGroup","WebServerGroup"],
          "Type":"AWS::CodeDeploy::DeploymentGroup",
          "Properties":{
             "ApplicationName":{
                "Ref":"ApplicationName"
-            },
+            }, 
+            "AutoScalingGroups":[{"Ref":"WebServerGroup"}],
+            
             "ServiceRoleArn":{
                "Fn::GetAtt":[
                   "CodeDeployServiceRole",
