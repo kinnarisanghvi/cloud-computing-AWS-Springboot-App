@@ -103,7 +103,7 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "arn:aws:s3:::",
+                                 "arn:aws:s3:::csye6225-spring2019-",
                                  {
                                     "Ref":"bucketName"
                                  },
@@ -166,11 +166,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "arn:aws:s3:::code-deploy.",
+                                 "arn:aws:s3:::code-deploy.csye6225-spring2019-",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 "/*"
+                                 ".me/*"
                               ]
                            ]
                         }
@@ -423,11 +423,11 @@
                   "Fn::Join":[
                      "",
                      [
-                        "https://s3.amazonaws.com/",
+                        "https://s3.amazonaws.com/csye6225-spring2019-",
                         {
                            "Ref":"bucketName"
                         },
-                        "csye6225.com/waf-owasp.yaml"
+                        ".me.csye6225.com/waf-owasp.yaml"
                      ]
                   ]
             },
@@ -507,11 +507,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=",
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=csye6225-spring2019-",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 "csye6225.com\"' >> setenv.sh \n"
+                                 ".me.csye6225.com\"' >> setenv.sh \n"
                               ]
                            ]
                         },

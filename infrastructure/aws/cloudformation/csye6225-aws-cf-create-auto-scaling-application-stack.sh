@@ -8,9 +8,8 @@ read autoscalestack
 AMIID=$(aws ec2 describe-images --owners self --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
 echo "AMI ID:${AMIID}"
 
-bucketName=$(aws route53 list-hosted-zones --query "HostedZones[0].Name" --output text)
-#bucketName+="csye6225.com"
-echo "Bucket name: $bucketName"
+echo "Enter bucketname"
+read bucketName
 
 hostedzoneid=$(aws route53 list-hosted-zones --query HostedZones[0].Id --output=text | awk -F '/' '{ print $3 }')
 echo "Hosted zone id: $hostedzoneid"
