@@ -49,6 +49,10 @@
       "AccountId":{
          "Description":"Account ID",
          "Type":"String"
+      },
+      "CertificateArn":{
+         "Description":"Certificate Arn",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -558,6 +562,31 @@
             ]
          }
       },
+      "webappListener":{
+         "Type":"AWS::ElasticLoadBalancingV2::Listener",
+         "Properties":{
+            "Certificates":[
+               {
+                  "CertificateArn":{
+                     "Ref":"CertificateArn"
+                  }
+               }
+            ],
+            "DefaultActions":[
+               {
+                  "Type":"forward",
+                  "TargetGroupArn":{
+                     "Ref":"csye6225TargetGroup"
+                  }
+               }
+            ],
+            "LoadBalancerArn":{
+               "Ref":"csye6225LoadBalancer"
+            },
+            "Port":443,
+            "Protocol":"HTTPS"
+         }
+      },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
          "Properties":{
@@ -599,7 +628,8 @@
          "Type":"AWS::AutoScaling::AutoScalingGroup",
          "DependsOn":[
             "csye6225LoadBalancer",
-            "csye6225LaunchConfig"
+            "csye6225LaunchConfig",
+            "webappListener"
          ],
          "Properties":{
             "AutoScalingGroupName":"WebServerGroup",
