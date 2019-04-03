@@ -205,6 +205,12 @@
                },
                {
                   "IpProtocol":"tcp",
+                  "FromPort":"8080",
+                  "ToPort":"8080",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
                   "FromPort":"443",
                   "ToPort":"443",
                   "CidrIp":"0.0.0.0/0"
@@ -324,6 +330,17 @@
             ]
          }
       },
+      "InstanceProfile":{
+         "Type":"AWS::IAM::InstanceProfile",
+         "Properties":{
+            "Path":"/",
+            "Roles":[
+               {
+                  "Ref":"CodeDeployEC2ServiceRole"
+               }
+            ]
+         }
+      },
       "myDBInstance":{
          "Type":"AWS::RDS::DBInstance",
          "Properties":{
@@ -429,6 +446,9 @@
                "Ref":"KeyPairName"
             },
             "LaunchConfigurationName":"asg_launch_config",
+            "IamInstanceProfile":{
+               "Ref":"InstanceProfile"
+            },
             "BlockDeviceMappings":[
                {
                   "DeviceName":"/dev/sdm",
