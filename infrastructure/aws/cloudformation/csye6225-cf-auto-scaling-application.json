@@ -314,9 +314,9 @@
             },
             "Ec2TagFilters":[
                {
-                  "Key":"EC2Name",
+                  "Key":"Name",
                   "Type":"KEY_AND_VALUE",
-                  "Value":"csye6225Spring2019"
+                  "Value":"CSYE6225_autoscaling_group"
                }
             ]
          }
