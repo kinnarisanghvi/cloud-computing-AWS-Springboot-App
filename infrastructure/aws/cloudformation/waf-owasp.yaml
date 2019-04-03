@@ -62,6 +62,9 @@ Parameters:
     Type: Number
     Description: The size in bytes of the CSRF token value. For example if it's a canonically formatted UUIDv4 value the expected size would be 36 bytes/ASCII characters
     Default: 36
+  LOADBALANCER:
+    Type: String
+    Description: Name of association
 
 ## ::METADATA::
 ## CloudFormation parameter UI definitions
@@ -1101,6 +1104,7 @@ Resources:
           RuleId: !Ref wafrAdminAccessRule
   wafgOwaspACL:
     Type: AWS::WAF::WebACL
+    DependsOn: !Ref LOADBALANCER
     Condition: isGlobal
     Properties:
       MetricName: !Join ['', [!Ref stackPrefix, 'owaspacl']]
@@ -1148,6 +1152,11 @@ Resources:
             Type: !Ref ruleAction
           Priority: 100
           RuleId: !Ref wafgAdminAccessRule
+  MyWebACLAssociation:
+    Type: "AWS::WAFRegional::WebACLAssociation"
+    Properties:
+      ResourceArn: !Ref LOADBALANCER
+      WebACLId: !Ref wafrOwaspACL
 
 ## ::OUTPUTS::
 ## Outputs useful in other templates
