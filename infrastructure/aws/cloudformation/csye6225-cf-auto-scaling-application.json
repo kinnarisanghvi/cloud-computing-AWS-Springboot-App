@@ -53,6 +53,14 @@
       "CertificateArn":{
          "Description":"Certificate Arn",
          "Type":"String"
+      },
+      "HostedZoneId":{
+         "Description":"Hosted zone",
+         "Type":"String"
+      },
+      "HostedZoneName":{
+         "Description":"Hosted zone",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -418,6 +426,7 @@
       "WafStack" : {
          "Type" : "AWS::CloudFormation::Stack",
          "Properties" : {
+            "ResourceId": { "Ref": "csye6225LoadBalancer"},
             "TemplateURL":              
             {
                   "Fn::Join":[
@@ -631,6 +640,7 @@
       },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+         "DependsOn":["csye6225webapp"],
          "Properties":{
             "LoadBalancerAttributes":[
                {
@@ -644,7 +654,7 @@
             "IpAddressType":"ipv4",
             "SecurityGroups":[
                {
-                  "Ref":"ELBSecurityGroup"
+                  "Ref":"csye6225webapp"
                }
             ],
             "Subnets":[
@@ -666,6 +676,19 @@
             ]
          }
       },
+      "myDNSRecord":{
+         "Type" : "AWS::Route53::RecordSet",
+         "Properties" : {
+                          "HostedZoneId": {"Ref": "HostedZoneId"},
+                          "Name": {"Ref": "HostedZoneName"},
+                          "Comment": "DNS name for my instance.",
+                          "Type": "A",
+                          "AliasTarget": {
+                            "DNSName": {"Fn::GetAtt": ["csye6225LoadBalancer","DNSName"]},
+                            "HostedZoneId": {"Fn::GetAtt": ["csye6225LoadBalancer","CanonicalHostedZoneID"]}
+                          }
+               }
+       },
       "WebServerGroup":{
          "Type":"AWS::AutoScaling::AutoScalingGroup",
          "DependsOn":[
