@@ -398,6 +398,25 @@
          },
          "Type":"AWS::Lambda::Permission"
       },
+      "WafStack" : {
+         "Type" : "AWS::CloudFormation::Stack",
+         "Properties" : {
+            "TemplateURL":              
+            {
+                  "Fn::Join":[
+                     "",
+                     [
+                        "https://s3.amazonaws.com/",
+                        {
+                           "Ref":"bucketName"
+                        },
+                        "csye6225.com/waf-owasp.yaml"
+                     ]
+                  ]
+            },
+             "TimeoutInMinutes" : "60"
+         }
+      },
       "csye6225LaunchConfig":{
          "Type":"AWS::AutoScaling::LaunchConfiguration",
          "Properties":{
