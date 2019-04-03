@@ -40,8 +40,11 @@ echo "subnetid2 : ${subnetID2}"
 export subnetID3=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPCID" --query 'Subnets[*].[SubnetId, VpcId, AvailabilityZone, CidrBlock]' --output text|grep 10.0.3.0/24|grep us-east-1c|awk '{print $1}')
 echo "subnetid3 : ${subnetID3}"
 
+certificatearn=$(aws acm list-certificates --query "CertificateSummaryList[0].CertificateArn" --output text)
+echo "Certificate Arn is $certificatearn"
 
-aws cloudformation deploy --template ./csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$autoscalestack" --parameter-overrides KeyPairName="$keypair" BucketName="$bucketName" AccountId="$accountid" LaunchConfigurationName="$launchConfigurationName" EC2ImageId="$ec2ImageId" EC2InstanceType="$ec2InstanceType" HostedZoneId="$hostedzoneid" HostedZoneName="$hostedzonename" CertificateArn="$certificatearn" AssociatePublicAddress="$associatePublicAddress" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID"
+
+aws cloudformation deploy --template ./csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --stack-name "$autoscalestack" --parameter-overrides KeyPairName="$keypair" bucketName="$bucketName" AccountId="$accountid" EC2ImageId="$ec2ImageId" EC2InstanceType="$ec2InstanceType" HostedZoneId="$hostedzoneid" HostedZoneName="$hostedzonename" CertificateArn="$certificatearn" AssociatePublicAddress="$associatePublicAddress" VPCID="$VPCID" subnetID1="$subnetID1" subnetID2="$subnetID2" subnetID3="$subnetID3" AMIID="$AMIID" CertificateArn="$certificatearn"
 
 
 

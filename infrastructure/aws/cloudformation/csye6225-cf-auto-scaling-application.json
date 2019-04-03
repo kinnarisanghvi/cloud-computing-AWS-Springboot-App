@@ -49,6 +49,10 @@
       "AccountId":{
          "Description":"Account ID",
          "Type":"String"
+      },
+      "CertificateArn":{
+         "Description":"Certificate Arn",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -285,11 +289,14 @@
          }
       },
       "myCodeDeplymentGroup":{
+         "DependsOn":["myCodeDeploy","csye6225TargetGroup","WebServerGroup"],
          "Type":"AWS::CodeDeploy::DeploymentGroup",
          "Properties":{
             "ApplicationName":{
                "Ref":"ApplicationName"
-            },
+            }, 
+            "AutoScalingGroups":[{"Ref":"WebServerGroup"}],
+            
             "ServiceRoleArn":{
                "Fn::GetAtt":[
                   "CodeDeployServiceRole",
@@ -310,9 +317,9 @@
             },
             "Ec2TagFilters":[
                {
-                  "Key":"EC2Name",
+                  "Key":"Name",
                   "Type":"KEY_AND_VALUE",
-                  "Value":"csye6225Spring2019"
+                  "Value":"CSYE6225_autoscaling_group"
                }
             ]
          }
@@ -461,11 +468,11 @@
                            "Fn::Join":[
                               "",
                               [
-                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=csye6225-spring2019-",
+                                 "sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Daws.s3.audio.bucket=",
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 ".me.csye6225.com\"' >> setenv.sh \n"
+                                 "csye6225.com\"' >> setenv.sh \n"
                               ]
                            ]
                         },
@@ -558,6 +565,31 @@
             ]
          }
       },
+      "webappListener":{
+         "Type":"AWS::ElasticLoadBalancingV2::Listener",
+         "Properties":{
+            "Certificates":[
+               {
+                  "CertificateArn":{
+                     "Ref":"CertificateArn"
+                  }
+               }
+            ],
+            "DefaultActions":[
+               {
+                  "Type":"forward",
+                  "TargetGroupArn":{
+                     "Ref":"csye6225TargetGroup"
+                  }
+               }
+            ],
+            "LoadBalancerArn":{
+               "Ref":"csye6225LoadBalancer"
+            },
+            "Port":443,
+            "Protocol":"HTTPS"
+         }
+      },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
          "Properties":{
@@ -599,7 +631,8 @@
          "Type":"AWS::AutoScaling::AutoScalingGroup",
          "DependsOn":[
             "csye6225LoadBalancer",
-            "csye6225LaunchConfig"
+            "csye6225LaunchConfig",
+            "webappListener"
          ],
          "Properties":{
             "AutoScalingGroupName":"WebServerGroup",
