@@ -115,7 +115,7 @@
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 "csye6225.com/*"
+                                 ".me.csye6225.com/*"
                               ]
                            ]
                         }
@@ -427,7 +427,7 @@
          "Type" : "AWS::CloudFormation::Stack",
          "Properties" : {
             "Parameters": {
-               "LoadBalancerArn": { "Ref": "csye6225LoadBalancer" },
+               "LoadBalancerArn": { "Ref": "csye6225LoadBalancer" }
             },
             "TemplateURL":              
             {
@@ -763,7 +763,7 @@
             "Statistic":"Average",
             "Period":"300",
             "EvaluationPeriods":"2",
-            "Threshold":"90",
+            "Threshold":"10",
             "AlarmActions":[
                {
                   "Ref":"WebServerScaleUpPolicy"
@@ -789,7 +789,7 @@
             "Statistic":"Average",
             "Period":"300",
             "EvaluationPeriods":"2",
-            "Threshold":"70",
+            "Threshold":"8",
             "AlarmActions":[
                {
                   "Ref":"WebServerScaleDownPolicy"

@@ -380,11 +380,10 @@
                   "AttributeType":"S"
                }
             ],
-            "TimeToLiveSpecification":
-               {
-                  "AttributeName" : "ttl",
-                  "Enabled" : true
-               },
+            "TimeToLiveSpecification":{
+               "AttributeName":"ttl",
+               "Enabled":true
+            },
             "KeySchema":[
                {
                   "AttributeName":"id",
@@ -490,25 +489,27 @@
          },
          "Type":"AWS::SNS::Topic"
       },
-      "MySubscription" : {
-         "Type" : "AWS::SNS::Subscription",
-         "Properties" : {
-           "Endpoint" : {
-            "Fn::Join":[
-               ":",
-               [
-                  "arn:aws:lambda:us-east-1",
-                  {
-                     "Ref":"AccountId"
-                  },
-                  "function:resetLambda"
+      "MySubscription":{
+         "Type":"AWS::SNS::Subscription",
+         "Properties":{
+            "Endpoint":{
+               "Fn::Join":[
+                  ":",
+                  [
+                     "arn:aws:lambda:us-east-1",
+                     {
+                        "Ref":"AccountId"
+                     },
+                     "function:resetLambda"
+                  ]
                ]
-            ]
-         },
-           "Protocol" : "lambda",
-           "TopicArn" : {"Ref" : "myTopic"}
+            },
+            "Protocol":"lambda",
+            "TopicArn":{
+               "Ref":"myTopic"
+            }
          }
-       },       
+      },
       "lambdaPermission":{
          "Properties":{
             "Action":"lambda:InvokeFunction",
