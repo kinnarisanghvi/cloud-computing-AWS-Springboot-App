@@ -423,26 +423,6 @@
          },
          "Type":"AWS::Lambda::Permission"
       },
-      "WafStack" : {
-         "Type" : "AWS::CloudFormation::Stack",
-         "Properties" : {
-            "ResourceId": { "Ref": "csye6225LoadBalancer"},
-            "TemplateURL":              
-            {
-                  "Fn::Join":[
-                     "",
-                     [
-                        "https://s3.amazonaws.com/csye6225-spring2019-",
-                        {
-                           "Ref":"bucketName"
-                        },
-                        ".me.csye6225.com/waf-owasp.yaml"
-                     ]
-                  ]
-            },
-             "TimeoutInMinutes" : "60"
-         }
-      },
       "csye6225LaunchConfig":{
          "Type":"AWS::AutoScaling::LaunchConfiguration",
          "Properties":{
