@@ -16,6 +16,9 @@
 echo "Please Enter the WAF Stack Name: "
 read wafstack
 
+echo "Enter bucketname"
+read bucketName
+
 LOADBALANCER=$(aws elbv2 describe-load-balancers --query LoadBalancers[0].LoadBalancerArn --output text)
 
 echo "ELBResourceARN: $LOADBALANCER"

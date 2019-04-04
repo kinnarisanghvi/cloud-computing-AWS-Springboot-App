@@ -1104,7 +1104,6 @@ Resources:
           RuleId: !Ref wafrAdminAccessRule
   wafgOwaspACL:
     Type: AWS::WAF::WebACL
-    DependsOn: !Ref LOADBALANCER
     Condition: isGlobal
     Properties:
       MetricName: !Join ['', [!Ref stackPrefix, 'owaspacl']]
