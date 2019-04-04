@@ -486,6 +486,7 @@
       "myTopic":{
          "Properties":{
             "DisplayName":"resetPassword",
+<<<<<<< HEAD
             "TopicName":"reset_password",
              "Subscription":[
                {
@@ -504,6 +505,9 @@
                   "Protocol":"lambda"
                }
             ]
+=======
+            "TopicName":"reset_password"
+>>>>>>> 830ace37bf27bae03bc285580ecc2caf5ad2b439
          },
          "Type":"AWS::SNS::Topic"
       },
