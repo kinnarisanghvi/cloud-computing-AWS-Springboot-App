@@ -5,6 +5,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS WAF Basic OWASP Example Rule Set
 
 Parameters:
+  LoadBalancerArn:
+    Type: String
+    Description: LoadBalancerArn from main stack
   stackPrefix:
     Type: String
     Description: The prefix to use when naming resources in this stack. Normally we would use the stack name, but since this template can be used as a resource in other stacks we want to keep the naming consistent. No symbols allowed.
@@ -62,9 +65,7 @@ Parameters:
     Type: Number
     Description: The size in bytes of the CSRF token value. For example if it's a canonically formatted UUIDv4 value the expected size would be 36 bytes/ASCII characters
     Default: 36
-  LOADBALANCER:
-    Type: String
-    Description: Name of association
+    
 
 ## ::METADATA::
 ## CloudFormation parameter UI definitions
@@ -1154,7 +1155,7 @@ Resources:
   MyWebACLAssociation:
     Type: "AWS::WAFRegional::WebACLAssociation"
     Properties:
-      ResourceArn: !Ref LOADBALANCER
+      ResourceArn: !Ref LoadBalancerArn
       WebACLId: !Ref wafrOwaspACL
 
 ## ::OUTPUTS::
