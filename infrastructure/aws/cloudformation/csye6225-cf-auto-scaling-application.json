@@ -115,7 +115,7 @@
                                  {
                                     "Ref":"bucketName"
                                  },
-                                 "csye6225.com/*"
+                                 ".me.csye6225.com/*"
                               ]
                            ]
                         }
