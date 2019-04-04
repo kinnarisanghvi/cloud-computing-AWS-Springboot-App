@@ -486,7 +486,7 @@
       "myTopic":{
          "Properties":{
             "DisplayName":"resetPassword",
-            "TopicName":"reset_password",
+            "TopicName":"reset_password"
          },
          "Type":"AWS::SNS::Topic"
       },
@@ -531,3 +531,4 @@
       }
    }
 }
+
