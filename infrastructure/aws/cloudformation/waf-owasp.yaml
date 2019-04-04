@@ -60,7 +60,7 @@ Parameters:
   csrfExpectedHeader:
     Type: String
     Description: The custom HTTP request header, where the CSRF token value is expected to be encountered
-    Default: x-csrf-token
+    Default: Postman-Token
   csrfExpectedSize:
     Type: Number
     Description: The size in bytes of the CSRF token value. For example if it's a canonically formatted UUIDv4 value the expected size would be 36 bytes/ASCII characters
