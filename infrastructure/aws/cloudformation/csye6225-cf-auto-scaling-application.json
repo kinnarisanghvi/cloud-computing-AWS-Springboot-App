@@ -555,7 +555,8 @@
                         "systemctl enable tomcat.service",
                         "systemctl start tomcat.service",
                         "cd /usr/local/src/statsd",
-                        "node stats.js statsd-config.js &"
+                        "node stats.js statsd-config.js &",
+                        "sudo touch /opt/tomcat/samplefile"
                      ]
                   ]
                }

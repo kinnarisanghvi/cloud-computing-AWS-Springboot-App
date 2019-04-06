@@ -17,7 +17,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
         <stringProp name="ThreadGroup.ramp_time">30</stringProp>
         <longProp name="ThreadGroup.start_time">1516717029000</longProp>
         <longProp name="ThreadGroup.end_time">1516717029000</longProp>
@@ -41,7 +41,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-s19-raghuramanv.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -60,7 +60,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">/home/vignesh/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
+            <stringProp name="filename">/home/csye6225/home/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
             <boolProp name="ignoreFirstLine">true</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -143,7 +143,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-s19-raghuramanv.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019.thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -161,7 +161,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">/home/vignesh/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
+            <stringProp name="filename">/home/csye6225/home/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
             <boolProp name="ignoreFirstLine">true</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -234,7 +234,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-s19-raghuramanv.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -253,7 +253,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">/home/vignesh/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
+            <stringProp name="filename">/home/csye6225/home/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
             <boolProp name="ignoreFirstLine">true</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -316,7 +316,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-s19-raghuramanv.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019.thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -334,7 +334,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">/home/vignesh/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
+            <stringProp name="filename">/home/csye6225/home/csye6225/dev/csye6225-spring2019/jmeter/users.csv</stringProp>
             <boolProp name="ignoreFirstLine">true</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -438,8 +438,8 @@ vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</st
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request Attach Image" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/home/vignesh/csye6225/dev/csye6225-spring2019/infrastructure/aws/cloudformation/csye6225-aws-cf-create-application-stack.sh" elementType="HTTPFileArg">
-                <stringProp name="File.path">/home/vignesh/csye6225/dev/csye6225-spring2019/infrastructure/aws/cloudformation/csye6225-aws-cf-create-application-stack.sh</stringProp>
+              <elementProp name="/home/csye6225/home/csye6225/dev/csye6225-spring2019/infrastructure/aws/cloudformation/csye6225-aws-cf-create-stack.sh" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/csye6225/home/csye6225/dev/csye6225-spring2019/infrastructure/aws/cloudformation/csye6225-aws-cf-create-stack.sh</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
                 <stringProp name="File.mimetype">application/x-bsh</stringProp>
               </elementProp>
@@ -448,7 +448,7 @@ vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</st
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-s19-raghuramanv.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
