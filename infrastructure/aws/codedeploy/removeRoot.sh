@@ -1,9 +1,10 @@
 #!/bin/bash
 
 set -e
-until [-f /opt/tomcat/samplefile ]; do
+while[ ! -f /opt/tomcat/samplefile ]
+do
     echo "waiting for ec2 intsance.."
-    sleep 5
+    sleep 2
 done
 echo "ec2 instance is running deploying code"
 sudo systemctl stop tomcat
