@@ -326,11 +326,8 @@
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "DeploymentGroupName":"csye6225-webapp-deployment",
             "DeploymentStyle":{
-               "DeploymentOption":"WITH_TRAFFIC_CONTROL",
+               "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
                "DeploymentType":"IN_PLACE"
-            },
-            "LoadBalancerInfo" : {
-               "TargetGroupInfoList" : [ { "Name": { "Fn::GetAtt": ["csye6225TargetGroup", "TargetGroupName"] } } ]
             },
             "Ec2TagFilters":[
                {
