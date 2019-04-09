@@ -219,7 +219,7 @@
                      "ELBSecurityGroup",
                      "GroupId"
                   ]
-                  }
+                 }
                },
                {
                   "IpProtocol":"tcp",
@@ -605,6 +605,7 @@
       "ELBSecurityGroup":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
+            "GroupName":"csye6225-elb",
             "GroupDescription":"csye6225-elb",
             "VpcId":{
                "Ref":"VPCID"
