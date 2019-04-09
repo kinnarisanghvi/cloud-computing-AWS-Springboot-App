@@ -204,7 +204,10 @@
                   "FromPort":"80",
                   "ToPort":"80",
                   "SourceSecurityGroupId": {
-                     "Ref":"ELBSecurityGroup"
+                     "Fn::GetAtt":[
+                     "ELBSecurityGroup",
+                     "GroupId"
+                  ]
                   }
                },
                {
@@ -212,7 +215,10 @@
                   "FromPort":"8080",
                   "ToPort":"8080",
                    "SourceSecurityGroupId": {
-                     "Ref":"ELBSecurityGroup"
+                     "Fn::GetAtt":[
+                     "ELBSecurityGroup",
+                     "GroupId"
+                  ]
                   }
                },
                {
@@ -652,7 +658,7 @@
       },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
-         "DependsOn":["csye6225webapp"],
+         "DependsOn":["csye6225webapp","ELBSecurityGroup"],
          "Properties":{
             "LoadBalancerAttributes":[
                {
@@ -666,7 +672,7 @@
             "IpAddressType":"ipv4",
             "SecurityGroups":[
                {
-                  "Ref":"csye6225webapp"
+                  "Ref":"ELBSecurityGroup"
                }
             ],
             "Subnets":[
