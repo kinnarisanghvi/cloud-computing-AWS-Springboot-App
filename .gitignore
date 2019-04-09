@@ -103,3 +103,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+jmeter/assign8Register.jmx
