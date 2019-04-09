@@ -171,7 +171,7 @@ public class NoteController {
                 return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
             }
         }
-        return null;
+        return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
