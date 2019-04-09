@@ -18,7 +18,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">2000</stringProp>
         <longProp name="ThreadGroup.start_time">1516717029000</longProp>
         <longProp name="ThreadGroup.end_time">1516717029000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -144,7 +144,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019.thakkarj.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -321,7 +321,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019.thakkarj.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -565,7 +565,7 @@ vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</st
             <value class="SampleSaveConfiguration">
               <time>true</time>
               <latency>true</latency>
-              <timestamp>true</timestamp>
+              <timestamp>false</timestamp>
               <success>true</success>
               <label>true</label>
               <code>true</code>
