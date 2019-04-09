@@ -201,31 +201,25 @@
             "SecurityGroupIngress":[
                {
                   "IpProtocol":"tcp",
-                  "FromPort":"22",
-                  "ToPort":"22",
-                  "CidrIp":"0.0.0.0/0"
-               },
-               {
-                  "IpProtocol":"tcp",
                   "FromPort":"80",
                   "ToPort":"80",
-                  "SourceSecurityGroupId":{
+                  "SourceSecurityGroupId": {
                      "Fn::GetAtt":[
-                        "ELBSecurityGroup",
-                        "GroupId"
-                     ]
+                     "ELBSecurityGroup",
+                     "GroupId"
+                  ]
                   }
                },
                {
                   "IpProtocol":"tcp",
                   "FromPort":"8080",
                   "ToPort":"8080",
-                  "SourceSecurityGroupId":{
+                   "SourceSecurityGroupId": {
                      "Fn::GetAtt":[
-                        "ELBSecurityGroup",
-                        "GroupId"
-                     ]
-                  }
+                     "ELBSecurityGroup",
+                     "GroupId"
+                  ]
+                 }
                },
                {
                   "IpProtocol":"tcp",
@@ -622,7 +616,19 @@
                   "FromPort":"443",
                   "ToPort":"443",
                   "CidrIp":"0.0.0.0/0"
-               }
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"80",
+                  "ToPort":"80",
+                  "CidrIp":"0.0.0.0/0"
+               },
+               {
+                  "IpProtocol":"tcp",
+                  "FromPort":"8080",
+                  "ToPort":"8080",
+                  "CidrIp":"0.0.0.0/0"
+               } 
             ]
          }
       },
@@ -653,7 +659,7 @@
       },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
-         "DependsOn":["csye6225webapp"],
+         "DependsOn":["csye6225webapp","ELBSecurityGroup"],
          "Properties":{
             "LoadBalancerAttributes":[
                {
@@ -667,7 +673,7 @@
             "IpAddressType":"ipv4",
             "SecurityGroups":[
                {
-                  "Ref":"csye6225webapp"
+                  "Ref":"ELBSecurityGroup"
                }
             ],
             "Subnets":[
