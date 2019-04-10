@@ -219,7 +219,7 @@
                      "ELBSecurityGroup",
                      "GroupId"
                   ]
-                  }
+                 }
                },
                {
                   "IpProtocol":"tcp",
@@ -333,7 +333,7 @@
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "DeploymentGroupName":"csye6225-webapp-deployment",
             "DeploymentStyle":{
-               "DeploymentOption":"WITH_TRAFFIC_CONTROL",
+               "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
                "DeploymentType":"IN_PLACE"
             },
             "Ec2TagFilters":[
@@ -608,6 +608,7 @@
       "ELBSecurityGroup":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
+            "GroupName":"csye6225-elb",
             "GroupDescription":"csye6225-elb",
             "VpcId":{
                "Ref":"VPCID"
