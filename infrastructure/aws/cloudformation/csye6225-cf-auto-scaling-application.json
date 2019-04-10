@@ -54,6 +54,10 @@
          "Description":"Certificate Arn",
          "Type":"String"
       },
+      "CertificateArn2":{
+         "Description":"Certificate Arn for second loadbalancer",
+         "Type":"String"
+      },
       "HostedZoneId":{
          "Description":"Hosted zone",
          "Type":"String"
@@ -203,22 +207,22 @@
                   "IpProtocol":"tcp",
                   "FromPort":"80",
                   "ToPort":"80",
-                  "SourceSecurityGroupId": {
+                  "SourceSecurityGroupId":{
                      "Fn::GetAtt":[
-                     "ELBSecurityGroup",
-                     "GroupId"
-                  ]
+                        "ELBSecurityGroup",
+                        "GroupId"
+                     ]
                   }
                },
                {
                   "IpProtocol":"tcp",
                   "FromPort":"8080",
                   "ToPort":"8080",
-                   "SourceSecurityGroupId": {
+                  "SourceSecurityGroupId":{
                      "Fn::GetAtt":[
-                     "ELBSecurityGroup",
-                     "GroupId"
-                  ]
+                        "ELBSecurityGroup",
+                        "GroupId"
+                     ]
                   }
                },
                {
@@ -307,23 +311,28 @@
          }
       },
       "myCodeDeplymentGroup":{
-         "DependsOn":["myCodeDeploy","csye6225TargetGroup","WebServerGroup"],
+         "DependsOn":[
+            "myCodeDeploy",
+            "csye6225TargetGroup",
+            "WebServerGroup",
+            "csye6225NewTargetGroup"
+         ],
          "Type":"AWS::CodeDeploy::DeploymentGroup",
          "Properties":{
             "ApplicationName":{
                "Ref":"ApplicationName"
-            }, 
-            "AutoScalingGroups":[{"Ref":"WebServerGroup"}],
-            
+            },
+            "AutoScalingGroups":[
+               {
+                  "Ref":"WebServerGroup"
+               }
+            ],
             "ServiceRoleArn":{
                "Fn::GetAtt":[
                   "CodeDeployServiceRole",
                   "Arn"
                ]
             },
-            "LoadBalancerInfo" : {
-               "TargetGroupInfoList" : [ { "Name": { "Fn::GetAtt": ["csye6225TargetGroup", "TargetGroupName"] } } ]
-           },           
             "AutoRollbackConfiguration":{
                "Enabled":true,
                "Events":[
@@ -333,7 +342,7 @@
             "DeploymentConfigName":"CodeDeployDefault.AllAtOnce",
             "DeploymentGroupName":"csye6225-webapp-deployment",
             "DeploymentStyle":{
-               "DeploymentOption":"WITH_TRAFFIC_CONTROL",
+               "DeploymentOption":"WITHOUT_TRAFFIC_CONTROL",
                "DeploymentType":"IN_PLACE"
             },
             "Ec2TagFilters":[
@@ -430,26 +439,27 @@
          },
          "Type":"AWS::Lambda::Permission"
       },
-      "WafStack" : {
-         "Type" : "AWS::CloudFormation::Stack",
-         "Properties" : {
-            "Parameters": {
-               "LoadBalancerArn": { "Ref": "csye6225LoadBalancer" }
+      "WafStack":{
+         "Type":"AWS::CloudFormation::Stack",
+         "Properties":{
+            "Parameters":{
+               "LoadBalancerArn":{
+                  "Ref":"csye6225LoadBalancer"
+               }
             },
-            "TemplateURL":              
-            {
-                  "Fn::Join":[
-                     "",
-                     [
-                        "https://s3.amazonaws.com/csye6225-spring2019-",
-                        {
-                           "Ref":"bucketName"
-                        },
-                        ".me.csye6225.com/waf-owasp.yaml"
-                     ]
+            "TemplateURL":{
+               "Fn::Join":[
+                  "",
+                  [
+                     "https://s3.amazonaws.com/csye6225-spring2019-",
+                     {
+                        "Ref":"bucketName"
+                     },
+                     ".me.csye6225.com/waf-owasp.yaml"
                   ]
+               ]
             },
-             "TimeoutInMinutes" : "60"
+            "TimeoutInMinutes":"60"
          }
       },
       "csye6225LaunchConfig":{
@@ -605,6 +615,37 @@
             ]
          }
       },
+      "csye6225NewTargetGroup":{
+         "Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
+         "Properties":{
+            "Name":"csye6225NewTargetGroup",
+            "HealthCheckIntervalSeconds":30,
+            "HealthCheckTimeoutSeconds":20,
+            "Protocol":"HTTP",
+            "HealthCheckProtocol":"HTTP",
+            "HealthCheckPort":"8080",
+            "Matcher":{
+               "HttpCode":"401,200"
+            },
+            "HealthyThresholdCount":3,
+            "TargetGroupAttributes":[
+               {
+                  "Key":"deregistration_delay.timeout_seconds",
+                  "Value":"600"
+               }
+            ],
+            "Port":8080,
+            "VpcId":{
+               "Ref":"VPCID"
+            },
+            "Tags":[
+               {
+                  "Key":"Name",
+                  "Value":"CSYE6225_autoscaling_group"
+               }
+            ]
+         }
+      },
       "ELBSecurityGroup":{
          "Type":"AWS::EC2::SecurityGroup",
          "Properties":{
@@ -630,7 +671,7 @@
                   "FromPort":"8080",
                   "ToPort":"8080",
                   "CidrIp":"0.0.0.0/0"
-               } 
+               }
             ]
          }
       },
@@ -659,9 +700,37 @@
             "Protocol":"HTTPS"
          }
       },
+      "webappNewListener":{
+         "Type":"AWS::ElasticLoadBalancingV2::Listener",
+         "Properties":{
+            "Certificates":[
+               {
+                  "CertificateArn":{
+                     "Ref":"CertificateArn2"
+                  }
+               }
+            ],
+            "DefaultActions":[
+               {
+                  "Type":"forward",
+                  "TargetGroupArn":{
+                     "Ref":"csye6225NewTargetGroup"
+                  }
+               }
+            ],
+            "LoadBalancerArn":{
+               "Ref":"csye6225NewLoadBalancer"
+            },
+            "Port":443,
+            "Protocol":"HTTPS"
+         }
+      },
       "csye6225LoadBalancer":{
          "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
-         "DependsOn":["csye6225webapp","ELBSecurityGroup"],
+         "DependsOn":[
+            "csye6225webapp",
+            "ELBSecurityGroup"
+         ],
          "Properties":{
             "LoadBalancerAttributes":[
                {
@@ -697,25 +766,117 @@
             ]
          }
       },
-      "myDNSRecord":{
-         "Type" : "AWS::Route53::RecordSet",
-         "Properties" : {
-                          "HostedZoneId": {"Ref": "HostedZoneId"},
-                          "Name": {"Ref": "HostedZoneName"},
-                          "Comment": "DNS name for my instance.",
-                          "Type": "A",
-                          "AliasTarget": {
-                            "DNSName": {"Fn::GetAtt": ["csye6225LoadBalancer","DNSName"]},
-                            "HostedZoneId": {"Fn::GetAtt": ["csye6225LoadBalancer","CanonicalHostedZoneID"]}
-                          }
+      "csye6225NewLoadBalancer":{
+         "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+         "DependsOn":[
+            "csye6225webapp",
+            "ELBSecurityGroup"
+         ],
+         "Properties":{
+            "LoadBalancerAttributes":[
+               {
+                  "Key":"idle_timeout.timeout_seconds",
+                  "Value":"60"
                }
-       },
+            ],
+            "Name":"csye6225NewLoadBalancer",
+            "Scheme":"internet-facing",
+            "Type":"application",
+            "IpAddressType":"ipv4",
+            "SecurityGroups":[
+               {
+                  "Ref":"ELBSecurityGroup"
+               }
+            ],
+            "Subnets":[
+               {
+                  "Ref":"subnetID1"
+               },
+               {
+                  "Ref":"subnetID2"
+               },
+               {
+                  "Ref":"subnetID3"
+               }
+            ],
+            "Tags":[
+               {
+                  "Key":"Name",
+                  "Value":"CSYE6225_autoscaling_group"
+               }
+            ]
+         }
+      },
+      "myDNSRecord":{
+         "Type":"AWS::Route53::RecordSet",
+         "Properties":{
+            "HostedZoneId":{
+               "Ref":"HostedZoneId"
+            },
+            "Name":{
+               "Ref":"HostedZoneName"
+            },
+            "Comment":"DNS name for my instance.",
+            "Type":"A",
+            "AliasTarget":{
+               "DNSName":{
+                  "Fn::GetAtt":[
+                     "csye6225LoadBalancer",
+                     "DNSName"
+                  ]
+               },
+               "HostedZoneId":{
+                  "Fn::GetAtt":[
+                     "csye6225LoadBalancer",
+                     "CanonicalHostedZoneID"
+                  ]
+               }
+            }
+         }
+      },
+      "newDNSRecord":{
+         "Type":"AWS::Route53::RecordSet",
+         "Properties":{
+            "HostedZoneId":{
+               "Ref":"HostedZoneId"
+            },
+            "Name":{
+                "Fn::Join": [
+                        "",
+                        [
+                           "nowaf.",
+                           {
+                              "Ref": "HostedZoneName"
+                           }
+                        ]
+                      ]
+            },
+            "Comment":"DNS name for my instance.",
+            "Type":"A",
+            "AliasTarget":{
+               "DNSName":{
+                  "Fn::GetAtt":[
+                     "csye6225NewLoadBalancer",
+                     "DNSName"
+                  ]
+               },
+               "HostedZoneId":{
+                  "Fn::GetAtt":[
+                     "csye6225NewLoadBalancer",
+                     "CanonicalHostedZoneID"
+                  ]
+               }
+            }
+         }
+      },
       "WebServerGroup":{
          "Type":"AWS::AutoScaling::AutoScalingGroup",
          "DependsOn":[
             "csye6225LoadBalancer",
             "csye6225LaunchConfig",
-            "webappListener"
+            "webappListener",
+            "webappNewListener",
+            "csye6225NewLoadBalancer"
          ],
          "Properties":{
             "AutoScalingGroupName":"WebServerGroup",
@@ -747,6 +908,9 @@
             "TargetGroupARNs":[
                {
                   "Ref":"csye6225TargetGroup"
+               },
+               {
+                  "Ref":"csye6225NewTargetGroup"
                }
             ]
          }
