@@ -88,8 +88,7 @@ public class UserController {
         }
 
         DateFormat dateFormat;
-        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
+        String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
@@ -127,7 +126,7 @@ public class UserController {
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
             LOG.info("User returned:"+userDetails[1]);
-            return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+            return new ResponseEntity<String>("{\"date\": \"" +timeStamp + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
