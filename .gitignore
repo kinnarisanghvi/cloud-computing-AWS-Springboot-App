@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.jmx
 # C extensions
 *.so
 
@@ -103,3 +103,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+jmeter/assign8Register.jmx
