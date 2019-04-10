@@ -132,7 +132,8 @@ public class UserController {
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping("/user/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
         LOG.info("Inside createUser()");
