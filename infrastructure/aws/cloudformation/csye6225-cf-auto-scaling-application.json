@@ -321,6 +321,9 @@
                   "Arn"
                ]
             },
+            "LoadBalancerInfo" : {
+               "TargetGroupInfoList" : [ { "Name": { "Fn::GetAtt": ["csye6225TargetGroup", "TargetGroupName"] } } ]
+           },           
             "AutoRollbackConfiguration":{
                "Enabled":true,
                "Events":[
