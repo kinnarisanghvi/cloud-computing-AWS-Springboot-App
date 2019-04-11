@@ -52,18 +52,18 @@ public class UserController {
         HashMap<String, String> map = new Gson().fromJson(stringToParse, new TypeToken<HashMap<String, String>>() {
         }.getType());
 
-        String username = map.get("email");
+        String username = map.get("emailID");
         List<User> users = userRepository.findAll();
         try {
 
             if (username.equals(null) && username.length() > 0 && isValidEmailAddress(username)) {
                 System.out.println("Username is null");
-                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<String>("{\"message\":\"Username is null or invalid\"}", responseHeaders, HttpStatus.FORBIDDEN);
 
             }
         } catch (NullPointerException e) {
             LOG.error("Bad request");
-            return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("{\"message\":\"Username is null or invalid\"}", responseHeaders, HttpStatus.FORBIDDEN);
         }
         for (User user1 : users) {
             try {
