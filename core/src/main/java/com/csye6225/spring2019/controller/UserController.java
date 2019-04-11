@@ -43,37 +43,37 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody User user) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
+        String username;
+        List<User> users = userRepository.findAll();
+        try {
+            username = user.getEmailID();
+            String password = user.getPassword();
 
-        String header = request.getHeader("Authorization");
-        String email = null;
-        if (header.contains("Basic")) {
-            String userDetails[] = new String[2];
-            assert header.substring(0, 6).equals("Basic");
-            String basicAuthEncoded = header.substring(6);
-            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
-            userDetails = basicAuthAsString.split(":", 2);
-            User userExists = userRepository.findByEmail(userDetails[0]);
+            if (username.equals(null)) {
+                System.out.println("Username or password is null");
+            }
+        } catch (NullPointerException e) {
+            LOG.error("Bad request");
+            return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+        }
+        for (User user1 : users) {
             try {
-                email = userDetails[0];
-
-                if (email.equals(null) || userExists == null) {
-                    System.out.println("Username is null");
+                if (user.getEmailID().equals(user1.getEmailID())) {
+                    amazonClient.publishSNSTopic("Email", username);
+                    return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
 
                 }
             } catch (NullPointerException e) {
                 LOG.warn("Bad request");
-                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
-
+                return new ResponseEntity<String>("{\"message\":\"User not registered\"}", responseHeaders, HttpStatus.FORBIDDEN);
             }
 
-
-            amazonClient.publishSNSTopic("Email", email);
-            return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
         }
-        return null;
+        return new ResponseEntity<String>("{\"message\":\"User not registered\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
