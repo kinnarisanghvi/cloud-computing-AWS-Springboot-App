@@ -89,9 +89,7 @@ public class UserController {
             LOG.trace(">> loginUser()");
         }
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(dtf.format(now));
+        String dtf = String.valueOf(java.time.Clock.systemUTC().instant());
 
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
@@ -129,7 +127,7 @@ public class UserController {
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
             LOG.info("User returned:"+userDetails[1]);
-            return new ResponseEntity<String>("{\"date\": \"" + dtf.format(now) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+            return new ResponseEntity<String>("{\"date\": \"" + dtf + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
