@@ -104,7 +104,7 @@ public class AttachmentController {
             auth_user_1 = auth_user.split(",");
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
 
-                if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                if (note.getUser().getId().equals(Long.valueOf(auth_user_1[1]))) {
                     List<JSONObject> entities = new ArrayList<JSONObject>();
 
                     JSONObject entity = new JSONObject();
