@@ -21,6 +21,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import com.google.gson.*
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 
 @RestController
 public class UserController {
@@ -43,15 +47,17 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody User user) {
+    public ResponseEntity<String> resetPassword(@RequestBody String stringToParse) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
-        String username;
+        HashMap<String, String> map = new Gson().fromJson(stringToParse, new TypeToken<HashMap<String, String>>() {
+        }.getType());
+
+        String username = map.get("email");
         List<User> users = userRepository.findAll();
         try {
-            username = user.getEmailID();
 
-            if (username.equals(null)) {
+            if (username.equals(null) && username.length() > 0 && isValidEmailAddress(username)) {
                 System.out.println("Username is null");
                 return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
 
@@ -62,7 +68,7 @@ public class UserController {
         }
         for (User user1 : users) {
             try {
-                if (user.getEmailID().equals(user1.getEmailID())) {
+                if (username.equals(user1.getEmailID())) {
                     amazonClient.publishSNSTopic("Email", username);
                     return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
 
