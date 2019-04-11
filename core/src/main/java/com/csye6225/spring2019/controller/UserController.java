@@ -19,6 +19,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 import com.google.gson.*;
@@ -93,10 +95,10 @@ public class UserController {
             LOG.trace(">> loginUser()");
         }
 
-        DateFormat dateFormat;
-        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
+        final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
+        Calendar cal = Calendar.getInstance();
+        String date = sdf.format(cal.getTime());
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
             String userDetails[] = new String[2];
@@ -133,7 +135,7 @@ public class UserController {
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
             LOG.info("User returned:"+userDetails[1]);
-            return new ResponseEntity<String>("{\"date\": \"" + dateFormat.format(date) + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+            return new ResponseEntity<String>("{\"date\": \"" + date + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }

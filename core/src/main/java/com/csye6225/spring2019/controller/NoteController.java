@@ -86,27 +86,32 @@ public class NoteController {
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
                 List<Note> notes = noteRepository.findAll();
                 List<JSONObject> entities = new ArrayList<JSONObject>();
-                for (Note n : notes) {
-                    if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                        JSONObject entity = new JSONObject();
-                        entity.put("Id", n.getId());
-                        entity.put("Content", n.getContent());
-                        entity.put("Title", n.getTitle());
-                        entity.put("Created_on", n.getCreated_on());
-                        entity.put("Last_updated_on", n.getLast_updated_on());
-                        JSONObject attachmentobj = new JSONObject();
-                        for (int i = 0; i < n.getAttachmentList().size(); i++) {
-                            attachmentobj.put("id", n.getAttachmentList().get(i).getId());
-                            attachmentobj.put("url",n.getAttachmentList().get(i).getUrl());
+                LOG.info("Notes length ==>" + notes.size());
+                if(notes.size() == 0) {
+                    return new ResponseEntity<Object>("No notes", HttpStatus.BAD_REQUEST); 
+                }else {
+                    for (Note n : notes) {
+                        if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                            JSONObject entity = new JSONObject();
+                            entity.put("Id", n.getId());
+                            entity.put("Content", n.getContent());
+                            entity.put("Title", n.getTitle());
+                            entity.put("Created_on", n.getCreated_on());
+                            entity.put("Last_updated_on", n.getLast_updated_on());
+                            JSONObject attachmentobj = new JSONObject();
+                            for (int i = 0; i < n.getAttachmentList().size(); i++) {
+                                attachmentobj.put("id", n.getAttachmentList().get(i).getId());
+                                attachmentobj.put("url",n.getAttachmentList().get(i).getUrl());
+                            }
+                            entity.put("attachment", attachmentobj);
+                            LOG.info("Entity ==>" + entity.toString());
+                            entities.add(entity);
                         }
-                        entity.put("attachment", attachmentobj);
-                        entities.add(entity);
-                    }
 
+                    }   
+                    LOG.info("User created "+ entities.toString());
+                    return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
                 }
-                LOG.info("User created "+ entities.toString());
-                return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
-
             }
         }
         LOG.warn("Unauthorized User "+ auth_user_1[1]);
