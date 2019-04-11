@@ -86,27 +86,32 @@ public class NoteController {
             if (auth_user_1[0].equalsIgnoreCase("Success")) {
                 List<Note> notes = noteRepository.findAll();
                 List<JSONObject> entities = new ArrayList<JSONObject>();
-                for (Note n : notes) {
-                    if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
-                        JSONObject entity = new JSONObject();
-                        entity.put("Id", n.getId());
-                        entity.put("Content", n.getContent());
-                        entity.put("Title", n.getTitle());
-                        entity.put("Created_on", n.getCreated_on());
-                        entity.put("Last_updated_on", n.getLast_updated_on());
-                        JSONObject attachmentobj = new JSONObject();
-                        for (int i = 0; i < n.getAttachmentList().size(); i++) {
-                            attachmentobj.put("id", n.getAttachmentList().get(i).getId());
-                            attachmentobj.put("url",n.getAttachmentList().get(i).getUrl());
+                LOG.info("Notes length ==>" + notes.size());
+                if(notes.size() == 0) {
+                    return new ResponseEntity<Object>("No notes", HttpStatus.BAD_REQUEST); 
+                }else {
+                    for (Note n : notes) {
+                        if (n.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                            JSONObject entity = new JSONObject();
+                            entity.put("Id", n.getId());
+                            entity.put("Content", n.getContent());
+                            entity.put("Title", n.getTitle());
+                            entity.put("Created_on", n.getCreated_on());
+                            entity.put("Last_updated_on", n.getLast_updated_on());
+                            JSONObject attachmentobj = new JSONObject();
+                            for (int i = 0; i < n.getAttachmentList().size(); i++) {
+                                attachmentobj.put("id", n.getAttachmentList().get(i).getId());
+                                attachmentobj.put("url",n.getAttachmentList().get(i).getUrl());
+                            }
+                            entity.put("attachment", attachmentobj);
+                            LOG.info("Entity ==>" + entity.toString());
+                            entities.add(entity);
                         }
-                        entity.put("attachment", attachmentobj);
-                        entities.add(entity);
-                    }
 
+                    }   
+                    LOG.info("User created "+ entities.toString());
+                    return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
                 }
-                LOG.info("User created "+ entities.toString());
-                return new ResponseEntity<Object>(entities.toString(), HttpStatus.OK);
-
             }
         }
         LOG.warn("Unauthorized User "+ auth_user_1[1]);
@@ -139,8 +144,7 @@ public class NoteController {
         } else {
             auth_user_1 = auth_user.split(",");
             long userid = 0L;
-            UUID uuid = UUID.randomUUID();
-            String randomUUIDString = uuid.toString();
+            final String randomUUIDString = UUID.randomUUID().toString().replace("-", "");
             note.setId(randomUUIDString);
             userid = Long.valueOf(auth_user_1[1]);
             User user = new User();
@@ -157,7 +161,8 @@ public class NoteController {
             noteRepository.save(note);
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
-            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+            if (note.getUser().getId().equals(Long.valueOf(auth_user_1[1]))) {
+                LOG.info("verified user");
                 entity.put("Id", note.getId());
                 System.out.print("note id "+ note.getId());
                 entity.put("Content", note.getContent());
@@ -169,9 +174,12 @@ public class NoteController {
                 entities.add(entity);
                 LOG.info("Added note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
+            } else {
+                LOG.info("Could not verify user?" + user);
+                LOG.info("note.getUser().getId() ==> " + note.getUser().getId() + "; value of auth_user_1 ==>" + Long.valueOf(auth_user_1[1]) + "; userid ==>" + userid);
+                return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
-        }
-        return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }        
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
@@ -190,7 +198,6 @@ public class NoteController {
             LOG.error("Note id is not found");
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
-
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
             String userDetails[] = new String[2];
@@ -225,7 +232,7 @@ public class NoteController {
             }
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
-            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+            if (note.getUser().getId().equals(Long.valueOf(auth_user_1[1]))) {
                 entity.put("Id", note.getId());
                 entity.put("Content", note.getContent());
                 entity.put("Title", note.getTitle());
@@ -240,9 +247,13 @@ public class NoteController {
                 entities.add(entity);
                 LOG.info("Returning note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.OK);
+            } else {
+                LOG.info("Could not verify user?" + auth_user_1);
+                LOG.info("note.getUser().getId() ==> " + note.getUser().getId() + "; value of auth_user_1 ==>" + Long.valueOf(auth_user_1[1]));
+                return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
         }
-        return null;
+        return new ResponseEntity<Object>("Unauthorized headers", HttpStatus.BAD_REQUEST);
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
