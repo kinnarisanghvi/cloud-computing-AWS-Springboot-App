@@ -50,10 +50,11 @@ public class UserController {
         List<User> users = userRepository.findAll();
         try {
             username = user.getEmailID();
-            String password = user.getPassword();
 
             if (username.equals(null)) {
-                System.out.println("Username or password is null");
+                System.out.println("Username is null");
+                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
             }
         } catch (NullPointerException e) {
             LOG.error("Bad request");
