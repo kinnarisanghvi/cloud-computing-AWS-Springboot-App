@@ -193,7 +193,6 @@ public class NoteController {
             LOG.error("Note id is not found");
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }
-
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
             String userDetails[] = new String[2];
@@ -243,9 +242,13 @@ public class NoteController {
                 entities.add(entity);
                 LOG.info("Returning note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.OK);
+            } else {
+                LOG.info("Could not verify user?" + auth_user_1);
+                LOG.info("note.getUser().getId() ==> " + note.getUser().getId() + "; value of auth_user_1 ==>" + Long.valueOf(auth_user_1[1]));
+                return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
         }
-        return null;
+        return new ResponseEntity<Object>("Unauthorized headers", HttpStatus.BAD_REQUEST);
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
