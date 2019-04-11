@@ -54,7 +54,7 @@ public class UserController {
         HashMap<String, String> map = new Gson().fromJson(stringToParse, new TypeToken<HashMap<String, String>>() {
         }.getType());
 
-        String username = map.get("emailID");
+        String username = map.get("email");
         List<User> users = userRepository.findAll();
         try {
 
