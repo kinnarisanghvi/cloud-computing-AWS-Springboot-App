@@ -89,8 +89,10 @@ public class UserController {
             LOG.trace(">> loginUser()");
         }
 
-        String dtf = String.valueOf(java.time.Clock.systemUTC().instant());
+        final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
+        Calendar cal = Calendar.getInstance();
+        String date = sdf.format(cal.getTime());
         String header = request.getHeader("Authorization");
         if (header != null && header.contains("Basic")) {
             String userDetails[] = new String[2];
@@ -127,7 +129,7 @@ public class UserController {
             responseHeaders.set("MyResponseHeader", "MyValue");
             //        "{\"message\":
             LOG.info("User returned:"+userDetails[1]);
-            return new ResponseEntity<String>("{\"date\": \"" + dtf + "\"}", responseHeaders, HttpStatus.ACCEPTED);
+            return new ResponseEntity<String>("{\"date\": \"" + date + "\"}", responseHeaders, HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<String>("{\"Message\": \"Please use Basic Auth with credentials.\"}", responseHeaders, HttpStatus.NOT_ACCEPTABLE);
     }
