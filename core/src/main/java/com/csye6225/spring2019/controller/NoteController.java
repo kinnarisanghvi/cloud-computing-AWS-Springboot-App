@@ -156,7 +156,7 @@ public class NoteController {
             noteRepository.save(note);
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
-            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+            if (note.getUser().getId().equals(Long.valueOf(auth_user_1[1]))) {
                 LOG.info("verified user");
                 entity.put("Id", note.getId());
                 System.out.print("note id "+ note.getId());
@@ -228,7 +228,7 @@ public class NoteController {
             }
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
-            if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+            if (note.getUser().getId().equals(Long.valueOf(auth_user_1[1]))) {
                 entity.put("Id", note.getId());
                 entity.put("Content", note.getContent());
                 entity.put("Title", note.getTitle());
