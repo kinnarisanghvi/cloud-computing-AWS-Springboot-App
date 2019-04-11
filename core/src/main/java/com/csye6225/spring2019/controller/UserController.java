@@ -21,6 +21,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+
 
 @RestController
 public class UserController {
@@ -43,37 +46,40 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/reset")
-    public ResponseEntity<String> resetPassword(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> resetPassword(@RequestBody String stringToParse) {
         LOG.info("Inside resetPassword()");
         statsd.incrementCounter("/reset url hit");
+        HashMap<String, String> map = new Gson().fromJson(stringToParse, new TypeToken<HashMap<String, String>>() {
+        }.getType());
 
-        String header = request.getHeader("Authorization");
-        String email = null;
-        if (header.contains("Basic")) {
-            String userDetails[] = new String[2];
-            assert header.substring(0, 6).equals("Basic");
-            String basicAuthEncoded = header.substring(6);
-            String basicAuthAsString = new String(Base64.getDecoder().decode(basicAuthEncoded.getBytes()));
-            userDetails = basicAuthAsString.split(":", 2);
-            User userExists = userRepository.findByEmail(userDetails[0]);
+        String username = map.get("emailID");
+        List<User> users = userRepository.findAll();
+        try {
+
+            if (username.equals(null) && username.length() > 0 && isValidEmailAddress(username)) {
+                System.out.println("Username is null");
+                return new ResponseEntity<String>("{\"message\":\"Username is null or invalid\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
+            }
+        } catch (NullPointerException e) {
+            LOG.error("Bad request");
+            return new ResponseEntity<String>("{\"message\":\"Username is null or invalid\"}", responseHeaders, HttpStatus.FORBIDDEN);
+        }
+        for (User user1 : users) {
             try {
-                email = userDetails[0];
-
-                if (email.equals(null) || userExists == null) {
-                    System.out.println("Username is null");
+                if (username.equals(user1.getEmailID())) {
+                    amazonClient.publishSNSTopic("Email", username);
+                    return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
 
                 }
             } catch (NullPointerException e) {
                 LOG.warn("Bad request");
-                return new ResponseEntity<String>("{\"message\":\"Enter username\"}", responseHeaders, HttpStatus.FORBIDDEN);
-
+                return new ResponseEntity<String>("{\"message\":\"User not registered\"}", responseHeaders, HttpStatus.FORBIDDEN);
             }
 
-
-            amazonClient.publishSNSTopic("Email", email);
-            return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
         }
-        return null;
+        return new ResponseEntity<String>("{\"message\":\"User not registered\"}", responseHeaders, HttpStatus.FORBIDDEN);
+
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
