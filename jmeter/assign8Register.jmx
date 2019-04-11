@@ -17,13 +17,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-<<<<<<< HEAD
-        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">2000</stringProp>
-=======
         <stringProp name="ThreadGroup.num_threads">500</stringProp>
         <stringProp name="ThreadGroup.ramp_time">500</stringProp>
->>>>>>> 154fdc3f9366b5d6f5c032b53fd4b1010b23fb0c
         <longProp name="ThreadGroup.start_time">1516717029000</longProp>
         <longProp name="ThreadGroup.end_time">1516717029000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -149,12 +144,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-<<<<<<< HEAD
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
-=======
-
           <stringProp name="HTTPSampler.domain">csye6225-spring2019-magdanik.me</stringProp>
->>>>>>> 154fdc3f9366b5d6f5c032b53fd4b1010b23fb0c
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -332,11 +322,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-<<<<<<< HEAD
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019-thakkarj.me</stringProp>
-=======
           <stringProp name="HTTPSampler.domain">csye6225-spring2019-magdanik.me</stringProp>
->>>>>>> 154fdc3f9366b5d6f5c032b53fd4b1010b23fb0c
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>

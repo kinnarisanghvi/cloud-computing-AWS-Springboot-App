@@ -139,8 +139,7 @@ public class NoteController {
         } else {
             auth_user_1 = auth_user.split(",");
             long userid = 0L;
-            UUID uuid = UUID.randomUUID();
-            String randomUUIDString = uuid.toString();
+            final String randomUUIDString = UUID.randomUUID().toString().replace("-", "");
             note.setId(randomUUIDString);
             userid = Long.valueOf(auth_user_1[1]);
             User user = new User();
@@ -158,6 +157,7 @@ public class NoteController {
             List<JSONObject> entities = new ArrayList<JSONObject>();
             JSONObject entity = new JSONObject();
             if (note.getUser().getId() == Long.valueOf(auth_user_1[1])) {
+                LOG.info("verified user");
                 entity.put("Id", note.getId());
                 System.out.print("note id "+ note.getId());
                 entity.put("Content", note.getContent());
@@ -169,9 +169,12 @@ public class NoteController {
                 entities.add(entity);
                 LOG.info("Added note" +entities.toString());
                 return new ResponseEntity<>(entities.toString(), HttpStatus.CREATED);
+            } else {
+                LOG.info("Could not verify user?" + user);
+                LOG.info("note.getUser().getId() ==> " + note.getUser().getId() + "; value of auth_user_1 ==>" + Long.valueOf(auth_user_1[1]) + "; userid ==>" + userid);
+                return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
-        }
-        return new ResponseEntity<Object>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }        
     }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
