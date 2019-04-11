@@ -811,6 +811,7 @@
       "myDNSRecord":{
          "Type":"AWS::Route53::RecordSet",
          "Properties":{
+            "Type" : "A",
             "HostedZoneId":{
                "Ref":"HostedZoneId"
             },
@@ -838,6 +839,7 @@
       "newDNSRecord":{
          "Type":"AWS::Route53::RecordSet",
          "Properties":{
+            "Type" : "A",
             "HostedZoneId":{
                "Ref":"HostedZoneId"
             },
